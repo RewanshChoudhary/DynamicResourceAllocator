@@ -105,3 +105,30 @@ def run_minimal_allocation(context: ApiTestContext, *, idempotency_key: str):
         x_idempotency_key=idempotency_key,
     )
     return payload, response
+
+
+def unallocated_allocation_payload() -> dict[str, Any]:
+    created_at = datetime(2026, 2, 22, 12, 0, tzinfo=timezone.utc).isoformat()
+    return {
+        "orders": [
+            {
+                "order_id": "ORD-UNALLOCATED",
+                "latitude": 12.9716,
+                "longitude": 77.5946,
+                "amount_paise": 30000,
+                "requested_vehicle_type": "car",
+                "created_at": created_at,
+            }
+        ],
+        "partners": [
+            {
+                "partner_id": "PT-BIKE",
+                "latitude": 12.9717,
+                "longitude": 77.5947,
+                "is_available": True,
+                "rating": 4.8,
+                "vehicle_types": ["bike"],
+                "active": True,
+            }
+        ],
+    }

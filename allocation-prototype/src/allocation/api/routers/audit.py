@@ -126,3 +126,16 @@ def get_trace(order_id: str, request: Request):
         }
     finally:
         session.close()
+
+
+@router.get("/allocations/{order_id}/rejection-summary")
+def get_rejection_summary(order_id: str, request: Request):
+    session = request.app.state.session_factory()
+    try:
+        allocation_repo = AllocationRepository(session)
+        summary = allocation_repo.get_rejection_summary(order_id)
+        if summary is None:
+            raise HTTPException(status_code=404, detail=f"No stored rejection summary found for order {order_id}")
+        return summary
+    finally:
+        session.close()
