@@ -8,6 +8,8 @@ from typing import Any
 from fastapi import FastAPI
 from starlette.requests import Request
 
+from allocation.api.routers.allocate import allocate
+from allocation.api.schemas import AllocationRequest
 from allocation.fairness.tracker import PartnerLoadTracker
 from allocation.persistence.models import create_all_tables, create_session_factory, create_sqlite_engine
 
@@ -93,3 +95,13 @@ def minimal_allocation_payload() -> dict[str, Any]:
             },
         ],
     }
+
+
+def run_minimal_allocation(context: ApiTestContext, *, idempotency_key: str):
+    payload = AllocationRequest.model_validate(minimal_allocation_payload())
+    response = allocate(
+        payload,
+        context.request("POST", "/allocations"),
+        x_idempotency_key=idempotency_key,
+    )
+    return payload, response
