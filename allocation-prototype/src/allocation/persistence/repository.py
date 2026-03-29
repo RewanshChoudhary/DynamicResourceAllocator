@@ -54,6 +54,66 @@ class AllocationRepository:
         )
         return self.session.execute(stmt).scalar_one_or_none()
 
+    def get_rejection_summary(self, order_id: str) -> dict[str, Any] | None:
+        stmt = (
+            select(AllocationEventModel)
+            .where(AllocationEventModel.order_id == order_id)
+            .order_by(AllocationEventModel.id.desc())
+            .limit(1)
+        )
+        event = self.session.execute(stmt).scalar_one_or_none()
+        if event is None:
+            return None
+
+        manifest_row = self.session.get(SealedManifestModel, event.manifest_id)
+        if manifest_row is None:
+            return None
+
+        manifest_payload = json.loads(manifest_row.manifest_json)
+        order_trace = next(
+            (
+                trace
+                for trace in manifest_payload.get("evaluation_trace", {}).get("orders", [])
+                if trace.get("order_id") == order_id
+            ),
+            None,
+        )
+        if order_trace is None:
+            return None
+
+        hard_rule_failures: list[dict[str, str | None]] = []
+        candidates = order_trace.get("candidates", [])
+        for candidate in candidates:
+            first_failure = next(
+                (
+                    hard_result
+                    for hard_result in candidate.get("hard_results", [])
+                    if not hard_result.get("passed", False)
+                ),
+                None,
+            )
+            if first_failure is None:
+                continue
+
+            hard_rule_failures.append(
+                {
+                    "rule": first_failure.get("rule"),
+                    "partner_id": candidate.get("partner_id"),
+                    "reason": first_failure.get("rationale"),
+                }
+            )
+
+        return {
+            "order_id": order_id,
+            "allocation_status": event.status,
+            "allocated_partner_id": event.partner_id,
+            "hard_rule_failures": hard_rule_failures,
+            "candidates_evaluated": len(candidates),
+            "candidates_surviving_hard_rules": sum(
+                1 for candidate in candidates if candidate.get("hard_passed", False)
+            ),
+        }
+
 
 class ManifestRepository:
     def __init__(self, session: Session) -> None:
