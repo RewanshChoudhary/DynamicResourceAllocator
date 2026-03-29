@@ -21,7 +21,14 @@ class AllocationRepository:
     def __init__(self, session: Session) -> None:
         self.session = session
 
-    def append_events(self, manifest_id: str, allocations: list[Allocation], commit: bool = True) -> None:
+    def append_events(
+        self,
+        manifest_id: str,
+        allocations: list[Allocation],
+        trace_hash: str,
+        config_version_hash: str,
+        commit: bool = True,
+    ) -> None:
         rows = []
         for allocation in allocations:
             rows.append(
@@ -30,6 +37,8 @@ class AllocationRepository:
                     manifest_id=manifest_id,
                     partner_id=allocation.partner_id,
                     status=allocation.status.value,
+                    trace_hash=trace_hash,
+                    config_version_hash=config_version_hash,
                 )
             )
         self.session.add_all(rows)

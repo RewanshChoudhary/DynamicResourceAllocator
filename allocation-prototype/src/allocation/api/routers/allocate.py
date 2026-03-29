@@ -129,7 +129,13 @@ def allocate(
 
         manifest_repository.save(manifest, commit=False)
         input_snapshot_repository.save(manifest.input_hash, input_snapshot, commit=False)
-        allocation_repository.append_events(manifest.manifest_id, list(pipeline_result.allocations), commit=False)
+        allocation_repository.append_events(
+            manifest.manifest_id,
+            list(pipeline_result.allocations),
+            trace_hash=manifest.trace_hash,
+            config_version_hash=manifest.config_version_hash,
+            commit=False,
+        )
 
         allocated_count = sum(1 for allocation in pipeline_result.allocations if allocation.partner_id is not None)
         response_payload = {
