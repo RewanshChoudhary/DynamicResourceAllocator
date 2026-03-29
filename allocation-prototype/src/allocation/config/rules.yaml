@@ -1,0 +1,43 @@
+hard_rules:
+  - name: availability
+    enabled: true
+  - name: vehicle_type
+    enabled: true
+  - name: max_distance
+    enabled: true
+    params:
+      max_distance_km: 5.0
+  - name: min_rating
+    enabled: true
+    params:
+      min_rating: 3.5
+
+vehicle_compatibility:
+  bike:
+    - bike
+    - scooter
+  scooter:
+    - scooter
+    - bike
+  car:
+    - car
+
+scoring_rules:
+  - name: proximity_score
+    enabled: true
+    params:
+      scale_km: 10.0
+  - name: rating_score
+    enabled: true
+  - name: fairness_score
+    enabled: true
+
+weights:
+  proximity_score: 0.45
+  rating_score: 0.25
+  fairness_score: 0.30
+
+fairness:
+  threshold: 0.35
+  escalation_factor: 1.5
+  window_minutes: 60
