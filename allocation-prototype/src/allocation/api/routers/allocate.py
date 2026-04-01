@@ -56,6 +56,14 @@ def _to_domain_partners(request_payload: AllocationRequest) -> list[DeliveryPart
     ]
 
 
+def _active_hard_rule_names(config: dict) -> list[str]:
+    return [
+        rule["name"]
+        for rule in config.get("hard_rules", [])
+        if rule.get("enabled", True)
+    ]
+
+
 @router.post("/allocations", response_model=AllocationResponse)
 def allocate(
     payload: AllocationRequest,
@@ -154,6 +162,7 @@ def allocate(
                 "total_orders": len(pipeline_result.allocations),
                 "allocated_orders": allocated_count,
                 "unallocated_orders": len(pipeline_result.allocations) - allocated_count,
+                "active_hard_rules": _active_hard_rule_names(config),
                 "fairness_escalation_event": fairness_event.to_dict() if fairness_event else None,
                 "conflict_resolution_report_hash": conflict_report_hash,
             },

@@ -1,121 +1,73 @@
 # Rule-Driven Allocation Engine Prototype
 
-A focused prototype implementing five novel capabilities for auditable, deterministic allocation decisions:
+This project assigns delivery orders to eligible partners in a way that is deterministic, explainable, and easy to verify later.
 
-1. **Sealed Decision Manifest (SDM)**: each allocation run emits a tamper-evident manifest with canonical trace hash, input hash, config hash, conflict report hash, and HMAC signature.
-2. **Counterfactual Simulation**: run what-if analysis against historical decisions by mutating rules/weights/toggles/partner pool.
-3. **Gini-Adaptive Fairness Enforcement**: monitor rolling load inequality and dynamically escalate fairness scoring weight when Gini exceeds threshold.
-4. **Rule Conflict Detection**: detect logical, weight, and dependency conflicts before evaluation starts.
-5. **Deterministic Replay**: replay historical decisions from stored inputs+config and prove identical trace hash.
+It does more than return an allocation result. It also stores a tamper-evident manifest, exposes replay and audit endpoints, supports counterfactual simulations, and includes realistic sample datasets for demos and manual testing.
+
+## What The System Does
+
+At a high level, the allocation flow is:
+
+1. Accept orders and delivery partners through the API.
+2. Load and validate the active rule configuration.
+3. Apply hard rules such as availability, vehicle compatibility, distance, and minimum rating.
+4. Score the remaining candidates with proximity, rating, and fairness.
+5. Choose the best partner deterministically.
+6. Persist the result, evaluation trace, input snapshot, and sealed manifest.
+7. Allow later verification, replay, diagnostics, and what-if simulation.
+
+## Feature Overview
+
+- **Deterministic allocation pipeline**: the same inputs and config produce the same allocation result and trace.
+- **Hard-rule filtering**: availability, vehicle compatibility, distance, and rating are checked before scoring.
+- **Weighted scoring**: proximity, rating, and fairness are combined into a transparent final score.
+- **Fairness escalation**: if recent partner load becomes too uneven, fairness weight can be increased automatically.
+- **Conflict-aware configuration loading**: broken or contradictory rule configs are detected before allocation starts.
+- **Sealed Decision Manifest (SDM)**: each run stores a tamper-evident manifest tied to the input snapshot and config hash.
+- **Replay and verification**: past decisions can be replayed and checked against stored signatures and trace hashes.
+- **Rejection summaries and aggregate diagnostics**: the API explains why orders failed and aggregates the most common hard-rule eliminations.
+- **Counterfactual simulation**: stored runs can be re-evaluated under config mutations.
+- **Human-readable frontend**: the browser UI loads curated sample datasets and turns API output into a plain-English summary.
+- **Dataset tooling**: the repo supports both curated sample payloads and larger generated payloads adapted from the Zomato CSV.
 
 ## Stack
 
 - FastAPI
 - Pydantic v2
-- SQLite + SQLAlchemy (sync)
-- Python stdlib `hmac` + `hashlib`
+- SQLite + SQLAlchemy
+- Alembic
 - pytest
 - structlog
 - PyYAML
+- Python stdlib `hmac` + `hashlib`
 
 ## Project Layout
 
 ```text
 allocation-prototype/
 ├── src/allocation/
+│   ├── api/
+│   ├── config/
+│   ├── data/
 │   ├── domain/
-│   ├── rules/
 │   ├── engine/
 │   ├── fairness/
-│   ├── simulation/
 │   ├── persistence/
-│   ├── config/
-│   └── api/
+│   ├── rules/
+│   └── simulation/
 ├── demo/
+│   ├── sample_datasets/
+│   └── demo_*.py
+├── frontend/
+├── scripts/
 ├── tests/
 ├── README.md
 └── pyproject.toml
 ```
 
-## Major Components
+## Quick Start
 
-- `API`: accepts allocation requests and exposes manifest, replay, and simulation endpoints.
-- `Config + Conflict Detection`: loads `rules.yaml`, validates rule setup, and blocks broken configs.
-- `Rule Engine`: applies hard rules first, then scoring rules, and picks the best partner deterministically.
-- `Fairness Layer`: tracks recent partner load and can raise fairness weight when allocation becomes too uneven.
-- `Manifest + Persistence`: stores the sealed decision manifest, input snapshot, config version, and allocation events.
-- `Replay + Simulation`: verifies past decisions, reproduces them deterministically, and runs what-if scenarios.
-
-## Small State Diagram
-
-This is a simple project-level view that shows only the main parts of the allocation flow.
-
-```mermaid
-stateDiagram-v2
-    [*] --> RequestReceived
-    RequestReceived --> IdempotencyCheck
-    IdempotencyCheck --> ConfigAndConflicts: new request
-    IdempotencyCheck --> ResponseReturned: cached response
-
-    ConfigAndConflicts --> AllocationEngine: config valid
-    ConfigAndConflicts --> RequestRejected: blocking conflict
-
-    state AllocationEngine {
-        [*] --> HardRules
-        HardRules --> ScoringRules
-        ScoringRules --> FairnessAdjustment
-        FairnessAdjustment --> DecisionMade
-    }
-
-    AllocationEngine --> ManifestAndStorage
-    ManifestAndStorage --> ResponseReturned
-
-    ResponseReturned --> ReplayAndVerification
-    ResponseReturned --> CounterfactualSimulation
-    ReplayAndVerification --> [*]
-    CounterfactualSimulation --> [*]
-    RequestRejected --> [*]
-```
-
-### How To Read This Diagram
-
-- `RequestReceived` and `IdempotencyCheck` are the API entry points.
-- `ConfigAndConflicts` represents config loading and pre-run rule validation.
-- `AllocationEngine` is the core decision path: filter with hard rules, score candidates, apply fairness, then choose a partner.
-- `ManifestAndStorage` means the result is sealed, saved, and linked to its input/config history.
-- `ReplayAndVerification` and `CounterfactualSimulation` are post-decision capabilities built on stored history.
-
-## Verified Local Workflow
-
-Use the project-local virtual environment for every command below. The repository currently validates cleanly with `.venv/bin/python`, while the system `python` on this machine may not have `pytest`, `sqlalchemy`, `structlog`, or other runtime dependencies on `PATH`.
-
-Optional shell shortcut:
-
-```bash
-cd allocation-prototype
-source .venv/bin/activate
-```
-
-Exact commands validated in this repository:
-
-```bash
-.venv/bin/python -m pytest -v
-.venv/bin/python demo/demo_sdm.py
-.venv/bin/python demo/demo_counterfactual.py
-.venv/bin/python demo/demo_fairness.py
-.venv/bin/python demo/demo_conflict.py
-.venv/bin/python demo/demo_replay.py
-.venv/bin/python demo/demo_scenario_compare.py
-.venv/bin/python scripts/prepare_zomato_data.py \
-  --input ../Zomato\ Dataset.csv \
-  --audit-out demo/zomato_audit_report.json \
-  --payload-out demo/zomato_allocation_payload.json \
-  --max-orders 120 \
-  --max-partners 80
-.venv/bin/alembic upgrade head
-```
-
-If `.venv` is missing on your machine, create it and install dependencies before running the validated commands:
+Create a local virtual environment and install the project in editable mode:
 
 ```bash
 cd allocation-prototype
@@ -124,13 +76,143 @@ source .venv/bin/activate
 pip install -e '.[dev]'
 ```
 
-## Run API (No Version Prefix)
+Run the database migration:
+
+```bash
+.venv/bin/alembic upgrade head
+```
+
+Start the API:
 
 ```bash
 .venv/bin/python -m uvicorn allocation.api.app:app --reload
 ```
 
-Endpoints:
+Open the frontend:
+
+```text
+http://127.0.0.1:8000/
+```
+
+## Running The Project With Different Datasets
+
+### 1. Curated realistic sample datasets
+
+The frontend and demo sample endpoints are backed by hand-authored payloads in [demo/sample_datasets](/home/rewansh57/Programming/PatentProject/allocation-prototype/demo/sample_datasets).
+
+Available datasets:
+
+- `bengaluru_lunch_rush.json`: compact weekday lunch demand with mostly bike and scooter traffic plus one car-only order.
+- `hyderabad_monsoon_mixed_fleet.json`: mixed-fleet evening demand with availability pressure and car-only requests.
+- `gurugram_distance_pressure.json`: spread-out suburban demand designed to surface distance-limit failures.
+
+Use them in the frontend:
+
+1. Start the API.
+2. Open `http://127.0.0.1:8000/`.
+3. Choose a dataset from the sample dropdown.
+4. Click `Load selected sample`.
+5. Run the allocation.
+
+Use them directly with the API:
+
+```bash
+curl -X POST http://127.0.0.1:8000/allocations \
+  -H 'Content-Type: application/json' \
+  -H 'X-Idempotency-Key: blr-sample-001' \
+  --data @demo/sample_datasets/bengaluru_lunch_rush.json
+```
+
+```bash
+curl -X POST http://127.0.0.1:8000/allocations \
+  -H 'Content-Type: application/json' \
+  -H 'X-Idempotency-Key: hyd-sample-001' \
+  --data @demo/sample_datasets/hyderabad_monsoon_mixed_fleet.json
+```
+
+```bash
+curl -X POST http://127.0.0.1:8000/allocations \
+  -H 'Content-Type: application/json' \
+  -H 'X-Idempotency-Key: ggn-sample-001' \
+  --data @demo/sample_datasets/gurugram_distance_pressure.json
+```
+
+You can also inspect the sample catalog through the app:
+
+- `GET /demo/sample-datasets`
+- `GET /demo/sample-payload?dataset=bengaluru_lunch_rush`
+- `GET /demo/sample-payload?dataset=hyderabad_monsoon_mixed_fleet`
+- `GET /demo/sample-payload?dataset=gurugram_distance_pressure`
+
+### 2. Larger generated dataset from the Zomato CSV
+
+If you want a bigger, noisier, more realistic payload, generate one from `../Zomato Dataset.csv`.
+
+Run the adapter:
+
+```bash
+.venv/bin/python scripts/prepare_zomato_data.py \
+  --input ../Zomato\ Dataset.csv \
+  --audit-out demo/zomato_audit_report.json \
+  --payload-out demo/zomato_allocation_payload.json \
+  --max-orders 120 \
+  --max-partners 80
+```
+
+That command:
+
+- audits the raw CSV
+- writes a data-quality report to `demo/zomato_audit_report.json`
+- writes an allocation-ready payload to `demo/zomato_allocation_payload.json`
+
+Use the generated payload with the API:
+
+```bash
+curl -X POST http://127.0.0.1:8000/allocations \
+  -H 'Content-Type: application/json' \
+  -H 'X-Idempotency-Key: zomato-seed-001' \
+  --data @demo/zomato_allocation_payload.json
+```
+
+Compare scenarios on the generated payload:
+
+```bash
+.venv/bin/python demo/demo_scenario_compare.py
+```
+
+### 3. Custom payloads
+
+Any custom JSON payload sent to `POST /allocations` must contain:
+
+- `orders`
+- `partners`
+
+Each order needs:
+
+- `order_id`
+- `latitude`
+- `longitude`
+- `amount_paise`
+- `requested_vehicle_type`
+- `created_at`
+
+Each partner needs:
+
+- `partner_id`
+- `latitude`
+- `longitude`
+- `is_available`
+- `rating`
+- `vehicle_types`
+- `active`
+
+Supported vehicle types are:
+
+- `bike`
+- `scooter`
+- `car`
+
+## API Endpoints
 
 - `POST /allocations`
 - `GET /allocations/diagnostics/latest`
@@ -140,26 +222,24 @@ Endpoints:
 - `GET /allocations/{order_id}/rejection-summary`
 - `GET /allocations/{order_id}/trace`
 - `POST /simulations`
+- `GET /demo/sample-datasets`
+- `GET /demo/sample-payload`
 - `GET /health`
 
-`POST /allocations` requires header `X-Idempotency-Key`.
+`POST /allocations` requires the `X-Idempotency-Key` header.
 
-## Verified Validation Results
+## Demo Scripts
 
-The current repository state was re-checked with the project-local `.venv` after the diagnostics, API-testability, and migration work:
+These scripts exercise the main claims of the project:
 
-- Tests: `.venv/bin/python -m pytest -v` -> `22 passed`
-- Demos: SDM, replay, fairness, conflict detection, and counterfactual all completed successfully
-- Zomato audit: `45,584` rows and `1,320` unique delivery partners
-- Refreshed generated payload: `120` orders and `80` partners
-- Scenario comparison on the refreshed payload:
-  - baseline exact: `53` allocated / `67` unallocated
-  - relaxed distance: `86` allocated / `34` unallocated
-  - compatibility-enabled default: `67` allocated / `53` unallocated
-- Direct route-function API validation now covers allocation, idempotency, manifest fetch, manifest verify, replay, and rejection summaries
-- Alembic migrations upgraded cleanly on a fresh SQLite database
+- `demo/demo_sdm.py`: cryptographically sealed, tamper-evident decision record
+- `demo/demo_counterfactual.py`: historical what-if simulation with config mutation
+- `demo/demo_fairness.py`: fairness-triggered scoring adjustment
+- `demo/demo_conflict.py`: pre-run conflict detection and blocking
+- `demo/demo_replay.py`: deterministic replay and trace-hash verification
+- `demo/demo_scenario_compare.py`: compare baseline, relaxed-distance, and compatibility-enabled scenarios on the generated Zomato payload
 
-## Run Demos
+Run them with:
 
 ```bash
 .venv/bin/python demo/demo_sdm.py
@@ -170,64 +250,76 @@ The current repository state was re-checked with the project-local `.venv` after
 .venv/bin/python demo/demo_scenario_compare.py
 ```
 
-## Run Migrations
+## Types Of Tests Performed
+
+The automated test suite covers the project from several angles:
+
+- **API route behavior**: allocation responses, idempotency, manifest fetch, manifest verification, replay, and rejection-summary routes
+- **Allocation lifecycle**: end-to-end request lifecycle with replayed trace-hash consistency
+- **Manifest integrity**: tamper detection and signature verification
+- **Diagnostics and auditability**: aggregate diagnostics, hard-rule elimination counts, and stored rejection summaries
+- **Counterfactual simulation**: config mutations that change historical outcomes
+- **Fairness logic**: Gini-based fairness escalation and weight renormalization
+- **Rule and config safety**: conflict detection, unknown-rule blocking, vehicle compatibility, and schema compatibility checks
+- **Dataset quality**: Zomato adapter output validation and curated sample-dataset schema validation
+- **Frontend smoke coverage**: root page rendering, sample payload loading, and curated sample catalog availability
+
+The main test files are:
+
+- `tests/test_api_allocate.py`
+- `tests/test_api_audit.py`
+- `tests/test_api_lifecycle.py`
+- `tests/test_manifest.py`
+- `tests/test_replay.py`
+- `tests/test_counterfactual.py`
+- `tests/test_diagnostics.py`
+- `tests/test_rejection_query.py`
+- `tests/test_fairness_gini.py`
+- `tests/test_conflict_detection.py`
+- `tests/test_vehicle_compatibility.py`
+- `tests/test_schema_compatibility.py`
+- `tests/test_zomato_adapter.py`
+- `tests/test_frontend.py`
+- `tests/test_sample_datasets.py`
+
+Run the full suite:
 
 ```bash
-.venv/bin/alembic upgrade head
+.venv/bin/python -m pytest tests -q
 ```
 
-## Use The Zomato CSV As Real-World Seed Data
-
-The file `../Zomato Dataset.csv` is a useful real-world proxy for this project. It has real delivery-style features (geo points, traffic/weather/festival context, delivery times), but it includes noise that must be cleaned before use.
-
-Known quality issues detected by audit:
-
-- Missing values (`NaN`) in ratings, age, city, traffic, and order time.
-- Coordinate sign bug on a subset of rows (restaurant latitude/longitude negative while delivery coordinate is positive).
-- A small set of outliers (invalid age/rating and extreme route distance).
-
-Run the adapter to audit and produce a cleaned allocation payload:
+Run only API-focused tests:
 
 ```bash
-.venv/bin/python scripts/prepare_zomato_data.py \
-  --input ../Zomato\ Dataset.csv \
-  --audit-out demo/zomato_audit_report.json \
-  --payload-out demo/zomato_allocation_payload.json \
-  --max-orders 120 \
-  --max-partners 80
+.venv/bin/python -m pytest tests/test_api_allocate.py tests/test_api_audit.py tests/test_api_lifecycle.py -q
 ```
 
-Use generated payload directly with the API:
+Run only dataset and frontend tests:
 
 ```bash
-curl -X POST http://127.0.0.1:8000/allocations \
-  -H 'Content-Type: application/json' \
-  -H 'X-Idempotency-Key: zomato-seed-001' \
-  --data @demo/zomato_allocation_payload.json
+.venv/bin/python -m pytest tests/test_frontend.py tests/test_sample_datasets.py tests/test_zomato_adapter.py -q
 ```
 
-### Demo to Claim Mapping
-
-- `demo/demo_sdm.py` -> Claim: cryptographically sealed, tamper-evident decision record.
-- `demo/demo_counterfactual.py` -> Claim: historical what-if simulation with rule mutation and trace diff.
-- `demo/demo_fairness.py` -> Claim: live inequality monitoring that changes scoring behavior.
-- `demo/demo_conflict.py` -> Claim: pre-run contradiction detection and activation blocking.
-- `demo/demo_replay.py` -> Claim: deterministic replay proof via trace hash identity.
-- `demo/demo_scenario_compare.py` -> Claim: product decision support for hard-rule strictness changes.
-
-## Tests
+Run only manifest, replay, and simulation tests:
 
 ```bash
-.venv/bin/python -m pytest -v
+.venv/bin/python -m pytest tests/test_manifest.py tests/test_replay.py tests/test_counterfactual.py -q
 ```
+
+## Current Validation Snapshot
+
+As of April 2, 2026, the repository was rechecked locally with the project virtual environment:
+
+- Full automated test suite: `29 passed`
+- Scenario comparison on `demo/zomato_allocation_payload.json`:
+  - `Baseline`: `53` allocated, `67` unallocated
+  - `Relaxed distance`: `86` allocated, `34` unallocated
+  - `Compatibility`: `67` allocated, `53` unallocated
 
 ## Notes
 
-- Config is loaded from `src/allocation/config/rules.yaml`.
-- Broken config for conflict demo: `src/allocation/config/rules_broken.yaml`.
-- SDM signing key is read from `SDM_SIGNING_KEY` (defaults to `dev-signing-key`).
-- Bottom-to-top quality guide: `docs/SYSTEM_QUALITY_GUIDE.md`.
-- Agent notes and intentional out-of-scope items: `AGENT_NOTES.md`.
-- Simple validation summary: `VALIDATION_SUMMARY.md`.
-- Latest feature report: `RUN_REPORT_2026-03-30.md`.
-- Historical runtime report: `RUN_REPORT_2026-03-21.md`.
+- The active config is [rules.yaml](/home/rewansh57/Programming/PatentProject/allocation-prototype/src/allocation/config/rules.yaml).
+- The intentionally broken config for conflict demos is [rules_broken.yaml](/home/rewansh57/Programming/PatentProject/allocation-prototype/src/allocation/config/rules_broken.yaml).
+- The signing key is read from `SDM_SIGNING_KEY` and defaults to `dev-signing-key`.
+- The default SQLite URL is `sqlite:///allocation_prototype.db`, but you can override it with `ALLOCATION_DB_URL`.
+- The system quality guide lives in [SYSTEM_QUALITY_GUIDE.md](/home/rewansh57/Programming/PatentProject/allocation-prototype/docs/SYSTEM_QUALITY_GUIDE.md).

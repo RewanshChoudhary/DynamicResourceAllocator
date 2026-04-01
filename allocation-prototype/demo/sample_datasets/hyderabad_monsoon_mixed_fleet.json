@@ -1,0 +1,734 @@
+{
+  "metadata": {
+    "name": "Hyderabad Monsoon Mixed Fleet",
+    "city": "Hyderabad",
+    "scenario": "Rain-shift demand across HITEC City, Madhapur, Kondapur, and Gachibowli",
+    "description": "A larger mixed-fleet scenario with rain-hour demand, stronger car usage, and visible availability pressure.",
+    "recommended_for": "Vehicle-compatibility demos, mixed-fleet regression checks, and larger manual API runs.",
+    "orders_generated": 48,
+    "partners_generated": 30,
+    "generator": "scripts/generate_sample_datasets.py"
+  },
+  "orders": [
+    {
+      "order_id": "HYD-001",
+      "latitude": 17.450898,
+      "longitude": 78.383439,
+      "amount_paise": 40500,
+      "requested_vehicle_type": "scooter",
+      "created_at": "2026-07-18T18:42:00+05:30"
+    },
+    {
+      "order_id": "HYD-002",
+      "latitude": 17.450567,
+      "longitude": 78.378191,
+      "amount_paise": 33500,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-07-18T18:43:00+05:30"
+    },
+    {
+      "order_id": "HYD-003",
+      "latitude": 17.453978,
+      "longitude": 78.361788,
+      "amount_paise": 31000,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-07-18T18:45:00+05:30"
+    },
+    {
+      "order_id": "HYD-004",
+      "latitude": 17.446639,
+      "longitude": 78.388159,
+      "amount_paise": 29000,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-07-18T18:46:00+05:30"
+    },
+    {
+      "order_id": "HYD-005",
+      "latitude": 17.456824,
+      "longitude": 78.389003,
+      "amount_paise": 26500,
+      "requested_vehicle_type": "scooter",
+      "created_at": "2026-07-18T18:50:00+05:30"
+    },
+    {
+      "order_id": "HYD-006",
+      "latitude": 17.439917,
+      "longitude": 78.37058,
+      "amount_paise": 23000,
+      "requested_vehicle_type": "scooter",
+      "created_at": "2026-07-18T18:52:00+05:30"
+    },
+    {
+      "order_id": "HYD-007",
+      "latitude": 17.452094,
+      "longitude": 78.382139,
+      "amount_paise": 34500,
+      "requested_vehicle_type": "scooter",
+      "created_at": "2026-07-18T18:53:00+05:30"
+    },
+    {
+      "order_id": "HYD-008",
+      "latitude": 17.439605,
+      "longitude": 78.364287,
+      "amount_paise": 28500,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-07-18T18:54:00+05:30"
+    },
+    {
+      "order_id": "HYD-009",
+      "latitude": 17.43594,
+      "longitude": 78.368939,
+      "amount_paise": 86000,
+      "requested_vehicle_type": "car",
+      "created_at": "2026-07-18T18:57:00+05:30"
+    },
+    {
+      "order_id": "HYD-010",
+      "latitude": 17.441122,
+      "longitude": 78.373694,
+      "amount_paise": 33000,
+      "requested_vehicle_type": "scooter",
+      "created_at": "2026-07-18T19:00:00+05:30"
+    },
+    {
+      "order_id": "HYD-011",
+      "latitude": 17.448024,
+      "longitude": 78.387533,
+      "amount_paise": 75000,
+      "requested_vehicle_type": "car",
+      "created_at": "2026-07-18T19:00:00+05:30"
+    },
+    {
+      "order_id": "HYD-012",
+      "latitude": 17.455014,
+      "longitude": 78.393224,
+      "amount_paise": 33500,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-07-18T19:02:00+05:30"
+    },
+    {
+      "order_id": "HYD-013",
+      "latitude": 17.450187,
+      "longitude": 78.387036,
+      "amount_paise": 60500,
+      "requested_vehicle_type": "car",
+      "created_at": "2026-07-18T19:04:00+05:30"
+    },
+    {
+      "order_id": "HYD-014",
+      "latitude": 17.443368,
+      "longitude": 78.373973,
+      "amount_paise": 29000,
+      "requested_vehicle_type": "scooter",
+      "created_at": "2026-07-18T19:07:00+05:30"
+    },
+    {
+      "order_id": "HYD-015",
+      "latitude": 17.453734,
+      "longitude": 78.363245,
+      "amount_paise": 28500,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-07-18T19:09:00+05:30"
+    },
+    {
+      "order_id": "HYD-016",
+      "latitude": 17.441871,
+      "longitude": 78.364761,
+      "amount_paise": 18000,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-07-18T19:10:00+05:30"
+    },
+    {
+      "order_id": "HYD-017",
+      "latitude": 17.435868,
+      "longitude": 78.380917,
+      "amount_paise": 56500,
+      "requested_vehicle_type": "car",
+      "created_at": "2026-07-18T19:13:00+05:30"
+    },
+    {
+      "order_id": "HYD-018",
+      "latitude": 17.448002,
+      "longitude": 78.380669,
+      "amount_paise": 97500,
+      "requested_vehicle_type": "car",
+      "created_at": "2026-07-18T19:16:00+05:30"
+    },
+    {
+      "order_id": "HYD-019",
+      "latitude": 17.451425,
+      "longitude": 78.38998,
+      "amount_paise": 37500,
+      "requested_vehicle_type": "scooter",
+      "created_at": "2026-07-18T19:17:00+05:30"
+    },
+    {
+      "order_id": "HYD-020",
+      "latitude": 17.441719,
+      "longitude": 78.385626,
+      "amount_paise": 25500,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-07-18T19:19:00+05:30"
+    },
+    {
+      "order_id": "HYD-021",
+      "latitude": 17.455503,
+      "longitude": 78.392001,
+      "amount_paise": 39000,
+      "requested_vehicle_type": "scooter",
+      "created_at": "2026-07-18T19:20:00+05:30"
+    },
+    {
+      "order_id": "HYD-022",
+      "latitude": 17.455007,
+      "longitude": 78.388948,
+      "amount_paise": 24000,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-07-18T19:24:00+05:30"
+    },
+    {
+      "order_id": "HYD-023",
+      "latitude": 17.453881,
+      "longitude": 78.371148,
+      "amount_paise": 19500,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-07-18T19:24:00+05:30"
+    },
+    {
+      "order_id": "HYD-024",
+      "latitude": 17.439523,
+      "longitude": 78.38084,
+      "amount_paise": 30500,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-07-18T19:28:00+05:30"
+    },
+    {
+      "order_id": "HYD-025",
+      "latitude": 17.455958,
+      "longitude": 78.384094,
+      "amount_paise": 82000,
+      "requested_vehicle_type": "car",
+      "created_at": "2026-07-18T19:29:00+05:30"
+    },
+    {
+      "order_id": "HYD-026",
+      "latitude": 17.44134,
+      "longitude": 78.383962,
+      "amount_paise": 32000,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-07-18T19:31:00+05:30"
+    },
+    {
+      "order_id": "HYD-027",
+      "latitude": 17.451108,
+      "longitude": 78.369285,
+      "amount_paise": 18000,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-07-18T19:34:00+05:30"
+    },
+    {
+      "order_id": "HYD-028",
+      "latitude": 17.443214,
+      "longitude": 78.386443,
+      "amount_paise": 45000,
+      "requested_vehicle_type": "car",
+      "created_at": "2026-07-18T19:36:00+05:30"
+    },
+    {
+      "order_id": "HYD-029",
+      "latitude": 17.45448,
+      "longitude": 78.393204,
+      "amount_paise": 17500,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-07-18T19:38:00+05:30"
+    },
+    {
+      "order_id": "HYD-030",
+      "latitude": 17.442232,
+      "longitude": 78.37875,
+      "amount_paise": 19000,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-07-18T19:38:00+05:30"
+    },
+    {
+      "order_id": "HYD-031",
+      "latitude": 17.460361,
+      "longitude": 78.361098,
+      "amount_paise": 37500,
+      "requested_vehicle_type": "scooter",
+      "created_at": "2026-07-18T19:42:00+05:30"
+    },
+    {
+      "order_id": "HYD-032",
+      "latitude": 17.451854,
+      "longitude": 78.367533,
+      "amount_paise": 30000,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-07-18T19:43:00+05:30"
+    },
+    {
+      "order_id": "HYD-033",
+      "latitude": 17.447625,
+      "longitude": 78.386608,
+      "amount_paise": 85500,
+      "requested_vehicle_type": "car",
+      "created_at": "2026-07-18T19:46:00+05:30"
+    },
+    {
+      "order_id": "HYD-034",
+      "latitude": 17.435238,
+      "longitude": 78.367697,
+      "amount_paise": 17000,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-07-18T19:48:00+05:30"
+    },
+    {
+      "order_id": "HYD-035",
+      "latitude": 17.444698,
+      "longitude": 78.386281,
+      "amount_paise": 21500,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-07-18T19:48:00+05:30"
+    },
+    {
+      "order_id": "HYD-036",
+      "latitude": 17.447708,
+      "longitude": 78.385957,
+      "amount_paise": 30000,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-07-18T19:50:00+05:30"
+    },
+    {
+      "order_id": "HYD-037",
+      "latitude": 17.446351,
+      "longitude": 78.378554,
+      "amount_paise": 23000,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-07-18T19:54:00+05:30"
+    },
+    {
+      "order_id": "HYD-038",
+      "latitude": 17.444892,
+      "longitude": 78.379369,
+      "amount_paise": 19000,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-07-18T19:55:00+05:30"
+    },
+    {
+      "order_id": "HYD-039",
+      "latitude": 17.435994,
+      "longitude": 78.378857,
+      "amount_paise": 34000,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-07-18T19:57:00+05:30"
+    },
+    {
+      "order_id": "HYD-040",
+      "latitude": 17.440957,
+      "longitude": 78.380259,
+      "amount_paise": 81000,
+      "requested_vehicle_type": "car",
+      "created_at": "2026-07-18T19:59:00+05:30"
+    },
+    {
+      "order_id": "HYD-041",
+      "latitude": 17.445065,
+      "longitude": 78.373589,
+      "amount_paise": 27500,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-07-18T20:02:00+05:30"
+    },
+    {
+      "order_id": "HYD-042",
+      "latitude": 17.451661,
+      "longitude": 78.365925,
+      "amount_paise": 27000,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-07-18T20:02:00+05:30"
+    },
+    {
+      "order_id": "HYD-043",
+      "latitude": 17.440453,
+      "longitude": 78.371296,
+      "amount_paise": 48500,
+      "requested_vehicle_type": "car",
+      "created_at": "2026-07-18T20:04:00+05:30"
+    },
+    {
+      "order_id": "HYD-044",
+      "latitude": 17.456503,
+      "longitude": 78.365302,
+      "amount_paise": 30500,
+      "requested_vehicle_type": "scooter",
+      "created_at": "2026-07-18T20:06:00+05:30"
+    },
+    {
+      "order_id": "HYD-045",
+      "latitude": 17.436444,
+      "longitude": 78.373833,
+      "amount_paise": 67500,
+      "requested_vehicle_type": "car",
+      "created_at": "2026-07-18T20:10:00+05:30"
+    },
+    {
+      "order_id": "HYD-046",
+      "latitude": 17.447961,
+      "longitude": 78.384633,
+      "amount_paise": 19000,
+      "requested_vehicle_type": "scooter",
+      "created_at": "2026-07-18T20:12:00+05:30"
+    },
+    {
+      "order_id": "HYD-047",
+      "latitude": 17.452341,
+      "longitude": 78.38905,
+      "amount_paise": 37000,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-07-18T20:14:00+05:30"
+    },
+    {
+      "order_id": "HYD-048",
+      "latitude": 17.454164,
+      "longitude": 78.385232,
+      "amount_paise": 35500,
+      "requested_vehicle_type": "scooter",
+      "created_at": "2026-07-18T20:16:00+05:30"
+    }
+  ],
+  "partners": [
+    {
+      "partner_id": "P-HYD-001",
+      "latitude": 17.45803,
+      "longitude": 78.383331,
+      "is_available": true,
+      "rating": 4.3,
+      "vehicle_types": [
+        "car"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-HYD-002",
+      "latitude": 17.443175,
+      "longitude": 78.380889,
+      "is_available": true,
+      "rating": 4.6,
+      "vehicle_types": [
+        "car"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-HYD-003",
+      "latitude": 17.448588,
+      "longitude": 78.365589,
+      "is_available": false,
+      "rating": 4.9,
+      "vehicle_types": [
+        "car"
+      ],
+      "active": false
+    },
+    {
+      "partner_id": "P-HYD-004",
+      "latitude": 17.447831,
+      "longitude": 78.378022,
+      "is_available": true,
+      "rating": 4.2,
+      "vehicle_types": [
+        "bike"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-HYD-005",
+      "latitude": 17.440869,
+      "longitude": 78.385024,
+      "is_available": true,
+      "rating": 4.5,
+      "vehicle_types": [
+        "scooter",
+        "bike"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-HYD-006",
+      "latitude": 17.448237,
+      "longitude": 78.374102,
+      "is_available": true,
+      "rating": 4.4,
+      "vehicle_types": [
+        "bike"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-HYD-007",
+      "latitude": 17.447207,
+      "longitude": 78.383797,
+      "is_available": true,
+      "rating": 4.4,
+      "vehicle_types": [
+        "bike"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-HYD-008",
+      "latitude": 17.441685,
+      "longitude": 78.373514,
+      "is_available": true,
+      "rating": 4.2,
+      "vehicle_types": [
+        "scooter"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-HYD-009",
+      "latitude": 17.45102,
+      "longitude": 78.38181,
+      "is_available": true,
+      "rating": 4.7,
+      "vehicle_types": [
+        "car"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-HYD-010",
+      "latitude": 17.452766,
+      "longitude": 78.384666,
+      "is_available": true,
+      "rating": 4.1,
+      "vehicle_types": [
+        "scooter"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-HYD-011",
+      "latitude": 17.442285,
+      "longitude": 78.379134,
+      "is_available": true,
+      "rating": 3.8,
+      "vehicle_types": [
+        "scooter",
+        "bike"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-HYD-012",
+      "latitude": 17.447409,
+      "longitude": 78.38438,
+      "is_available": true,
+      "rating": 4.5,
+      "vehicle_types": [
+        "car"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-HYD-013",
+      "latitude": 17.437845,
+      "longitude": 78.376655,
+      "is_available": true,
+      "rating": 4.4,
+      "vehicle_types": [
+        "car"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-HYD-014",
+      "latitude": 17.447639,
+      "longitude": 78.381129,
+      "is_available": true,
+      "rating": 4.2,
+      "vehicle_types": [
+        "scooter"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-HYD-015",
+      "latitude": 17.435723,
+      "longitude": 78.373204,
+      "is_available": true,
+      "rating": 4.4,
+      "vehicle_types": [
+        "scooter",
+        "bike"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-HYD-016",
+      "latitude": 17.444005,
+      "longitude": 78.372845,
+      "is_available": true,
+      "rating": 4.7,
+      "vehicle_types": [
+        "bike"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-HYD-017",
+      "latitude": 17.446749,
+      "longitude": 78.383285,
+      "is_available": true,
+      "rating": 4.3,
+      "vehicle_types": [
+        "bike"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-HYD-018",
+      "latitude": 17.444693,
+      "longitude": 78.379001,
+      "is_available": false,
+      "rating": 4.3,
+      "vehicle_types": [
+        "car"
+      ],
+      "active": false
+    },
+    {
+      "partner_id": "P-HYD-019",
+      "latitude": 17.448166,
+      "longitude": 78.367765,
+      "is_available": true,
+      "rating": 4.2,
+      "vehicle_types": [
+        "scooter"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-HYD-020",
+      "latitude": 17.442821,
+      "longitude": 78.382222,
+      "is_available": true,
+      "rating": 4.8,
+      "vehicle_types": [
+        "car"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-HYD-021",
+      "latitude": 17.44465,
+      "longitude": 78.378363,
+      "is_available": true,
+      "rating": 3.2,
+      "vehicle_types": [
+        "car"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-HYD-022",
+      "latitude": 17.441511,
+      "longitude": 78.369892,
+      "is_available": false,
+      "rating": 4.4,
+      "vehicle_types": [
+        "bike"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-HYD-023",
+      "latitude": 17.441381,
+      "longitude": 78.375969,
+      "is_available": true,
+      "rating": 4.8,
+      "vehicle_types": [
+        "car"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-HYD-024",
+      "latitude": 17.443801,
+      "longitude": 78.376441,
+      "is_available": true,
+      "rating": 4.7,
+      "vehicle_types": [
+        "car"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-HYD-025",
+      "latitude": 17.439982,
+      "longitude": 78.381995,
+      "is_available": true,
+      "rating": 4.2,
+      "vehicle_types": [
+        "scooter"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-HYD-026",
+      "latitude": 17.442226,
+      "longitude": 78.383005,
+      "is_available": false,
+      "rating": 4.5,
+      "vehicle_types": [
+        "scooter"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-HYD-027",
+      "latitude": 17.450558,
+      "longitude": 78.365961,
+      "is_available": false,
+      "rating": 4.9,
+      "vehicle_types": [
+        "car"
+      ],
+      "active": false
+    },
+    {
+      "partner_id": "P-HYD-028",
+      "latitude": 17.437986,
+      "longitude": 78.379713,
+      "is_available": true,
+      "rating": 4.5,
+      "vehicle_types": [
+        "bike"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-HYD-029",
+      "latitude": 17.446171,
+      "longitude": 78.372057,
+      "is_available": true,
+      "rating": 3.9,
+      "vehicle_types": [
+        "scooter"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-HYD-030",
+      "latitude": 17.442169,
+      "longitude": 78.383457,
+      "is_available": true,
+      "rating": 4.0,
+      "vehicle_types": [
+        "scooter",
+        "bike"
+      ],
+      "active": true
+    }
+  ]
+}

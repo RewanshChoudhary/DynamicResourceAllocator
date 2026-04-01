@@ -1,0 +1,732 @@
+{
+  "metadata": {
+    "name": "Gurugram Distance Pressure",
+    "city": "Gurugram",
+    "scenario": "Evening demand spread from Cyber City to the edge of the service radius",
+    "description": "A larger suburban scenario where supply stays clustered but many orders drift outward, making the distance rule a major factor.",
+    "recommended_for": "Diagnostics demos, distance-limit investigations, and larger unallocated-order explainability checks.",
+    "orders_generated": 56,
+    "partners_generated": 24,
+    "generator": "scripts/generate_sample_datasets.py"
+  },
+  "orders": [
+    {
+      "order_id": "GGN-001",
+      "latitude": 28.390996,
+      "longitude": 77.05249,
+      "amount_paise": 34000,
+      "requested_vehicle_type": "scooter",
+      "created_at": "2026-04-02T19:10:00+05:30"
+    },
+    {
+      "order_id": "GGN-002",
+      "latitude": 28.448899,
+      "longitude": 77.089248,
+      "amount_paise": 30500,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-04-02T19:14:00+05:30"
+    },
+    {
+      "order_id": "GGN-003",
+      "latitude": 28.439094,
+      "longitude": 77.140843,
+      "amount_paise": 20000,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-04-02T19:16:00+05:30"
+    },
+    {
+      "order_id": "GGN-004",
+      "latitude": 28.450193,
+      "longitude": 77.146826,
+      "amount_paise": 31500,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-04-02T19:17:00+05:30"
+    },
+    {
+      "order_id": "GGN-005",
+      "latitude": 28.393634,
+      "longitude": 77.06267,
+      "amount_paise": 36500,
+      "requested_vehicle_type": "scooter",
+      "created_at": "2026-04-02T19:18:00+05:30"
+    },
+    {
+      "order_id": "GGN-006",
+      "latitude": 28.450597,
+      "longitude": 77.133579,
+      "amount_paise": 20000,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-04-02T19:20:00+05:30"
+    },
+    {
+      "order_id": "GGN-007",
+      "latitude": 28.385544,
+      "longitude": 77.051947,
+      "amount_paise": 25000,
+      "requested_vehicle_type": "scooter",
+      "created_at": "2026-04-02T19:23:00+05:30"
+    },
+    {
+      "order_id": "GGN-008",
+      "latitude": 28.450132,
+      "longitude": 77.096625,
+      "amount_paise": 22000,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-04-02T19:25:00+05:30"
+    },
+    {
+      "order_id": "GGN-009",
+      "latitude": 28.393796,
+      "longitude": 77.064024,
+      "amount_paise": 36000,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-04-02T19:27:00+05:30"
+    },
+    {
+      "order_id": "GGN-010",
+      "latitude": 28.383405,
+      "longitude": 77.04213,
+      "amount_paise": 68000,
+      "requested_vehicle_type": "car",
+      "created_at": "2026-04-02T19:28:00+05:30"
+    },
+    {
+      "order_id": "GGN-011",
+      "latitude": 28.392165,
+      "longitude": 77.051699,
+      "amount_paise": 28500,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-04-02T19:32:00+05:30"
+    },
+    {
+      "order_id": "GGN-012",
+      "latitude": 28.436529,
+      "longitude": 77.14552,
+      "amount_paise": 30500,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-04-02T19:32:00+05:30"
+    },
+    {
+      "order_id": "GGN-013",
+      "latitude": 28.38487,
+      "longitude": 77.049054,
+      "amount_paise": 72500,
+      "requested_vehicle_type": "car",
+      "created_at": "2026-04-02T19:36:00+05:30"
+    },
+    {
+      "order_id": "GGN-014",
+      "latitude": 28.394714,
+      "longitude": 77.051564,
+      "amount_paise": 61500,
+      "requested_vehicle_type": "car",
+      "created_at": "2026-04-02T19:36:00+05:30"
+    },
+    {
+      "order_id": "GGN-015",
+      "latitude": 28.391151,
+      "longitude": 77.058148,
+      "amount_paise": 29500,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-04-02T19:39:00+05:30"
+    },
+    {
+      "order_id": "GGN-016",
+      "latitude": 28.465285,
+      "longitude": 77.10095,
+      "amount_paise": 25000,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-04-02T19:41:00+05:30"
+    },
+    {
+      "order_id": "GGN-017",
+      "latitude": 28.447515,
+      "longitude": 77.130922,
+      "amount_paise": 33500,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-04-02T19:44:00+05:30"
+    },
+    {
+      "order_id": "GGN-018",
+      "latitude": 28.381089,
+      "longitude": 77.058383,
+      "amount_paise": 27000,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-04-02T19:45:00+05:30"
+    },
+    {
+      "order_id": "GGN-019",
+      "latitude": 28.445289,
+      "longitude": 77.127927,
+      "amount_paise": 22000,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-04-02T19:47:00+05:30"
+    },
+    {
+      "order_id": "GGN-020",
+      "latitude": 28.448794,
+      "longitude": 77.093694,
+      "amount_paise": 33500,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-04-02T19:49:00+05:30"
+    },
+    {
+      "order_id": "GGN-021",
+      "latitude": 28.379984,
+      "longitude": 77.053215,
+      "amount_paise": 25000,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-04-02T19:51:00+05:30"
+    },
+    {
+      "order_id": "GGN-022",
+      "latitude": 28.406959,
+      "longitude": 77.065464,
+      "amount_paise": 86500,
+      "requested_vehicle_type": "car",
+      "created_at": "2026-04-02T19:52:00+05:30"
+    },
+    {
+      "order_id": "GGN-023",
+      "latitude": 28.398635,
+      "longitude": 77.067338,
+      "amount_paise": 26000,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-04-02T19:55:00+05:30"
+    },
+    {
+      "order_id": "GGN-024",
+      "latitude": 28.454708,
+      "longitude": 77.126682,
+      "amount_paise": 26000,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-04-02T19:56:00+05:30"
+    },
+    {
+      "order_id": "GGN-025",
+      "latitude": 28.375852,
+      "longitude": 77.051016,
+      "amount_paise": 17000,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-04-02T19:59:00+05:30"
+    },
+    {
+      "order_id": "GGN-026",
+      "latitude": 28.450106,
+      "longitude": 77.146123,
+      "amount_paise": 33500,
+      "requested_vehicle_type": "scooter",
+      "created_at": "2026-04-02T20:01:00+05:30"
+    },
+    {
+      "order_id": "GGN-027",
+      "latitude": 28.40194,
+      "longitude": 77.062933,
+      "amount_paise": 28000,
+      "requested_vehicle_type": "scooter",
+      "created_at": "2026-04-02T20:03:00+05:30"
+    },
+    {
+      "order_id": "GGN-028",
+      "latitude": 28.447706,
+      "longitude": 77.133187,
+      "amount_paise": 53000,
+      "requested_vehicle_type": "car",
+      "created_at": "2026-04-02T20:04:00+05:30"
+    },
+    {
+      "order_id": "GGN-029",
+      "latitude": 28.455179,
+      "longitude": 77.142214,
+      "amount_paise": 20000,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-04-02T20:06:00+05:30"
+    },
+    {
+      "order_id": "GGN-030",
+      "latitude": 28.426577,
+      "longitude": 77.096833,
+      "amount_paise": 49000,
+      "requested_vehicle_type": "car",
+      "created_at": "2026-04-02T20:08:00+05:30"
+    },
+    {
+      "order_id": "GGN-031",
+      "latitude": 28.377903,
+      "longitude": 77.043913,
+      "amount_paise": 72000,
+      "requested_vehicle_type": "car",
+      "created_at": "2026-04-02T20:10:00+05:30"
+    },
+    {
+      "order_id": "GGN-032",
+      "latitude": 28.383494,
+      "longitude": 77.059118,
+      "amount_paise": 23500,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-04-02T20:13:00+05:30"
+    },
+    {
+      "order_id": "GGN-033",
+      "latitude": 28.463236,
+      "longitude": 77.105652,
+      "amount_paise": 63000,
+      "requested_vehicle_type": "car",
+      "created_at": "2026-04-02T20:14:00+05:30"
+    },
+    {
+      "order_id": "GGN-034",
+      "latitude": 28.452427,
+      "longitude": 77.100267,
+      "amount_paise": 18000,
+      "requested_vehicle_type": "scooter",
+      "created_at": "2026-04-02T20:16:00+05:30"
+    },
+    {
+      "order_id": "GGN-035",
+      "latitude": 28.439209,
+      "longitude": 77.104572,
+      "amount_paise": 39500,
+      "requested_vehicle_type": "scooter",
+      "created_at": "2026-04-02T20:19:00+05:30"
+    },
+    {
+      "order_id": "GGN-036",
+      "latitude": 28.410194,
+      "longitude": 77.074693,
+      "amount_paise": 33500,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-04-02T20:20:00+05:30"
+    },
+    {
+      "order_id": "GGN-037",
+      "latitude": 28.46615,
+      "longitude": 77.100252,
+      "amount_paise": 26500,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-04-02T20:23:00+05:30"
+    },
+    {
+      "order_id": "GGN-038",
+      "latitude": 28.442307,
+      "longitude": 77.141312,
+      "amount_paise": 29500,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-04-02T20:25:00+05:30"
+    },
+    {
+      "order_id": "GGN-039",
+      "latitude": 28.389464,
+      "longitude": 77.062455,
+      "amount_paise": 29500,
+      "requested_vehicle_type": "scooter",
+      "created_at": "2026-04-02T20:26:00+05:30"
+    },
+    {
+      "order_id": "GGN-040",
+      "latitude": 28.452211,
+      "longitude": 77.097572,
+      "amount_paise": 95500,
+      "requested_vehicle_type": "car",
+      "created_at": "2026-04-02T20:29:00+05:30"
+    },
+    {
+      "order_id": "GGN-041",
+      "latitude": 28.375746,
+      "longitude": 77.05493,
+      "amount_paise": 16500,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-04-02T20:30:00+05:30"
+    },
+    {
+      "order_id": "GGN-042",
+      "latitude": 28.406127,
+      "longitude": 77.068236,
+      "amount_paise": 22000,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-04-02T20:34:00+05:30"
+    },
+    {
+      "order_id": "GGN-043",
+      "latitude": 28.388457,
+      "longitude": 77.049529,
+      "amount_paise": 41500,
+      "requested_vehicle_type": "scooter",
+      "created_at": "2026-04-02T20:35:00+05:30"
+    },
+    {
+      "order_id": "GGN-044",
+      "latitude": 28.412171,
+      "longitude": 77.073769,
+      "amount_paise": 43000,
+      "requested_vehicle_type": "car",
+      "created_at": "2026-04-02T20:38:00+05:30"
+    },
+    {
+      "order_id": "GGN-045",
+      "latitude": 28.439317,
+      "longitude": 77.134481,
+      "amount_paise": 37500,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-04-02T20:39:00+05:30"
+    },
+    {
+      "order_id": "GGN-046",
+      "latitude": 28.436495,
+      "longitude": 77.096065,
+      "amount_paise": 20500,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-04-02T20:40:00+05:30"
+    },
+    {
+      "order_id": "GGN-047",
+      "latitude": 28.406401,
+      "longitude": 77.082461,
+      "amount_paise": 33000,
+      "requested_vehicle_type": "scooter",
+      "created_at": "2026-04-02T20:42:00+05:30"
+    },
+    {
+      "order_id": "GGN-048",
+      "latitude": 28.440281,
+      "longitude": 77.14268,
+      "amount_paise": 42500,
+      "requested_vehicle_type": "scooter",
+      "created_at": "2026-04-02T20:46:00+05:30"
+    },
+    {
+      "order_id": "GGN-049",
+      "latitude": 28.44081,
+      "longitude": 77.107625,
+      "amount_paise": 87000,
+      "requested_vehicle_type": "car",
+      "created_at": "2026-04-02T20:47:00+05:30"
+    },
+    {
+      "order_id": "GGN-050",
+      "latitude": 28.468648,
+      "longitude": 77.100083,
+      "amount_paise": 19500,
+      "requested_vehicle_type": "scooter",
+      "created_at": "2026-04-02T20:49:00+05:30"
+    },
+    {
+      "order_id": "GGN-051",
+      "latitude": 28.435544,
+      "longitude": 77.10144,
+      "amount_paise": 24000,
+      "requested_vehicle_type": "scooter",
+      "created_at": "2026-04-02T20:51:00+05:30"
+    },
+    {
+      "order_id": "GGN-052",
+      "latitude": 28.43738,
+      "longitude": 77.090688,
+      "amount_paise": 32500,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-04-02T20:53:00+05:30"
+    },
+    {
+      "order_id": "GGN-053",
+      "latitude": 28.395699,
+      "longitude": 77.054639,
+      "amount_paise": 23500,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-04-02T20:56:00+05:30"
+    },
+    {
+      "order_id": "GGN-054",
+      "latitude": 28.396116,
+      "longitude": 77.074789,
+      "amount_paise": 67500,
+      "requested_vehicle_type": "car",
+      "created_at": "2026-04-02T20:58:00+05:30"
+    },
+    {
+      "order_id": "GGN-055",
+      "latitude": 28.400843,
+      "longitude": 77.073794,
+      "amount_paise": 63500,
+      "requested_vehicle_type": "car",
+      "created_at": "2026-04-02T21:00:00+05:30"
+    },
+    {
+      "order_id": "GGN-056",
+      "latitude": 28.435804,
+      "longitude": 77.146535,
+      "amount_paise": 17500,
+      "requested_vehicle_type": "bike",
+      "created_at": "2026-04-02T21:00:00+05:30"
+    }
+  ],
+  "partners": [
+    {
+      "partner_id": "P-GGN-001",
+      "latitude": 28.439304,
+      "longitude": 77.107889,
+      "is_available": true,
+      "rating": 4.6,
+      "vehicle_types": [
+        "scooter",
+        "bike"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-GGN-002",
+      "latitude": 28.43201,
+      "longitude": 77.094203,
+      "is_available": true,
+      "rating": 4.4,
+      "vehicle_types": [
+        "bike"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-GGN-003",
+      "latitude": 28.436427,
+      "longitude": 77.098442,
+      "is_available": true,
+      "rating": 4.4,
+      "vehicle_types": [
+        "scooter"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-GGN-004",
+      "latitude": 28.4431,
+      "longitude": 77.105545,
+      "is_available": true,
+      "rating": 4.5,
+      "vehicle_types": [
+        "car"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-GGN-005",
+      "latitude": 28.435096,
+      "longitude": 77.102998,
+      "is_available": true,
+      "rating": 4.6,
+      "vehicle_types": [
+        "bike"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-GGN-006",
+      "latitude": 28.436134,
+      "longitude": 77.106847,
+      "is_available": true,
+      "rating": 4.2,
+      "vehicle_types": [
+        "scooter",
+        "bike"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-GGN-007",
+      "latitude": 28.43648,
+      "longitude": 77.10813,
+      "is_available": false,
+      "rating": 4.7,
+      "vehicle_types": [
+        "car"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-GGN-008",
+      "latitude": 28.434403,
+      "longitude": 77.107454,
+      "is_available": true,
+      "rating": 4.4,
+      "vehicle_types": [
+        "bike"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-GGN-009",
+      "latitude": 28.435002,
+      "longitude": 77.100624,
+      "is_available": true,
+      "rating": 4.2,
+      "vehicle_types": [
+        "bike"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-GGN-010",
+      "latitude": 28.435766,
+      "longitude": 77.105665,
+      "is_available": true,
+      "rating": 4.2,
+      "vehicle_types": [
+        "scooter",
+        "bike"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-GGN-011",
+      "latitude": 28.432186,
+      "longitude": 77.101122,
+      "is_available": true,
+      "rating": 4.2,
+      "vehicle_types": [
+        "car"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-GGN-012",
+      "latitude": 28.441475,
+      "longitude": 77.10642,
+      "is_available": true,
+      "rating": 4.7,
+      "vehicle_types": [
+        "car"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-GGN-013",
+      "latitude": 28.429907,
+      "longitude": 77.104399,
+      "is_available": true,
+      "rating": 4.6,
+      "vehicle_types": [
+        "bike"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-GGN-014",
+      "latitude": 28.442124,
+      "longitude": 77.107106,
+      "is_available": true,
+      "rating": 4.6,
+      "vehicle_types": [
+        "bike"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-GGN-015",
+      "latitude": 28.430648,
+      "longitude": 77.095136,
+      "is_available": true,
+      "rating": 4.4,
+      "vehicle_types": [
+        "bike"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-GGN-016",
+      "latitude": 28.431272,
+      "longitude": 77.099361,
+      "is_available": true,
+      "rating": 4.5,
+      "vehicle_types": [
+        "scooter",
+        "bike"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-GGN-017",
+      "latitude": 28.43663,
+      "longitude": 77.106829,
+      "is_available": true,
+      "rating": 4.8,
+      "vehicle_types": [
+        "car"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-GGN-018",
+      "latitude": 28.437231,
+      "longitude": 77.100517,
+      "is_available": true,
+      "rating": 4.6,
+      "vehicle_types": [
+        "bike"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-GGN-019",
+      "latitude": 28.435826,
+      "longitude": 77.102545,
+      "is_available": false,
+      "rating": 4.3,
+      "vehicle_types": [
+        "car"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-GGN-020",
+      "latitude": 28.430122,
+      "longitude": 77.106462,
+      "is_available": false,
+      "rating": 4.3,
+      "vehicle_types": [
+        "bike"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-GGN-021",
+      "latitude": 28.438235,
+      "longitude": 77.10521,
+      "is_available": false,
+      "rating": 4.5,
+      "vehicle_types": [
+        "car"
+      ],
+      "active": false
+    },
+    {
+      "partner_id": "P-GGN-022",
+      "latitude": 28.432871,
+      "longitude": 77.093977,
+      "is_available": true,
+      "rating": 4.0,
+      "vehicle_types": [
+        "scooter"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-GGN-023",
+      "latitude": 28.432219,
+      "longitude": 77.103201,
+      "is_available": false,
+      "rating": 3.1,
+      "vehicle_types": [
+        "car"
+      ],
+      "active": true
+    },
+    {
+      "partner_id": "P-GGN-024",
+      "latitude": 28.441569,
+      "longitude": 77.113714,
+      "is_available": true,
+      "rating": 4.7,
+      "vehicle_types": [
+        "car"
+      ],
+      "active": true
+    }
+  ]
+}

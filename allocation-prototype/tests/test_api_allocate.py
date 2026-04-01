@@ -23,6 +23,12 @@ def test_allocate_route_happy_path_returns_allocations_and_aggregate_diagnostics
     assert "aggregate_diagnostics" in body
     assert body["aggregate_diagnostics"]["allocated"] == 2
     assert body["summary"]["allocated_orders"] == 2
+    assert body["summary"]["active_hard_rules"] == [
+        "availability",
+        "vehicle_type",
+        "max_distance",
+        "min_rating",
+    ]
 
 
 def test_allocate_route_idempotency_returns_cached_response_without_duplicate_writes(tmp_path):

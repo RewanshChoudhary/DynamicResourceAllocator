@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Allocation Engine Frontend</title>
+    <style>
+      :root {
+        --paper: #f8f2e8;
+        --ink: #1f2430;
+        --muted: #5f6a78;
+        --panel: rgba(255, 252, 247, 0.92);
+        --line: rgba(57, 70, 89, 0.16);
+        --accent: #b45f3c;
+        --accent-deep: #7a3218;
+        --green: #2f7d4c;
+        --red: #b33a3a;
+        --gold: #aa7a1d;
+        --shadow: 0 18px 45px rgba(56, 34, 17, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top left, rgba(215, 162, 110, 0.28), transparent 32%),
+          radial-gradient(circle at bottom right, rgba(181, 95, 60, 0.16), transparent 28%),
+          linear-gradient(180deg, #fbf6ee 0%, #f3eadf 100%);
+        font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
+      }
+
+      .page {
+        width: min(1220px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 28px 0 36px;
+      }
+
+      .hero {
+        padding: 28px;
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        background: linear-gradient(135deg, rgba(255, 252, 247, 0.96), rgba(248, 238, 224, 0.92));
+        box-shadow: var(--shadow);
+      }
+
+      .eyebrow {
+        margin: 0 0 10px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--accent-deep);
+      }
+
+      h1 {
+        margin: 0;
+        font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+        font-size: clamp(2rem, 3vw, 3.2rem);
+        line-height: 1.05;
+      }
+
+      .lead {
+        max-width: 760px;
+        margin: 14px 0 0;
+        font-size: 1.04rem;
+        line-height: 1.6;
+        color: var(--muted);
+      }
+
+      .hero-notes {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 18px;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.7);
+        font-size: 0.92rem;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(320px, 0.9fr) minmax(420px, 1.1fr);
+        gap: 18px;
+        margin-top: 18px;
+      }
+
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background: var(--panel);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+
+      .panel-header {
+        padding: 22px 24px 12px;
+      }
+
+      .panel-title {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+
+      .panel-copy {
+        margin: 8px 0 0;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .panel-body {
+        padding: 0 24px 24px;
+      }
+
+      .action-row,
+      .inline-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .action-row {
+        margin-bottom: 14px;
+      }
+
+      label {
+        display: block;
+        margin: 0 0 8px;
+        font-size: 0.92rem;
+        font-weight: 700;
+      }
+
+      input,
+      textarea,
+      select {
+        width: 100%;
+        border: 1px solid rgba(67, 77, 90, 0.18);
+        border-radius: 16px;
+        padding: 14px 15px;
+        background: rgba(255, 255, 255, 0.85);
+        color: var(--ink);
+        font: inherit;
+      }
+
+      input:focus,
+      textarea:focus,
+      select:focus {
+        outline: 2px solid rgba(180, 95, 60, 0.22);
+        border-color: rgba(180, 95, 60, 0.45);
+      }
+
+      textarea {
+        min-height: 420px;
+        resize: vertical;
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        font-size: 0.9rem;
+        line-height: 1.45;
+      }
+
+      .button {
+        border: 0;
+        border-radius: 999px;
+        padding: 12px 18px;
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 140ms ease, box-shadow 140ms ease, opacity 140ms ease;
+      }
+
+      .button:hover {
+        transform: translateY(-1px);
+      }
+
+      .button:disabled {
+        opacity: 0.65;
+        cursor: wait;
+        transform: none;
+      }
+
+      .button-primary {
+        color: #fff9f3;
+        background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+        box-shadow: 0 12px 24px rgba(122, 50, 24, 0.22);
+      }
+
+      .button-secondary {
+        background: rgba(255, 255, 255, 0.8);
+        color: var(--ink);
+        border: 1px solid var(--line);
+      }
+
+      .helper {
+        margin: 12px 0 0;
+        color: var(--muted);
+        line-height: 1.5;
+        font-size: 0.93rem;
+      }
+
+      .banner {
+        margin-bottom: 14px;
+        padding: 14px 16px;
+        border-radius: 18px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.68);
+        line-height: 1.5;
+      }
+
+      .banner.info {
+        border-color: rgba(58, 96, 144, 0.2);
+        background: rgba(232, 241, 253, 0.72);
+      }
+
+      .banner.success {
+        border-color: rgba(47, 125, 76, 0.25);
+        background: rgba(232, 246, 236, 0.78);
+      }
+
+      .banner.error {
+        border-color: rgba(179, 58, 58, 0.22);
+        background: rgba(250, 234, 234, 0.8);
+      }
+
+      .section {
+        margin-top: 18px;
+      }
+
+      .section:first-child {
+        margin-top: 0;
+      }
+
+      .section h3 {
+        margin: 0 0 8px;
+        font-size: 1rem;
+      }
+
+      .narrative {
+        margin: 0;
+        line-height: 1.7;
+        color: var(--ink);
+      }
+
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 12px;
+      }
+
+      .rule-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .rule-chip {
+        display: inline-flex;
+        align-items: center;
+        padding: 10px 14px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.82);
+        font-size: 0.92rem;
+        font-weight: 700;
+      }
+
+      .card {
+        padding: 14px 16px;
+        border-radius: 18px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.82);
+      }
+
+      .card-label {
+        display: block;
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+
+      .card-value {
+        display: block;
+        margin-top: 4px;
+        font-size: 1.6rem;
+        font-weight: 800;
+      }
+
+      .card-allocated .card-value {
+        color: var(--green);
+      }
+
+      .card-unallocated .card-value {
+        color: var(--red);
+      }
+
+      .card-rate .card-value {
+        color: var(--gold);
+      }
+
+      .insight-list,
+      .detail-list {
+        margin: 0;
+        padding-left: 18px;
+        line-height: 1.7;
+      }
+
+      .decision-table-wrap {
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        overflow: auto;
+        max-height: 520px;
+        background: rgba(255, 255, 255, 0.84);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 720px;
+      }
+
+      th,
+      td {
+        padding: 12px 14px;
+        text-align: left;
+        border-bottom: 1px solid rgba(67, 77, 90, 0.1);
+        vertical-align: top;
+      }
+
+      th {
+        position: sticky;
+        top: 0;
+        background: #f8f2e8;
+        z-index: 1;
+        font-size: 0.88rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      .status-tag {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 800;
+      }
+
+      .status-tag.assigned {
+        color: var(--green);
+        background: rgba(47, 125, 76, 0.12);
+      }
+
+      .status-tag.unallocated {
+        color: var(--red);
+        background: rgba(179, 58, 58, 0.12);
+      }
+
+      .mini-button {
+        padding: 8px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.76);
+        font: inherit;
+        font-size: 0.86rem;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .selection-box {
+        padding: 16px 18px;
+        border-radius: 20px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.8);
+      }
+
+      details {
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.8);
+        padding: 12px 14px;
+      }
+
+      summary {
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      pre {
+        margin: 14px 0 0;
+        overflow: auto;
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        font-size: 0.87rem;
+        line-height: 1.5;
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      @media (max-width: 940px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        textarea {
+          min-height: 320px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="hero">
+        <p class="eyebrow">Rule-Driven Allocation Prototype</p>
+        <h1>Human-readable allocation results in one page</h1>
+        <p class="lead">
+          Paste an allocation payload, run the engine, and get a plain-English summary of what happened,
+          how many orders were assigned, and which hard rules blocked the rest.
+        </p>
+        <div class="hero-notes">
+          <span class="pill">Simple browser UI for the existing FastAPI API</span>
+          <span class="pill">Shows summary, diagnostics, and per-order decisions</span>
+          <span class="pill">Includes curated realistic sample payloads</span>
+        </div>
+      </header>
+
+      <main class="layout">
+        <section class="panel">
+          <div class="panel-header">
+            <h2 class="panel-title">1. Choose Input</h2>
+            <p class="panel-copy">
+              You can load one of the bundled realistic sample payloads, tweak it if needed, then send it to
+              <code>/allocations</code>.
+            </p>
+          </div>
+          <div class="panel-body">
+            <div class="section">
+              <label for="sample-dataset">Sample dataset</label>
+              <div class="inline-row">
+                <select id="sample-dataset"></select>
+                <button class="button button-secondary" id="load-sample" type="button">Load selected sample</button>
+              </div>
+              <p class="helper" id="sample-dataset-copy">
+                Curated delivery scenarios are available for quick demos and realistic manual testing.
+              </p>
+            </div>
+
+            <div class="action-row">
+              <button class="button button-secondary" id="format-json" type="button">Format JSON</button>
+              <button class="button button-secondary" id="clear-editor" type="button">Clear</button>
+            </div>
+
+            <div class="section">
+              <label for="idempotency-key">Idempotency key</label>
+              <div class="inline-row">
+                <input id="idempotency-key" type="text" />
+                <button class="button button-secondary" id="new-key" type="button">New key</button>
+              </div>
+              <p class="helper">
+                Reusing the same key returns the cached response for that request. The frontend now refreshes the
+                key automatically when you load or materially change a dataset.
+              </p>
+            </div>
+
+            <div class="section">
+              <label for="payload-editor">Allocation payload JSON</label>
+              <textarea id="payload-editor" spellcheck="false"></textarea>
+            </div>
+
+            <div class="section">
+              <button class="button button-primary" id="run-allocation" type="button">Run allocation</button>
+              <p class="helper">
+                This frontend stays intentionally simple: it uses the existing backend, then translates the
+                response into short explanations a person can read quickly.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <h2 class="panel-title">2. Read The Result</h2>
+            <p class="panel-copy">
+              The page turns the API response into a short narrative, key counts, and an order-by-order view.
+            </p>
+          </div>
+          <div class="panel-body">
+            <div id="banner" class="banner info">Load a payload and run the engine to see the result here.</div>
+
+            <section id="summary-section" class="section hidden">
+              <h3>Plain-English summary</h3>
+              <p id="summary-narrative" class="narrative"></p>
+            </section>
+
+            <section id="card-section" class="section hidden">
+              <div id="summary-cards" class="cards"></div>
+            </section>
+
+            <section id="rules-section" class="section hidden">
+              <h3>Hard rules currently applied</h3>
+              <p class="helper">
+                These are the enabled hard filters loaded from the active config for this run.
+              </p>
+              <div id="rules-list" class="rule-list"></div>
+            </section>
+
+            <section id="insight-section" class="section hidden">
+              <h3>What blocked allocations?</h3>
+              <ul id="insight-list" class="insight-list"></ul>
+            </section>
+
+            <section id="selection-section" class="section hidden">
+              <h3>Selected order explanation</h3>
+              <div id="selection-box" class="selection-box muted">
+                Choose an order from the table below to see a more detailed explanation.
+              </div>
+            </section>
+
+            <section id="table-section" class="section hidden">
+              <h3>Order-by-order decisions</h3>
+              <p class="helper">
+                Click <strong>Explain</strong> on any row to inspect why that order was allocated or left
+                unallocated.
+              </p>
+              <div class="decision-table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Order</th>
+                      <th>Status</th>
+                      <th>Partner</th>
+                      <th>Why</th>
+                      <th>Score</th>
+                      <th>Explain</th>
+                    </tr>
+                  </thead>
+                  <tbody id="decision-table-body"></tbody>
+                </table>
+              </div>
+            </section>
+
+            <section id="raw-section" class="section hidden">
+              <details>
+                <summary>Raw API response</summary>
+                <pre id="raw-json"></pre>
+              </details>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const payloadEditor = document.getElementById("payload-editor");
+      const sampleDatasetSelect = document.getElementById("sample-dataset");
+      const sampleDatasetCopy = document.getElementById("sample-dataset-copy");
+      const idempotencyKeyInput = document.getElementById("idempotency-key");
+      const banner = document.getElementById("banner");
+      const runButton = document.getElementById("run-allocation");
+      const summarySection = document.getElementById("summary-section");
+      const summaryNarrative = document.getElementById("summary-narrative");
+      const cardSection = document.getElementById("card-section");
+      const summaryCards = document.getElementById("summary-cards");
+      const rulesSection = document.getElementById("rules-section");
+      const rulesList = document.getElementById("rules-list");
+      const insightSection = document.getElementById("insight-section");
+      const insightList = document.getElementById("insight-list");
+      const selectionSection = document.getElementById("selection-section");
+      const selectionBox = document.getElementById("selection-box");
+      const tableSection = document.getElementById("table-section");
+      const decisionTableBody = document.getElementById("decision-table-body");
+      const rawSection = document.getElementById("raw-section");
+      const rawJson = document.getElementById("raw-json");
+
+      let currentResponse = null;
+      let sampleDatasetCatalog = [];
+      let lastSubmittedIdempotencyKey = null;
+      let lastSubmittedPayloadFingerprint = null;
+
+      function createIdempotencyKey() {
+        const stamp = new Date().toISOString().replaceAll(":", "").replaceAll(".", "");
+        return `frontend-${stamp}`;
+      }
+
+      function setBanner(message, type) {
+        banner.textContent = message;
+        banner.className = `banner ${type}`;
+      }
+
+      function resetResultsView() {
+        currentResponse = null;
+        rulesList.innerHTML = "";
+        selectionBox.innerHTML =
+          '<span class="muted">Choose an order from the table below to see a more detailed explanation.</span>';
+        rawJson.textContent = "";
+        hideResults();
+      }
+
+      function payloadFingerprint(payload) {
+        return JSON.stringify(payload);
+      }
+
+      function ensureRunIdempotencyKey(parsedPayload) {
+        const fingerprint = payloadFingerprint(parsedPayload);
+        const typedKey = idempotencyKeyInput.value.trim();
+
+        if (!typedKey) {
+          const generatedKey = createIdempotencyKey();
+          idempotencyKeyInput.value = generatedKey;
+          return { key: generatedKey, fingerprint, refreshed: false };
+        }
+
+        if (
+          lastSubmittedIdempotencyKey === typedKey &&
+          lastSubmittedPayloadFingerprint !== null &&
+          lastSubmittedPayloadFingerprint !== fingerprint
+        ) {
+          const refreshedKey = createIdempotencyKey();
+          idempotencyKeyInput.value = refreshedKey;
+          return { key: refreshedKey, fingerprint, refreshed: true };
+        }
+
+        return { key: typedKey, fingerprint, refreshed: false };
+      }
+
+      function showResults() {
+        summarySection.classList.remove("hidden");
+        cardSection.classList.remove("hidden");
+        selectionSection.classList.remove("hidden");
+        tableSection.classList.remove("hidden");
+        rawSection.classList.remove("hidden");
+      }
+
+      function hideResults() {
+        summarySection.classList.add("hidden");
+        cardSection.classList.add("hidden");
+        rulesSection.classList.add("hidden");
+        insightSection.classList.add("hidden");
+        selectionSection.classList.add("hidden");
+        tableSection.classList.add("hidden");
+        rawSection.classList.add("hidden");
+      }
+
+      function selectedSampleDataset() {
+        return sampleDatasetCatalog.find((dataset) => dataset.slug === sampleDatasetSelect.value) || null;
+      }
+
+      function updateSampleDatasetCopy() {
+        const dataset = selectedSampleDataset();
+        if (!dataset) {
+          sampleDatasetCopy.textContent =
+            "Curated delivery scenarios are available for quick demos and realistic manual testing.";
+          return;
+        }
+
+        let sentence = `${dataset.name} (${dataset.city}) includes ${dataset.orders} orders and ${dataset.partners} partners. ${dataset.description}`;
+        if (dataset.recommended_for) {
+          sentence += ` Best for: ${dataset.recommended_for}`;
+        }
+        sampleDatasetCopy.textContent = sentence;
+      }
+
+      function renderSampleDatasetCatalog(catalog) {
+        sampleDatasetCatalog = catalog.datasets || [];
+        sampleDatasetSelect.innerHTML = sampleDatasetCatalog
+          .map((dataset) => `<option value="${dataset.slug}">${dataset.name}</option>`)
+          .join("");
+
+        if (!sampleDatasetCatalog.length) {
+          sampleDatasetCopy.textContent = "No sample datasets are currently available.";
+          return;
+        }
+
+        const defaultSlug = catalog.default || sampleDatasetCatalog[0].slug;
+        sampleDatasetSelect.value = defaultSlug;
+        updateSampleDatasetCopy();
+      }
+
+      async function loadSampleDatasetCatalog() {
+        const response = await fetch("/demo/sample-datasets");
+        if (!response.ok) {
+          throw new Error(`Could not load sample dataset catalog (${response.status})`);
+        }
+        const catalog = await response.json();
+        renderSampleDatasetCatalog(catalog);
+      }
+
+      function formatRuleName(ruleName) {
+        const friendly = {
+          availability: "availability",
+          max_distance: "distance limit",
+          min_rating: "minimum rating",
+          max_rating: "maximum rating",
+          vehicle_type: "vehicle compatibility",
+        };
+        return friendly[ruleName] || ruleName.replaceAll("_", " ");
+      }
+
+      function formatDecisionReason(reason) {
+        const friendly = {
+          BEST_WEIGHTED_SCORE: "Best combined score across proximity, rating, and fairness.",
+          BEST_WEIGHTED_SCORE_TIE_BREAKER: "Won a score tie using the deterministic partner-id tie-break.",
+          NO_ELIGIBLE_PARTNER: "No eligible partner was found.",
+          NO_PARTNER_PASSED_HARD_RULES: "No partner passed the required hard rules.",
+        };
+        return friendly[reason] || reason.replaceAll("_", " ").toLowerCase();
+      }
+
+      function formatStatus(status) {
+        return status === "assigned" ? "Assigned" : "Unallocated";
+      }
+
+      function formatFailureCombination(combo) {
+        if (!combo || combo === "NO_FAILURE_CODES") {
+          return "No detailed failure codes were recorded.";
+        }
+
+        const friendly = {
+          DISTANCE_LIMIT_EXCEEDED: "distance limit",
+          VEHICLE_TYPE_MISMATCH: "vehicle mismatch",
+          PARTNER_UNAVAILABLE: "partner unavailable",
+          RATING_TOO_LOW: "rating too low",
+          RATING_TOO_HIGH: "rating too high",
+        };
+
+        return combo
+          .split("+")
+          .map((part) => friendly[part] || part.replaceAll("_", " ").toLowerCase())
+          .join(" + ");
+      }
+
+      function topFailureEntry(diag) {
+        const combos = Object.entries(diag.unallocated_orders_by_failure_combination || {});
+        if (!combos.length) {
+          return null;
+        }
+        combos.sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+        return combos[0];
+      }
+
+      function topRuleEntry(diag) {
+        const ruleCounts = Object.entries(diag.hard_rule_elimination_counts || {});
+        if (!ruleCounts.length) {
+          return null;
+        }
+        ruleCounts.sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+        return ruleCounts[0];
+      }
+
+      function renderNarrative(response) {
+        const diag = response.aggregate_diagnostics || {};
+        const total = diag.total_orders || response.summary.total_orders || response.allocations.length;
+        const allocated = diag.allocated || response.summary.allocated_orders || 0;
+        const unallocated = diag.unallocated || response.summary.unallocated_orders || 0;
+        const rate = total ? ((allocated / total) * 100).toFixed(1) : "0.0";
+        const failure = topFailureEntry(diag);
+        const rule = topRuleEntry(diag);
+
+        let sentence =
+          `The engine reviewed ${total} orders and assigned ${allocated} of them, which is an allocation rate of ${rate}%. `;
+
+        if (unallocated > 0) {
+          sentence += `${unallocated} orders stayed unallocated. `;
+        } else {
+          sentence += `Every order received a partner. `;
+        }
+
+        if (failure) {
+          sentence += `The most common reason unallocated orders failed was ${formatFailureCombination(failure[0])} on ${failure[1]} orders. `;
+        }
+
+        if (rule) {
+          sentence += `Across all candidate checks, the rule that eliminated the most options was ${formatRuleName(rule[0])} with ${rule[1]} eliminations.`;
+        }
+
+        summaryNarrative.textContent = sentence.trim();
+      }
+
+      function renderCards(response) {
+        const diag = response.aggregate_diagnostics || {};
+        const total = diag.total_orders || response.summary.total_orders || response.allocations.length;
+        const allocated = diag.allocated || response.summary.allocated_orders || 0;
+        const unallocated = diag.unallocated || response.summary.unallocated_orders || 0;
+        const rate = total ? `${((allocated / total) * 100).toFixed(1)}%` : "0.0%";
+
+        const cards = [
+          { label: "Total orders", value: total, css: "" },
+          { label: "Allocated", value: allocated, css: "card-allocated" },
+          { label: "Unallocated", value: unallocated, css: "card-unallocated" },
+          { label: "Allocation rate", value: rate, css: "card-rate" },
+        ];
+
+        summaryCards.innerHTML = cards
+          .map(
+            (card) => `
+              <div class="card ${card.css}">
+                <span class="card-label">${card.label}</span>
+                <span class="card-value">${card.value}</span>
+              </div>
+            `
+          )
+          .join("");
+      }
+
+      function renderActiveHardRules(response) {
+        const hardRules = response.summary.active_hard_rules || [];
+        if (!hardRules.length) {
+          rulesList.innerHTML = "";
+          rulesSection.classList.add("hidden");
+          return;
+        }
+
+        rulesList.innerHTML = hardRules
+          .map((rule) => `<span class="rule-chip">${formatRuleName(rule)}</span>`)
+          .join("");
+        rulesSection.classList.remove("hidden");
+      }
+
+      function renderInsights(response) {
+        const diag = response.aggregate_diagnostics || {};
+        const failure = topFailureEntry(diag);
+        const ruleCounts = Object.entries(diag.hard_rule_elimination_counts || {})
+          .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+          .slice(0, 3);
+
+        const items = [];
+
+        if (failure) {
+          items.push(
+            `Most common unallocated pattern: ${formatFailureCombination(failure[0])} on ${failure[1]} orders.`
+          );
+        }
+
+        if (ruleCounts.length) {
+          items.push(
+            `Top hard-rule eliminations: ${ruleCounts
+              .map(([rule, count]) => `${formatRuleName(rule)} (${count})`)
+              .join(", ")}.`
+          );
+        }
+
+        if (response.summary.fairness_escalation_event) {
+          items.push("Fairness escalation was triggered during this run.");
+        } else {
+          items.push("Fairness escalation was not triggered during this run.");
+        }
+
+        insightList.innerHTML = items.map((item) => `<li>${item}</li>`).join("");
+      }
+
+      function renderTable(response) {
+        decisionTableBody.innerHTML = response.allocations
+          .map(
+            (row) => `
+              <tr>
+                <td><strong>${row.order_id}</strong></td>
+                <td><span class="status-tag ${row.status}">${formatStatus(row.status)}</span></td>
+                <td>${row.partner_id || "No partner selected"}</td>
+                <td>${formatDecisionReason(row.reason)}</td>
+                <td>${row.weighted_score === null ? "Not scored" : row.weighted_score}</td>
+                <td>
+                  <button class="mini-button" type="button" data-order-id="${row.order_id}">
+                    Explain
+                  </button>
+                </td>
+              </tr>
+            `
+          )
+          .join("");
+
+        decisionTableBody.querySelectorAll("[data-order-id]").forEach((button) => {
+          button.addEventListener("click", async () => {
+            const orderId = button.getAttribute("data-order-id");
+            await explainOrder(orderId);
+          });
+        });
+      }
+
+      function renderSelectionFallback(orderId, errorText) {
+        selectionBox.innerHTML = `
+          <strong>${orderId}</strong><br />
+          <span class="muted">${errorText}</span>
+        `;
+      }
+
+      function renderSelection(orderId, summary) {
+        const failures = summary.hard_rule_failures || [];
+        const failureItems = failures.length
+          ? `
+            <ul class="detail-list">
+              ${failures
+                .slice(0, 8)
+                .map(
+                  (item) =>
+                    `<li>Partner ${item.partner_id}: ${formatRuleName(item.rule)} failed because ${item.reason}.</li>`
+                )
+                .join("")}
+            </ul>
+          `
+          : `<p class="muted">No hard-rule failures were stored for this order.</p>`;
+
+        selectionBox.innerHTML = `
+          <strong>Order ${orderId}</strong>
+          <p class="helper">
+            Status: ${formatStatus(summary.allocation_status)}.
+            ${
+              summary.allocated_partner_id
+                ? `Chosen partner: ${summary.allocated_partner_id}.`
+                : "No partner was chosen."
+            }
+            Candidates evaluated: ${summary.candidates_evaluated}.
+            Candidates that survived the hard rules: ${summary.candidates_surviving_hard_rules}.
+          </p>
+          <h4>Why other candidates dropped out</h4>
+          ${failureItems}
+        `;
+      }
+
+      async function explainOrder(orderId) {
+        selectionBox.innerHTML = `<span class="muted">Loading explanation for ${orderId}...</span>`;
+
+        try {
+          const response = await fetch(`/allocations/${encodeURIComponent(orderId)}/rejection-summary`);
+          if (!response.ok) {
+            const detail = await response.text();
+            renderSelectionFallback(orderId, detail || "No explanation could be loaded.");
+            return;
+          }
+          const summary = await response.json();
+          renderSelection(orderId, summary);
+        } catch (error) {
+          renderSelectionFallback(orderId, error.message || "The explanation request failed.");
+        }
+      }
+
+      async function loadSamplePayload() {
+        const dataset = selectedSampleDataset();
+        const datasetLabel = dataset ? dataset.name : "sample payload";
+        const query = dataset ? `?dataset=${encodeURIComponent(dataset.slug)}` : "";
+        setBanner(`Loading ${datasetLabel}...`, "info");
+        try {
+          const response = await fetch(`/demo/sample-payload${query}`);
+          if (!response.ok) {
+            throw new Error(`Could not load sample payload (${response.status})`);
+          }
+          const payload = await response.json();
+          payloadEditor.value = JSON.stringify(payload, null, 2);
+          idempotencyKeyInput.value = createIdempotencyKey();
+          resetResultsView();
+          setBanner(
+            `${dataset ? dataset.name : "Sample payload"} loaded with a fresh idempotency key. You can run it as-is or edit it first.`,
+            "success"
+          );
+        } catch (error) {
+          setBanner(error.message || "Failed to load the sample payload.", "error");
+        }
+      }
+
+      function formatEditorJson() {
+        try {
+          const parsed = JSON.parse(payloadEditor.value);
+          payloadEditor.value = JSON.stringify(parsed, null, 2);
+          setBanner("JSON formatted successfully.", "success");
+        } catch (error) {
+          setBanner(`Could not format JSON: ${error.message}`, "error");
+        }
+      }
+
+      async function runAllocation() {
+        let parsedPayload;
+        try {
+          parsedPayload = JSON.parse(payloadEditor.value);
+        } catch (error) {
+          setBanner(`The payload is not valid JSON: ${error.message}`, "error");
+          hideResults();
+          return;
+        }
+
+        runButton.disabled = true;
+        const runState = ensureRunIdempotencyKey(parsedPayload);
+        if (runState.refreshed) {
+          setBanner("Payload changed, so the frontend generated a fresh idempotency key before running.", "info");
+        } else {
+          setBanner("Running allocation...", "info");
+        }
+
+        try {
+          const response = await fetch("/allocations", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Idempotency-Key": runState.key,
+            },
+            body: JSON.stringify(parsedPayload),
+          });
+
+          const text = await response.text();
+          let payload = {};
+          if (text) {
+            try {
+              payload = JSON.parse(text);
+            } catch (error) {
+              payload = { raw: text };
+            }
+          }
+
+          if (!response.ok) {
+            const message =
+              payload.detail
+                ? typeof payload.detail === "string"
+                  ? payload.detail
+                  : JSON.stringify(payload.detail, null, 2)
+                : `Request failed with status ${response.status}`;
+            hideResults();
+            rawJson.textContent = JSON.stringify(payload, null, 2);
+            rawSection.classList.remove("hidden");
+            setBanner(message, "error");
+            return;
+          }
+
+          lastSubmittedIdempotencyKey = runState.key;
+          lastSubmittedPayloadFingerprint = runState.fingerprint;
+          currentResponse = payload;
+          renderNarrative(payload);
+          renderCards(payload);
+          renderActiveHardRules(payload);
+          renderInsights(payload);
+          renderTable(payload);
+          selectionBox.innerHTML =
+            '<span class="muted">Choose an order from the table below to see a more detailed explanation.</span>';
+          rawJson.textContent = JSON.stringify(payload, null, 2);
+          showResults();
+          insightSection.classList.remove("hidden");
+          setBanner("Allocation completed successfully. The summary below is ready to share with a human reader.", "success");
+        } catch (error) {
+          hideResults();
+          setBanner(error.message || "The allocation request failed.", "error");
+        } finally {
+          runButton.disabled = false;
+        }
+      }
+
+      document.getElementById("load-sample").addEventListener("click", loadSamplePayload);
+      sampleDatasetSelect.addEventListener("change", updateSampleDatasetCopy);
+      document.getElementById("format-json").addEventListener("click", formatEditorJson);
+      document.getElementById("clear-editor").addEventListener("click", () => {
+        payloadEditor.value = "";
+        idempotencyKeyInput.value = createIdempotencyKey();
+        resetResultsView();
+        setBanner("Editor cleared.", "info");
+      });
+      document.getElementById("new-key").addEventListener("click", () => {
+        idempotencyKeyInput.value = createIdempotencyKey();
+      });
+      runButton.addEventListener("click", runAllocation);
+
+      async function initializePage() {
+        idempotencyKeyInput.value = createIdempotencyKey();
+        hideResults();
+
+        try {
+          await loadSampleDatasetCatalog();
+        } catch (error) {
+          sampleDatasetCopy.textContent =
+            "Could not load the sample dataset catalog, so the frontend will fall back to the default sample payload.";
+        }
+
+        await loadSamplePayload();
+      }
+
+      initializePage();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+.coverage.*
+*.egg-info/
+*.db
+reports/
+demo/large_datasets/
+demo/zomato_audit_report.json

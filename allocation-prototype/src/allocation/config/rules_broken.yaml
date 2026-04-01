@@ -1,0 +1,21 @@
+hard_rules:
+  - name: availability
+    enabled: true
+  - name: min_rating
+    enabled: true
+    params:
+      min_rating: 4.0
+  - name: max_rating
+    enabled: true
+    params:
+      max_rating: 3.5
+
+scoring_rules:
+  - name: proximity_score
+    enabled: true
+  - name: fairness_score
+    enabled: true
+
+weights:
+  proximity_score: 0.70
+  fairness_score: 0.20

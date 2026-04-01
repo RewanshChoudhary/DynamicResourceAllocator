@@ -317,10 +317,7 @@ This layer proves whether the system behaves as intended:
 
 - tests in `tests/`
 - demo scripts in `demo/`
-- reports in:
-  - `VALIDATION_SUMMARY.md`
-  - `RUN_REPORT_2026-03-21.md`
-  - `RUN_REPORT_2026-03-29.md`
+- optional generated validation artifacts when deeper benchmarking is needed
 
 ### Why this matters
 
@@ -335,7 +332,7 @@ Quality is not what the code claims. Quality is what this layer can prove repeat
 
 - API behavior is not currently covered by a reliable automated path in this sandbox
 - latest validation re-ran behavior but not coverage
-- repo reports can drift if they are not refreshed alongside meaningful logic changes
+- generated validation artifacts can drift if they are not refreshed alongside meaningful logic changes
 
 ### Quality improvements
 

@@ -1,0 +1,396 @@
+from __future__ import annotations
+
+import csv
+import json
+import math
+from collections import OrderedDict
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+
+MISSING_MARKERS = {"", "nan", "none", "null", "na"}
+
+
+@dataclass(frozen=True)
+class CsvAuditSummary:
+    total_rows: int
+    unique_delivery_partners: int
+    duplicate_order_ids: int
+    date_range_start: str | None
+    date_range_end: str | None
+    missing_counts: dict[str, int]
+    anomaly_counts: dict[str, int]
+    top_city_counts: dict[str, int]
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "total_rows": self.total_rows,
+            "unique_delivery_partners": self.unique_delivery_partners,
+            "duplicate_order_ids": self.duplicate_order_ids,
+            "date_range_start": self.date_range_start,
+            "date_range_end": self.date_range_end,
+            "missing_counts": self.missing_counts,
+            "anomaly_counts": self.anomaly_counts,
+            "top_city_counts": self.top_city_counts,
+        }
+
+
+def _ensure_existing_csv(csv_path: str | Path) -> Path:
+    path = Path(csv_path)
+    if not path.exists():
+        raise FileNotFoundError(f"CSV not found: {path}")
+    return path
+
+
+def _is_missing(value: Any) -> bool:
+    if value is None:
+        return True
+    return str(value).strip().lower() in MISSING_MARKERS
+
+
+def _parse_float(value: Any) -> float | None:
+    if _is_missing(value):
+        return None
+    try:
+        return float(str(value).strip())
+    except ValueError:
+        return None
+
+
+def _parse_int(value: Any) -> int | None:
+    if _is_missing(value):
+        return None
+    try:
+        return int(float(str(value).strip()))
+    except ValueError:
+        return None
+
+
+def _normalize_city(raw: str | None) -> str:
+    if raw is None:
+        return "Unknown"
+    value = raw.strip()
+    if value.lower() == "metropolitian":
+        return "Metropolitan"
+    if value.lower() == "nan" or not value:
+        return "Unknown"
+    return value
+
+
+def _normalize_vehicle(raw: str | None) -> str:
+    value = (raw or "").strip().lower()
+    if value in {"motorcycle", "bicycle", "bike"}:
+        return "bike"
+    if value in {"scooter", "electric_scooter"}:
+        return "scooter"
+    if value in {"car", "auto", "van"}:
+        return "car"
+    return "bike"
+
+
+def _haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    earth_radius_km = 6371.0
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+    a = (
+        math.sin(dlat / 2) ** 2
+        + math.cos(math.radians(lat1))
+        * math.cos(math.radians(lat2))
+        * math.sin(dlon / 2) ** 2
+    )
+    c = 2 * math.asin(math.sqrt(a))
+    return earth_radius_km * c
+
+
+def _parse_timestamp(order_date: str | None, time_ordered: str | None) -> datetime:
+    if _is_missing(order_date):
+        return datetime.now(timezone.utc)
+
+    date_part = str(order_date).strip()
+    if _is_missing(time_ordered):
+        time_part = "12:00"
+    else:
+        time_part = str(time_ordered).strip()
+
+    try:
+        dt = datetime.strptime(f"{date_part} {time_part}", "%d-%m-%Y %H:%M")
+    except ValueError:
+        dt = datetime.strptime(date_part, "%d-%m-%Y")
+    return dt.replace(tzinfo=timezone.utc)
+
+
+def _estimate_amount_paise(type_of_order: str | None, multiple_deliveries: int | None) -> int:
+    order_kind = (type_of_order or "").strip().lower()
+    base = {
+        "drinks": 12000,
+        "snack": 18000,
+        "meal": 26000,
+        "buffet": 42000,
+    }.get(order_kind, 22000)
+
+    extra = max(0, min(multiple_deliveries or 0, 3)) * 2500
+    return base + extra
+
+
+def _fix_restaurant_coordinates(
+    restaurant_lat: float,
+    restaurant_lon: float,
+    delivery_lat: float,
+    delivery_lon: float,
+) -> tuple[float, float, bool]:
+    corrected = False
+    rest_lat = restaurant_lat
+    rest_lon = restaurant_lon
+
+    # The source has a known sign bug on some rows; delivery coordinates remain positive.
+    if restaurant_lat < 0 and delivery_lat > 0:
+        rest_lat = abs(restaurant_lat)
+        corrected = True
+    if restaurant_lon < 0 and delivery_lon > 0:
+        rest_lon = abs(restaurant_lon)
+        corrected = True
+
+    return rest_lat, rest_lon, corrected
+
+
+def audit_zomato_csv(csv_path: str | Path) -> CsvAuditSummary:
+    path = _ensure_existing_csv(csv_path)
+
+    missing_counts: dict[str, int] = {}
+    anomaly_counts = {
+        "invalid_age_rows": 0,
+        "invalid_rating_rows": 0,
+        "negative_restaurant_coordinate_rows": 0,
+        "distance_over_30km_rows": 0,
+        "distance_over_80km_rows": 0,
+        "speed_over_80kmh_rows": 0,
+    }
+
+    unique_partners: set[str] = set()
+    order_ids: set[str] = set()
+    duplicate_order_ids = 0
+    city_counts: dict[str, int] = {}
+    dates: list[datetime] = []
+    total_rows = 0
+
+    with path.open(newline="", encoding="utf-8", errors="replace") as handle:
+        reader = csv.DictReader(handle)
+        for row in reader:
+            total_rows += 1
+
+            order_id = row.get("ID", "")
+            if order_id in order_ids:
+                duplicate_order_ids += 1
+            order_ids.add(order_id)
+
+            partner_id = row.get("Delivery_person_ID", "")
+            if not _is_missing(partner_id):
+                unique_partners.add(partner_id.strip())
+
+            normalized_city = _normalize_city(row.get("City"))
+            city_counts[normalized_city] = city_counts.get(normalized_city, 0) + 1
+
+            for key, value in row.items():
+                if _is_missing(value):
+                    missing_counts[key] = missing_counts.get(key, 0) + 1
+
+            age = _parse_int(row.get("Delivery_person_Age"))
+            if age is not None and not (16 <= age <= 80):
+                anomaly_counts["invalid_age_rows"] += 1
+
+            rating = _parse_float(row.get("Delivery_person_Ratings"))
+            if rating is not None and not (1.0 <= rating <= 5.0):
+                anomaly_counts["invalid_rating_rows"] += 1
+
+            restaurant_lat = _parse_float(row.get("Restaurant_latitude"))
+            restaurant_lon = _parse_float(row.get("Restaurant_longitude"))
+            delivery_lat = _parse_float(row.get("Delivery_location_latitude"))
+            delivery_lon = _parse_float(row.get("Delivery_location_longitude"))
+            time_taken = _parse_int(row.get("Time_taken (min)"))
+
+            if None not in (restaurant_lat, restaurant_lon, delivery_lat, delivery_lon):
+                if restaurant_lat < 0 or restaurant_lon < 0:
+                    anomaly_counts["negative_restaurant_coordinate_rows"] += 1
+
+                fixed_lat, fixed_lon, _ = _fix_restaurant_coordinates(
+                    restaurant_lat,
+                    restaurant_lon,
+                    delivery_lat,
+                    delivery_lon,
+                )
+
+                distance_km = _haversine_km(fixed_lat, fixed_lon, delivery_lat, delivery_lon)
+                if distance_km > 30:
+                    anomaly_counts["distance_over_30km_rows"] += 1
+                if distance_km > 80:
+                    anomaly_counts["distance_over_80km_rows"] += 1
+
+                if time_taken is not None and time_taken > 0:
+                    speed_kmh = distance_km / (time_taken / 60)
+                    if speed_kmh > 80:
+                        anomaly_counts["speed_over_80kmh_rows"] += 1
+
+            if not _is_missing(row.get("Order_Date")):
+                try:
+                    dates.append(datetime.strptime(str(row["Order_Date"]).strip(), "%d-%m-%Y"))
+                except ValueError:
+                    pass
+
+    top_city_counts = dict(sorted(city_counts.items(), key=lambda item: item[1], reverse=True)[:10])
+    return CsvAuditSummary(
+        total_rows=total_rows,
+        unique_delivery_partners=len(unique_partners),
+        duplicate_order_ids=duplicate_order_ids,
+        date_range_start=min(dates).date().isoformat() if dates else None,
+        date_range_end=max(dates).date().isoformat() if dates else None,
+        missing_counts=dict(sorted(missing_counts.items(), key=lambda item: item[1], reverse=True)),
+        anomaly_counts=anomaly_counts,
+        top_city_counts=top_city_counts,
+    )
+
+
+def build_allocation_payload_from_zomato(
+    csv_path: str | Path,
+    max_orders: int = 250,
+    max_partners: int = 150,
+    max_delivery_radius_km: float = 30.0,
+) -> dict[str, Any]:
+    path = _ensure_existing_csv(csv_path)
+
+    orders: list[dict[str, Any]] = []
+    partner_state: "OrderedDict[str, dict[str, Any]]" = OrderedDict()
+
+    dropped_counts = {
+        "missing_core_fields": 0,
+        "invalid_age": 0,
+        "invalid_rating": 0,
+        "invalid_coordinates": 0,
+        "distance_outlier": 0,
+        "duplicate_order_id": 0,
+    }
+    corrected_coordinate_rows = 0
+
+    seen_order_ids: set[str] = set()
+
+    with path.open(newline="", encoding="utf-8", errors="replace") as handle:
+        reader = csv.DictReader(handle)
+        for row in reader:
+            order_id = (row.get("ID") or "").strip()
+            partner_id = (row.get("Delivery_person_ID") or "").strip()
+            if not order_id or not partner_id:
+                dropped_counts["missing_core_fields"] += 1
+                continue
+            if order_id in seen_order_ids:
+                dropped_counts["duplicate_order_id"] += 1
+                continue
+
+            restaurant_lat = _parse_float(row.get("Restaurant_latitude"))
+            restaurant_lon = _parse_float(row.get("Restaurant_longitude"))
+            delivery_lat = _parse_float(row.get("Delivery_location_latitude"))
+            delivery_lon = _parse_float(row.get("Delivery_location_longitude"))
+            age = _parse_int(row.get("Delivery_person_Age"))
+            rating = _parse_float(row.get("Delivery_person_Ratings"))
+
+            if None in (restaurant_lat, restaurant_lon, delivery_lat, delivery_lon):
+                dropped_counts["invalid_coordinates"] += 1
+                continue
+            if age is None or not (16 <= age <= 80):
+                dropped_counts["invalid_age"] += 1
+                continue
+            if rating is None or not (1.0 <= rating <= 5.0):
+                dropped_counts["invalid_rating"] += 1
+                continue
+
+            fixed_lat, fixed_lon, corrected = _fix_restaurant_coordinates(
+                restaurant_lat,
+                restaurant_lon,
+                delivery_lat,
+                delivery_lon,
+            )
+            if corrected:
+                corrected_coordinate_rows += 1
+
+            distance_km = _haversine_km(fixed_lat, fixed_lon, delivery_lat, delivery_lon)
+            if distance_km > max_delivery_radius_km:
+                dropped_counts["distance_outlier"] += 1
+                continue
+
+            created_at = _parse_timestamp(row.get("Order_Date"), row.get("Time_Orderd"))
+            multiple_deliveries = _parse_int(row.get("multiple_deliveries"))
+            requested_vehicle = _normalize_vehicle(row.get("Type_of_vehicle"))
+
+            if len(orders) < max_orders:
+                orders.append(
+                    {
+                        "order_id": order_id,
+                        "latitude": round(fixed_lat, 6),
+                        "longitude": round(fixed_lon, 6),
+                        "amount_paise": _estimate_amount_paise(row.get("Type_of_order"), multiple_deliveries),
+                        "requested_vehicle_type": requested_vehicle,
+                        "created_at": created_at.isoformat(),
+                    }
+                )
+                seen_order_ids.add(order_id)
+            else:
+                break
+
+            if partner_id not in partner_state and len(partner_state) >= max_partners:
+                continue
+
+            partner = partner_state.setdefault(
+                partner_id,
+                {
+                    "partner_id": partner_id,
+                    "latitude": round(delivery_lat, 6),
+                    "longitude": round(delivery_lon, 6),
+                    "is_available": True,
+                    "rating_sum": 0.0,
+                    "rating_count": 0,
+                    "vehicle_types": set(),
+                    "active": True,
+                },
+            )
+            partner["latitude"] = round(delivery_lat, 6)
+            partner["longitude"] = round(delivery_lon, 6)
+            partner["rating_sum"] += float(rating)
+            partner["rating_count"] += 1
+            partner["vehicle_types"].add(requested_vehicle)
+
+    partners: list[dict[str, Any]] = []
+    for payload in partner_state.values():
+        count = max(1, int(payload["rating_count"]))
+        partners.append(
+            {
+                "partner_id": payload["partner_id"],
+                "latitude": payload["latitude"],
+                "longitude": payload["longitude"],
+                "is_available": payload["is_available"],
+                "rating": round(payload["rating_sum"] / count, 2),
+                "vehicle_types": sorted(payload["vehicle_types"]),
+                "active": payload["active"],
+            }
+        )
+
+    metadata = {
+        "source_file": str(path),
+        "max_orders": max_orders,
+        "max_partners": max_partners,
+        "max_delivery_radius_km": max_delivery_radius_km,
+        "orders_generated": len(orders),
+        "partners_generated": len(partners),
+        "corrected_coordinate_rows": corrected_coordinate_rows,
+        "dropped_counts": dropped_counts,
+    }
+
+    return {
+        "orders": orders,
+        "partners": partners,
+        "metadata": metadata,
+    }
+
+
+def write_json(path: str | Path, payload: dict[str, Any]) -> None:
+    output = Path(path)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")

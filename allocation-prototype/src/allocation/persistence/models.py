@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, Integer, String, Text, create_engine
+from sqlalchemy import DateTime, Integer, String, Text, create_engine, inspect as sa_inspect
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 
 
@@ -68,3 +68,73 @@ def create_session_factory(engine):
 
 def create_all_tables(engine) -> None:
     Base.metadata.create_all(engine)
+
+
+REQUIRED_SCHEMA_COLUMNS = {
+    "allocation_events": {
+        "id",
+        "order_id",
+        "manifest_id",
+        "partner_id",
+        "status",
+        "trace_hash",
+        "config_version_hash",
+        "created_at",
+    },
+    "sealed_manifests": {
+        "manifest_id",
+        "manifest_json",
+        "trace_hash",
+        "config_version_hash",
+        "decided_at",
+    },
+    "input_snapshots": {
+        "input_hash",
+        "snapshot_json",
+    },
+    "config_versions": {
+        "config_version_hash",
+        "config_yaml",
+        "config_json",
+        "inserted_at",
+    },
+    "idempotency_records": {
+        "key",
+        "status",
+        "response_json",
+        "created_at",
+    },
+}
+
+
+def find_missing_schema_columns(engine) -> dict[str, list[str]]:
+    inspector = sa_inspect(engine)
+    existing_tables = set(inspector.get_table_names())
+    missing: dict[str, list[str]] = {}
+    for table_name, required_columns in REQUIRED_SCHEMA_COLUMNS.items():
+        if table_name not in existing_tables:
+            missing[table_name] = sorted(required_columns)
+            continue
+
+        existing_columns = {column["name"] for column in inspector.get_columns(table_name)}
+        missing_columns = sorted(required_columns - existing_columns)
+        if missing_columns:
+            missing[table_name] = missing_columns
+    return missing
+
+
+def assert_schema_compatible(engine) -> None:
+    missing = find_missing_schema_columns(engine)
+    if not missing:
+        return
+
+    details = "; ".join(
+        f"{table_name} missing columns: {', '.join(columns)}"
+        for table_name, columns in sorted(missing.items())
+    )
+    raise RuntimeError(
+        "Database schema is outdated or incomplete. "
+        f"{details}. If this database predates Alembic versioning, run "
+        "`.venv/bin/alembic stamp 13cab1c6d55d` and then `.venv/bin/alembic upgrade head`, "
+        "or recreate the database."
+    )
