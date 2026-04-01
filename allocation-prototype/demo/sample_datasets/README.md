@@ -1,34 +1,29 @@
 # Allocation Prototype Dataset Payloads
 
-This directory contains two kinds of allocation payloads:
+This directory contains the versioned sample payloads used by the frontend demo.
 
-- Synthetic scenario payloads generated from hand-tuned city templates by `scripts/generate_sample_datasets.py`
-- CSV-derived payloads generated from the real `Zomato Dataset.csv` source by `scripts/generate_zomato_sample_datasets.py`
+All three datasets are generated from the real `Zomato Dataset.csv` source by `scripts/generate_realistic_sample.py` and remain compatible with the current `POST /allocations` payload format.
 
-Synthetic scenario payloads:
+Available datasets:
 
-- `bengaluru_lunch_rush.json`: 42 orders and 28 partners for a dense weekday lunch rush with mostly two-wheelers and a smaller car fleet.
-- `hyderabad_monsoon_mixed_fleet.json`: 48 orders and 30 partners for rain-shift demand with a broader mixed fleet.
-- `gurugram_distance_pressure.json`: 56 orders and 24 partners for a suburban spread designed to surface distance-limit failures.
+- `realistic_clear_weather.json`: large clear-weather slice with 172 orders sourced from Sunny, Cloudy, and Windy rows.
+- `realistic_severe_weather.json`: large severe-weather slice with 288 orders sourced from Stormy and Sandstorms rows.
+- `realistic_traffic_jam.json`: large traffic-heavy slice with 544 orders sourced from Jam and High traffic rows.
 
-CSV-derived Zomato payloads:
-
-- `zomato_national_high_volume.json`: a large multi-city allocation payload derived from the full CSV.
-- `zomato_metro_jam_core.json`: a metropolitan jam-traffic slice for dense demand and rejection analysis.
-- `zomato_urban_low_traffic.json`: a lighter urban slice for baseline allocation and replay checks.
-- `zomato_festival_jam_surge.json`: a festival-period metropolitan jam slice for surge-style validation.
-- `zomato_metro_high_traffic.json`: a metropolitan high-traffic slice for medium-sized diagnostics and replay runs.
+These datasets intentionally avoid using the dataset's distance field.
 
 All files follow the same `orders` plus `partners` payload shape accepted by `POST /allocations`. The `metadata` object supports the dataset catalog and operator context shown in the prototype console.
 
-To regenerate the synthetic scenario datasets:
+To regenerate the dataset catalog:
 
 ```bash
-.venv/bin/python scripts/generate_sample_datasets.py
+.venv/bin/python scripts/generate_realistic_sample.py --mode clear_weather --csv ../Zomato\ Dataset.csv
+.venv/bin/python scripts/generate_realistic_sample.py --mode severe_weather --csv ../Zomato\ Dataset.csv
+.venv/bin/python scripts/generate_realistic_sample.py --mode traffic_jam --csv ../Zomato\ Dataset.csv
 ```
 
-To regenerate the CSV-derived Zomato datasets:
+To validate the dataset directory:
 
 ```bash
-.venv/bin/python scripts/generate_zomato_sample_datasets.py
+.venv/bin/python scripts/validate_sample_datasets.py
 ```

@@ -65,6 +65,23 @@ def serialize_orders(orders: list[Order]) -> list[dict[str, Any]]:
                 "amount_paise": int(order.amount_paise),
                 "requested_vehicle_type": order.requested_vehicle_type.value,
                 "created_at": order.created_at.astimezone(timezone.utc).isoformat(),
+                "restaurant_latitude": (
+                    round(order.restaurant_latitude, 8) if order.restaurant_latitude is not None else None
+                ),
+                "restaurant_longitude": (
+                    round(order.restaurant_longitude, 8) if order.restaurant_longitude is not None else None
+                ),
+                "delivery_latitude": (
+                    round(order.delivery_latitude, 8) if order.delivery_latitude is not None else None
+                ),
+                "delivery_longitude": (
+                    round(order.delivery_longitude, 8) if order.delivery_longitude is not None else None
+                ),
+                "weather_condition": order.weather_condition,
+                "traffic_density": order.traffic_density,
+                "order_type": order.order_type,
+                "priority": order.priority,
+                "vehicle_required_raw": order.vehicle_required_raw,
             }
         )
     return serialized
@@ -82,6 +99,12 @@ def serialize_partners(partners: list[DeliveryPartner]) -> list[dict[str, Any]]:
                 "rating": round(partner.rating, 8),
                 "vehicle_types": sorted(v.value for v in partner.vehicle_types),
                 "active": bool(partner.active),
+                "name": partner.name,
+                "current_load": int(partner.current_load),
+                "vehicle_condition": int(partner.vehicle_condition),
+                "avg_time_taken_min": int(partner.avg_time_taken_min),
+                "city": partner.city,
+                "raw_vehicle_type": partner.raw_vehicle_type,
             }
         )
     return serialized

@@ -9,7 +9,6 @@ def initial_partner_loads_for_replay(
     evaluation_trace: dict[str, Any],
     partners: list[DeliveryPartner],
 ) -> dict[str, int]:
-    # Historical traces may not include this key (backward compatibility).
     stored = evaluation_trace.get("initial_partner_loads", {})
     if not isinstance(stored, dict):
         stored = {}

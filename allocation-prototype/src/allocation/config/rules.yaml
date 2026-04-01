@@ -11,6 +11,19 @@ hard_rules:
     enabled: true
     params:
       min_rating: 3.5
+  - name: vehicle_condition
+    enabled: true
+    params:
+      min_condition: 1
+  - name: weather_safety
+    enabled: true
+    params:
+      severe_conditions:
+        - Stormy
+        - Sandstorms
+      restricted_vehicles:
+        - MOTORCYCLE
+        - SCOOTER
 
 vehicle_compatibility:
   bike:
@@ -31,11 +44,26 @@ scoring_rules:
     enabled: true
   - name: fairness_score
     enabled: true
+  - name: on_time_rate
+    enabled: true
+    params:
+      baseline_minutes: 30
+  - name: traffic_adjusted_proximity
+    enabled: false
+    params:
+      max_distance_km: 10.0
+      traffic_multipliers:
+        Low: 1.0
+        Medium: 1.3
+        High: 1.6
+        Jam: 2.2
 
 weights:
-  proximity_score: 0.45
-  rating_score: 0.25
+  proximity_score: 0.35
+  rating_score: 0.20
   fairness_score: 0.30
+  on_time_rate: 0.15
+  traffic_adjusted_proximity: 0.0
 
 fairness:
   threshold: 0.35

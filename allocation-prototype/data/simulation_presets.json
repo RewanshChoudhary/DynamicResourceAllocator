@@ -57,5 +57,27 @@
         "partner_id": "REPLACE_WITH_ACTUAL_ID"
       }
     ]
+  },
+  {
+    "name": "Enable Traffic-Aware Proximity",
+    "description": "Penalize high-traffic routes so nearby partners stuck in jam conditions can rank below slightly farther partners on clearer roads.",
+    "requires_manifest_id": true,
+    "mutations": [
+      {
+        "mutation_type": "rule_toggle",
+        "rule_name": "traffic_adjusted_proximity",
+        "enabled": true
+      },
+      {
+        "mutation_type": "rule_weight",
+        "rule_name": "traffic_adjusted_proximity",
+        "new_weight": 0.25
+      },
+      {
+        "mutation_type": "rule_weight",
+        "rule_name": "proximity_score",
+        "new_weight": 0.10
+      }
+    ]
   }
 ]

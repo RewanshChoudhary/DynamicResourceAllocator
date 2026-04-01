@@ -15,4 +15,6 @@ def test_simulation_presets_endpoint_returns_required_demo_presets(tmp_path, mon
     assert "weights: fairness_score prioritized" in preset_names
     assert "min_rating disabled" in preset_names
     assert "partner_pool.remove busiest_partner" in preset_names
+    assert "Enable Traffic-Aware Proximity" in preset_names
+    assert len(payload) == 5
     assert all(preset["requires_manifest_id"] is True for preset in payload)

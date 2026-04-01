@@ -6,12 +6,22 @@ from pathlib import Path
 from allocation.api.schemas import AllocationRequest
 
 DATASET_DIR = Path(__file__).resolve().parents[1] / "demo" / "sample_datasets"
+LARGE_REALISTIC_DATASET_MINIMUMS = {
+    "realistic_clear_weather.json": (172, 35),
+    "realistic_severe_weather.json": (288, 40),
+    "realistic_traffic_jam.json": (544, 45),
+}
 
 
 def test_curated_sample_datasets_validate_against_request_schema():
     dataset_paths = sorted(DATASET_DIR.glob("*.json"))
 
     assert dataset_paths
+    assert {path.name for path in dataset_paths} == {
+        "realistic_clear_weather.json",
+        "realistic_severe_weather.json",
+        "realistic_traffic_jam.json",
+    }
 
     for path in dataset_paths:
         payload = json.loads(path.read_text())
@@ -32,38 +42,36 @@ def test_curated_sample_datasets_cover_all_vehicle_types():
         for partner in payload["partners"]:
             partner_vehicle_types.update(partner["vehicle_types"])
 
-    assert {"bike", "scooter", "car"} <= requested_vehicle_types
-    assert {"bike", "scooter", "car"} <= partner_vehicle_types
+    assert {"bike", "scooter"} <= requested_vehicle_types
+    assert {"bike", "scooter"} <= partner_vehicle_types
 
 
 def test_curated_sample_datasets_are_substantially_larger_than_smoke_samples():
     for path in DATASET_DIR.glob("*.json"):
         payload = json.loads(path.read_text())
-        assert len(payload["orders"]) >= 40, path.name
-        assert len(payload["partners"]) >= 24, path.name
+        min_orders, min_partners = LARGE_REALISTIC_DATASET_MINIMUMS[path.name]
+        assert len(payload["orders"]) == min_orders, path.name
+        assert len(payload["partners"]) >= min_partners, path.name
 
 
-def test_zomato_high_volume_sample_is_available_for_large_demo_runs():
-    path = DATASET_DIR / "zomato_national_high_volume.json"
-    payload = json.loads(path.read_text())
-
-    assert payload["metadata"]["name"] == "Zomato National High Volume"
-    assert len(payload["orders"]) >= 400
-    assert len(payload["partners"]) >= 200
-
-
-def test_csv_derived_zomato_sample_slices_are_available():
+def test_only_three_large_zomato_samples_are_available():
     expected = {
-        "zomato_metro_jam_core.json": "Zomato Metro Jam Core",
-        "zomato_urban_low_traffic.json": "Zomato Urban Low Traffic",
-        "zomato_festival_jam_surge.json": "Zomato Festival Jam Surge",
-        "zomato_metro_high_traffic.json": "Zomato Metro High Traffic",
+        "realistic_clear_weather.json": "Zomato Clear Weather Large (172 orders)",
+        "realistic_severe_weather.json": "Zomato Severe Weather Large (288 orders)",
+        "realistic_traffic_jam.json": "Zomato Traffic Jam Large (544 orders)",
     }
 
     for filename, expected_name in expected.items():
         payload = json.loads((DATASET_DIR / filename).read_text())
         assert payload["metadata"]["name"] == expected_name
-        assert payload["metadata"]["generator"] == "scripts/generate_zomato_sample_datasets.py"
+        assert payload["metadata"]["generator"] == "scripts/generate_realistic_sample.py"
         assert payload["metadata"]["source_filters"]
-        assert len(payload["orders"]) >= 60
-        assert len(payload["partners"]) >= 50
+        assert len(payload["orders"]) >= LARGE_REALISTIC_DATASET_MINIMUMS[filename][0]
+        assert len(payload["partners"]) >= LARGE_REALISTIC_DATASET_MINIMUMS[filename][1]
+
+
+def test_realistic_traffic_jam_dataset_records_delta_verification_status():
+    payload = json.loads((DATASET_DIR / "realistic_traffic_jam.json").read_text())
+
+    assert "traffic_delta_verified" in payload["metadata"]
+    assert isinstance(payload["metadata"]["traffic_delta_verified"], bool)

@@ -40,11 +40,22 @@ def _to_domain_orders(request_payload: AllocationRequest) -> list[Order]:
     return [
         Order(
             order_id=order.order_id,
-            latitude=order.latitude,
-            longitude=order.longitude,
+            latitude=float(order.latitude),
+            longitude=float(order.longitude),
             amount_paise=order.amount_paise,
             requested_vehicle_type=order.requested_vehicle_type,
             created_at=order.created_at,
+            restaurant_latitude=order.restaurant_latitude if order.restaurant_latitude is not None else order.latitude,
+            restaurant_longitude=(
+                order.restaurant_longitude if order.restaurant_longitude is not None else order.longitude
+            ),
+            delivery_latitude=order.delivery_latitude,
+            delivery_longitude=order.delivery_longitude,
+            weather_condition=order.weather_condition,
+            traffic_density=order.traffic_density,
+            order_type=order.order_type,
+            priority=order.priority,
+            vehicle_required_raw=order.vehicle_required_raw,
         )
         for order in request_payload.orders
     ]
@@ -54,12 +65,18 @@ def _to_domain_partners(request_payload: AllocationRequest) -> list[DeliveryPart
     return [
         DeliveryPartner(
             partner_id=partner.partner_id,
-            latitude=partner.latitude,
-            longitude=partner.longitude,
+            latitude=float(partner.latitude),
+            longitude=float(partner.longitude),
             is_available=partner.is_available,
             rating=partner.rating,
             vehicle_types=tuple(partner.vehicle_types),
             active=partner.active,
+            name=partner.name,
+            current_load=partner.current_load,
+            vehicle_condition=partner.vehicle_condition,
+            avg_time_taken_min=partner.avg_time_taken_min,
+            city=partner.city,
+            raw_vehicle_type=partner.raw_vehicle_type,
         )
         for partner in request_payload.partners
     ]

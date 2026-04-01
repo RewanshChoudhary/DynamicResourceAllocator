@@ -48,14 +48,17 @@ rule_registry = RuleRegistry()
 
 
 def import_all_rules() -> None:
-    # Import side effects register all rules.
-    import allocation.rules.hard.availability  # noqa: F401
-    import allocation.rules.hard.distance  # noqa: F401
-    import allocation.rules.hard.rating  # noqa: F401
-    import allocation.rules.hard.vehicle_type  # noqa: F401
-    import allocation.rules.scoring.fairness  # noqa: F401
-    import allocation.rules.scoring.proximity  # noqa: F401
-    import allocation.rules.scoring.rating  # noqa: F401
+    import allocation.rules.hard.availability
+    import allocation.rules.hard.distance
+    import allocation.rules.hard.rating
+    import allocation.rules.hard.vehicle_condition
+    import allocation.rules.hard.weather_safety
+    import allocation.rules.hard.vehicle_type
+    import allocation.rules.scoring.fairness
+    import allocation.rules.scoring.on_time_rate
+    import allocation.rules.scoring.proximity
+    import allocation.rules.scoring.rating
+    import allocation.rules.scoring.traffic_adjusted_proximity
 
 
 def build_rule_set(config: dict[str, Any]) -> tuple[list[HardRule], list[ScoringRule]]:

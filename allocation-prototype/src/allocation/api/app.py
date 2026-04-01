@@ -24,11 +24,14 @@ from allocation.persistence.models import (
 )
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
-FRONTEND_PATH = PROJECT_ROOT / "frontend" / "index.html"
+FRONTEND_DIR = PROJECT_ROOT / "frontend"
+FRONTEND_PATH = FRONTEND_DIR / "index.html"
+FRONTEND_CSS_PATH = FRONTEND_DIR / "styles.css"
+FRONTEND_JS_PATH = FRONTEND_DIR / "app.js"
 SAMPLE_DATASET_DIR = PROJECT_ROOT / "demo" / "sample_datasets"
 SIMULATION_PRESETS_PATH = PROJECT_ROOT / "data" / "simulation_presets.json"
 RULE_CONFIG_PATH = PROJECT_ROOT / "src" / "allocation" / "config" / "rules.yaml"
-DEFAULT_SAMPLE_DATASET = "bengaluru_lunch_rush"
+DEFAULT_SAMPLE_DATASET = "realistic_clear_weather"
 
 
 def _load_json_payload(path: Path) -> dict[str, Any]:
@@ -158,6 +161,18 @@ def create_app() -> FastAPI:
         if not FRONTEND_PATH.exists():
             raise HTTPException(status_code=404, detail="Frontend page is missing")
         return FileResponse(FRONTEND_PATH)
+
+    @app.get("/styles.css", include_in_schema=False)
+    def frontend_styles() -> FileResponse:
+        if not FRONTEND_CSS_PATH.exists():
+            raise HTTPException(status_code=404, detail="Frontend stylesheet is missing")
+        return FileResponse(FRONTEND_CSS_PATH, media_type="text/css")
+
+    @app.get("/app.js", include_in_schema=False)
+    def frontend_script() -> FileResponse:
+        if not FRONTEND_JS_PATH.exists():
+            raise HTTPException(status_code=404, detail="Frontend script is missing")
+        return FileResponse(FRONTEND_JS_PATH, media_type="application/javascript")
 
     @app.get("/demo/sample-datasets", include_in_schema=False)
     def sample_datasets() -> dict[str, Any]:

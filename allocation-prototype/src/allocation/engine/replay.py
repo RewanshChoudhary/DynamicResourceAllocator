@@ -46,6 +46,31 @@ def snapshot_to_orders(snapshot: dict[str, Any]) -> list[Order]:
                 amount_paise=int(payload["amount_paise"]),
                 requested_vehicle_type=VehicleType(payload["requested_vehicle_type"]),
                 created_at=datetime.fromisoformat(payload["created_at"]),
+                restaurant_latitude=(
+                    float(payload["restaurant_latitude"])
+                    if payload.get("restaurant_latitude") is not None
+                    else None
+                ),
+                restaurant_longitude=(
+                    float(payload["restaurant_longitude"])
+                    if payload.get("restaurant_longitude") is not None
+                    else None
+                ),
+                delivery_latitude=(
+                    float(payload["delivery_latitude"])
+                    if payload.get("delivery_latitude") is not None
+                    else None
+                ),
+                delivery_longitude=(
+                    float(payload["delivery_longitude"])
+                    if payload.get("delivery_longitude") is not None
+                    else None
+                ),
+                weather_condition=str(payload.get("weather_condition", "Sunny")),
+                traffic_density=str(payload.get("traffic_density", "Low")),
+                order_type=str(payload.get("order_type", "Meal")),
+                priority=str(payload.get("priority", "NORMAL")),
+                vehicle_required_raw=payload.get("vehicle_required_raw"),
             )
         )
     return orders
@@ -63,6 +88,12 @@ def snapshot_to_partners(snapshot: dict[str, Any]) -> list[DeliveryPartner]:
                 rating=float(payload["rating"]),
                 vehicle_types=tuple(VehicleType(v) for v in payload.get("vehicle_types", [])),
                 active=bool(payload.get("active", True)),
+                name=payload.get("name"),
+                current_load=int(payload.get("current_load", 0)),
+                vehicle_condition=int(payload.get("vehicle_condition", 1)),
+                avg_time_taken_min=int(payload.get("avg_time_taken_min", 30)),
+                city=payload.get("city"),
+                raw_vehicle_type=payload.get("raw_vehicle_type"),
             )
         )
     return partners

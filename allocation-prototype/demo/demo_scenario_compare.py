@@ -105,7 +105,7 @@ def run_scenario(name: str, config: dict, orders: list[Order], partners: list[De
 if __name__ == "__main__":
     if not PAYLOAD_PATH.exists():
         raise SystemExit(
-            "Expected demo/zomato_allocation_payload.json. Run scripts/prepare_zomato_data.py first."
+            "Expected demo/zomato_allocation_payload.json. Run scripts/generate_realistic_sample.py --mode generic first."
         )
 
     orders, partners = load_payload()

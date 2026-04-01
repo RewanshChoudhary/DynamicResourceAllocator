@@ -196,8 +196,6 @@ def audit_diagnostics(request: Request):
         ]
         config_payload = config_store.get_by_hash(manifest.config_version_hash)
 
-        # Gini tracking is in-memory only; persisted value
-        # available after event log introduction (roadmap Week 3).
         fairness_gini = None
 
         return {

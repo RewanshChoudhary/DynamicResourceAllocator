@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from allocation.engine.manifest import ManifestBuilder, build_input_snapshot
 from allocation.engine.pipeline import DeterministicAllocationPipeline
-from allocation.engine.replay import DeterministicReplayer
+from allocation.engine.replay import DeterministicReplayer, snapshot_to_orders, snapshot_to_partners
 from allocation.persistence.config_versions import ConfigVersionStore
 from allocation.persistence.repository import AllocationRepository, InputSnapshotRepository, ManifestRepository
 from allocation.rules.registry import build_rule_set
@@ -53,3 +53,59 @@ def test_deterministic_replay_matches(session, sample_orders, sample_partners, b
     assert replay.matched is True
     assert replay.trace_hash_identical is True
     assert replay.divergence_point_if_any is None
+
+
+def test_snapshot_round_trip_preserves_additive_order_and_partner_fields():
+    from datetime import datetime, timezone
+
+    from allocation.domain.enums import VehicleType
+    from allocation.domain.order import Order
+    from allocation.domain.partner import DeliveryPartner
+
+    orders = [
+        Order(
+            order_id="ORD-RICH-1",
+            latitude=12.9716,
+            longitude=77.5946,
+            amount_paise=24000,
+            requested_vehicle_type=VehicleType.BIKE,
+            created_at=datetime(2026, 2, 22, 12, 0, tzinfo=timezone.utc),
+            restaurant_latitude=12.9716,
+            restaurant_longitude=77.5946,
+            delivery_latitude=12.9816,
+            delivery_longitude=77.6046,
+            weather_condition="Stormy",
+            traffic_density="Jam",
+            order_type="Meal",
+            priority="NORMAL",
+            vehicle_required_raw="MOTORCYCLE",
+        )
+    ]
+    partners = [
+        DeliveryPartner(
+            partner_id="PT-RICH-1",
+            latitude=12.9717,
+            longitude=77.5947,
+            is_available=True,
+            rating=4.8,
+            vehicle_types=(VehicleType.BIKE,),
+            active=True,
+            name="PT-RICH-1",
+            current_load=2,
+            vehicle_condition=0,
+            avg_time_taken_min=18,
+            city="Urban",
+            raw_vehicle_type="MOTORCYCLE",
+        )
+    ]
+
+    snapshot = build_input_snapshot(orders, partners)
+    restored_order = snapshot_to_orders(snapshot)[0]
+    restored_partner = snapshot_to_partners(snapshot)[0]
+
+    assert restored_order.weather_condition == "Stormy"
+    assert restored_order.traffic_density == "Jam"
+    assert restored_order.vehicle_required_raw == "MOTORCYCLE"
+    assert restored_partner.vehicle_condition == 0
+    assert restored_partner.avg_time_taken_min == 18
+    assert restored_partner.raw_vehicle_type == "MOTORCYCLE"

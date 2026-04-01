@@ -98,18 +98,15 @@ http://127.0.0.1:8000/
 
 ### 1. Versioned sample datasets
 
-The frontend and demo sample endpoints are backed by versioned payloads in [demo/sample_datasets](/home/rewansh57/Programming/PatentProject/allocation-prototype/demo/sample_datasets). That directory now includes both synthetic scenario datasets and CSV-derived Zomato slices.
+The frontend and demo sample endpoints are backed by versioned payloads in [demo/sample_datasets](/home/rewansh57/Programming/PatentProject/allocation-prototype/demo/sample_datasets). That directory now contains only three large datasets, all derived from the real `Zomato Dataset.csv` source and kept compatible with the current API payload format.
 
 Available datasets:
 
-- `bengaluru_lunch_rush.json`: compact weekday lunch demand with mostly bike and scooter traffic plus one car-only order.
-- `hyderabad_monsoon_mixed_fleet.json`: mixed-fleet evening demand with availability pressure and car-only requests.
-- `gurugram_distance_pressure.json`: spread-out suburban demand designed to surface distance-limit failures.
-- `zomato_national_high_volume.json`: larger cross-city payload derived from the source Zomato CSV.
-- `zomato_metro_jam_core.json`: metropolitan jam-traffic slice from the Zomato CSV.
-- `zomato_urban_low_traffic.json`: lighter urban slice from the Zomato CSV.
-- `zomato_festival_jam_surge.json`: festival-period jam slice from the Zomato CSV.
-- `zomato_metro_high_traffic.json`: metropolitan high-traffic slice from the Zomato CSV.
+- `realistic_clear_weather.json`: large clear-weather run with 172 orders sourced from Sunny, Cloudy, and Windy Zomato rows.
+- `realistic_severe_weather.json`: large severe-weather run with 288 orders sourced from Stormy and Sandstorms Zomato rows.
+- `realistic_traffic_jam.json`: large traffic-heavy run with 544 orders sourced from Jam and High traffic Zomato rows.
+
+These datasets are sourced from the Zomato delivery CSV without using the dataset's distance field.
 
 Use them in the frontend:
 
@@ -124,76 +121,47 @@ Use them directly with the API:
 ```bash
 curl -X POST http://127.0.0.1:8000/allocations \
   -H 'Content-Type: application/json' \
-  -H 'X-Idempotency-Key: blr-sample-001' \
-  --data @demo/sample_datasets/bengaluru_lunch_rush.json
+  -H 'X-Idempotency-Key: clear-sample-001' \
+  --data @demo/sample_datasets/realistic_clear_weather.json
 ```
 
 ```bash
 curl -X POST http://127.0.0.1:8000/allocations \
   -H 'Content-Type: application/json' \
-  -H 'X-Idempotency-Key: hyd-sample-001' \
-  --data @demo/sample_datasets/hyderabad_monsoon_mixed_fleet.json
+  -H 'X-Idempotency-Key: severe-sample-001' \
+  --data @demo/sample_datasets/realistic_severe_weather.json
 ```
 
 ```bash
 curl -X POST http://127.0.0.1:8000/allocations \
   -H 'Content-Type: application/json' \
-  -H 'X-Idempotency-Key: ggn-sample-001' \
-  --data @demo/sample_datasets/gurugram_distance_pressure.json
+  -H 'X-Idempotency-Key: jam-sample-001' \
+  --data @demo/sample_datasets/realistic_traffic_jam.json
 ```
 
 You can also inspect the sample catalog through the app:
 
 - `GET /demo/sample-datasets`
-- `GET /demo/sample-payload?dataset=bengaluru_lunch_rush`
-- `GET /demo/sample-payload?dataset=hyderabad_monsoon_mixed_fleet`
-- `GET /demo/sample-payload?dataset=gurugram_distance_pressure`
-- `GET /demo/sample-payload?dataset=zomato_metro_jam_core`
-- `GET /demo/sample-payload?dataset=zomato_urban_low_traffic`
-- `GET /demo/sample-payload?dataset=zomato_festival_jam_surge`
-- `GET /demo/sample-payload?dataset=zomato_metro_high_traffic`
+- `GET /demo/sample-payload?dataset=realistic_clear_weather`
+- `GET /demo/sample-payload?dataset=realistic_severe_weather`
+- `GET /demo/sample-payload?dataset=realistic_traffic_jam`
 
 ### 2. Generated datasets from the Zomato CSV
 
-If you want bigger, noisier, or source-derived payloads, generate them from `../Zomato Dataset.csv`.
+If you want to regenerate the three large source-derived payloads, use `../Zomato Dataset.csv`.
 
-Run the adapter:
+Generate the dataset catalog:
 
 ```bash
-.venv/bin/python scripts/prepare_zomato_data.py \
-  --input ../Zomato\ Dataset.csv \
-  --audit-out demo/zomato_audit_report.json \
-  --payload-out demo/zomato_allocation_payload.json \
-  --max-orders 120 \
-  --max-partners 80
+.venv/bin/python scripts/generate_realistic_sample.py --mode clear_weather --csv ../Zomato\ Dataset.csv
+.venv/bin/python scripts/generate_realistic_sample.py --mode severe_weather --csv ../Zomato\ Dataset.csv
+.venv/bin/python scripts/generate_realistic_sample.py --mode traffic_jam --csv ../Zomato\ Dataset.csv
 ```
 
-That command:
-
-- audits the raw CSV
-- writes a data-quality report to `demo/zomato_audit_report.json`
-- writes an allocation-ready payload to `demo/zomato_allocation_payload.json`
-
-To regenerate the CSV-derived sample datasets that appear in the frontend catalog:
+Validate the dataset directory:
 
 ```bash
-.venv/bin/python scripts/generate_zomato_sample_datasets.py \
-  --input ../Zomato\ Dataset.csv
-```
-
-Use the generated payload with the API:
-
-```bash
-curl -X POST http://127.0.0.1:8000/allocations \
-  -H 'Content-Type: application/json' \
-  -H 'X-Idempotency-Key: zomato-seed-001' \
-  --data @demo/zomato_allocation_payload.json
-```
-
-Compare scenarios on the generated payload:
-
-```bash
-.venv/bin/python demo/demo_scenario_compare.py
+.venv/bin/python scripts/validate_sample_datasets.py
 ```
 
 ### 3. Custom payloads
@@ -294,7 +262,6 @@ The main test files are:
 - `tests/test_conflict_detection.py`
 - `tests/test_vehicle_compatibility.py`
 - `tests/test_schema_compatibility.py`
-- `tests/test_zomato_adapter.py`
 - `tests/test_frontend.py`
 - `tests/test_sample_datasets.py`
 
@@ -313,7 +280,7 @@ Run only API-focused tests:
 Run only dataset and frontend tests:
 
 ```bash
-.venv/bin/python -m pytest tests/test_frontend.py tests/test_sample_datasets.py tests/test_zomato_adapter.py -q
+.venv/bin/python -m pytest tests/test_frontend.py tests/test_sample_datasets.py tests/test_zomato_adapter_extended.py -q
 ```
 
 Run only manifest, replay, and simulation tests:
@@ -326,7 +293,7 @@ Run only manifest, replay, and simulation tests:
 
 As of April 2, 2026, the repository was rechecked locally with the project virtual environment:
 
-- Full automated test suite: `29 passed`
+- Full automated test suite: `87 passed`
 - Scenario comparison on `demo/zomato_allocation_payload.json`:
   - `Baseline`: `53` allocated, `67` unallocated
   - `Relaxed distance`: `86` allocated, `34` unallocated
