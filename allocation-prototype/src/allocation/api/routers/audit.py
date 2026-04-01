@@ -122,7 +122,7 @@ def get_trace(order_id: str, request: Request):
         return {
             "order_id": order_id,
             "trace": manifest.evaluation_trace,
-            "human_readable_trace": json.dumps(manifest.evaluation_trace, indent=2, sort_keys=True),
+            "formatted_trace_json": json.dumps(manifest.evaluation_trace, indent=2, sort_keys=True),
         }
     finally:
         session.close()

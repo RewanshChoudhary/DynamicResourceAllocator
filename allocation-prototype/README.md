@@ -27,7 +27,7 @@ At a high level, the allocation flow is:
 - **Replay and verification**: past decisions can be replayed and checked against stored signatures and trace hashes.
 - **Rejection summaries and aggregate diagnostics**: the API explains why orders failed and aggregates the most common hard-rule eliminations.
 - **Counterfactual simulation**: stored runs can be re-evaluated under config mutations.
-- **Human-readable frontend**: the browser UI loads curated sample datasets and turns API output into a plain-English summary.
+- **Allocation operations console**: the browser UI loads project datasets and surfaces manifests, trace inspection, replay, diagnostics, and counterfactual runs.
 - **Dataset tooling**: the repo supports both curated sample payloads and larger generated payloads adapted from the Zomato CSV.
 
 ## Stack
@@ -96,15 +96,20 @@ http://127.0.0.1:8000/
 
 ## Running The Project With Different Datasets
 
-### 1. Curated realistic sample datasets
+### 1. Versioned sample datasets
 
-The frontend and demo sample endpoints are backed by hand-authored payloads in [demo/sample_datasets](/home/rewansh57/Programming/PatentProject/allocation-prototype/demo/sample_datasets).
+The frontend and demo sample endpoints are backed by versioned payloads in [demo/sample_datasets](/home/rewansh57/Programming/PatentProject/allocation-prototype/demo/sample_datasets). That directory now includes both synthetic scenario datasets and CSV-derived Zomato slices.
 
 Available datasets:
 
 - `bengaluru_lunch_rush.json`: compact weekday lunch demand with mostly bike and scooter traffic plus one car-only order.
 - `hyderabad_monsoon_mixed_fleet.json`: mixed-fleet evening demand with availability pressure and car-only requests.
 - `gurugram_distance_pressure.json`: spread-out suburban demand designed to surface distance-limit failures.
+- `zomato_national_high_volume.json`: larger cross-city payload derived from the source Zomato CSV.
+- `zomato_metro_jam_core.json`: metropolitan jam-traffic slice from the Zomato CSV.
+- `zomato_urban_low_traffic.json`: lighter urban slice from the Zomato CSV.
+- `zomato_festival_jam_surge.json`: festival-period jam slice from the Zomato CSV.
+- `zomato_metro_high_traffic.json`: metropolitan high-traffic slice from the Zomato CSV.
 
 Use them in the frontend:
 
@@ -143,10 +148,14 @@ You can also inspect the sample catalog through the app:
 - `GET /demo/sample-payload?dataset=bengaluru_lunch_rush`
 - `GET /demo/sample-payload?dataset=hyderabad_monsoon_mixed_fleet`
 - `GET /demo/sample-payload?dataset=gurugram_distance_pressure`
+- `GET /demo/sample-payload?dataset=zomato_metro_jam_core`
+- `GET /demo/sample-payload?dataset=zomato_urban_low_traffic`
+- `GET /demo/sample-payload?dataset=zomato_festival_jam_surge`
+- `GET /demo/sample-payload?dataset=zomato_metro_high_traffic`
 
-### 2. Larger generated dataset from the Zomato CSV
+### 2. Generated datasets from the Zomato CSV
 
-If you want a bigger, noisier, more realistic payload, generate one from `../Zomato Dataset.csv`.
+If you want bigger, noisier, or source-derived payloads, generate them from `../Zomato Dataset.csv`.
 
 Run the adapter:
 
@@ -164,6 +173,13 @@ That command:
 - audits the raw CSV
 - writes a data-quality report to `demo/zomato_audit_report.json`
 - writes an allocation-ready payload to `demo/zomato_allocation_payload.json`
+
+To regenerate the CSV-derived sample datasets that appear in the frontend catalog:
+
+```bash
+.venv/bin/python scripts/generate_zomato_sample_datasets.py \
+  --input ../Zomato\ Dataset.csv
+```
 
 Use the generated payload with the API:
 

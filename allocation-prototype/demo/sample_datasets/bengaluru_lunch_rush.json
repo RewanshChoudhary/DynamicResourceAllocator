@@ -3,8 +3,8 @@
     "name": "Bengaluru Lunch Rush",
     "city": "Bengaluru",
     "scenario": "Dense weekday lunch demand across Indiranagar, Domlur, and Koramangala",
-    "description": "A larger lunch-rush scenario with dense central demand, mixed two-wheeler supply, and a smaller car fleet for bulky orders.",
-    "recommended_for": "Frontend demos, realistic local testing, and reading allocation explanations at medium scale.",
+    "description": "Baseline Bengaluru payload for validating assignment quality, manifest persistence, and rule diagnostics under medium load.",
+    "recommended_for": "Allocation API checks, trace inspection, and local regression runs.",
     "orders_generated": 42,
     "partners_generated": 28,
     "generator": "scripts/generate_sample_datasets.py"

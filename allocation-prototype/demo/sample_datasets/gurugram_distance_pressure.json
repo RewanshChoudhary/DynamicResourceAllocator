@@ -3,8 +3,8 @@
     "name": "Gurugram Distance Pressure",
     "city": "Gurugram",
     "scenario": "Evening demand spread from Cyber City to the edge of the service radius",
-    "description": "A larger suburban scenario where supply stays clustered but many orders drift outward, making the distance rule a major factor.",
-    "recommended_for": "Diagnostics demos, distance-limit investigations, and larger unallocated-order explainability checks.",
+    "description": "Distance-stressed Gurugram payload for validating max-distance filtering and unallocated-order diagnostics.",
+    "recommended_for": "Distance-rule validation, rejection-summary inspection, and unallocated-order regression.",
     "orders_generated": 56,
     "partners_generated": 24,
     "generator": "scripts/generate_sample_datasets.py"

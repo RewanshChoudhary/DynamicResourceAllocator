@@ -1,0 +1,1207 @@
+{
+  "metadata": {
+    "city": "Metropolitan",
+    "corrected_coordinate_rows": 0,
+    "description": "Festival-period metropolitan jam payload sourced from the Zomato CSV for validating allocation behavior when demand spikes and partner selection pressure increases.",
+    "dropped_counts": {
+      "distance_outlier": 0,
+      "duplicate_order_id": 0,
+      "invalid_age": 16,
+      "invalid_coordinates": 0,
+      "invalid_rating": 0,
+      "missing_core_fields": 0
+    },
+    "generator": "scripts/generate_zomato_sample_datasets.py",
+    "max_delivery_radius_km": 30.0,
+    "max_orders": 72,
+    "max_partners": 54,
+    "name": "Zomato Festival Jam Surge",
+    "orders_generated": 72,
+    "partners_generated": 54,
+    "recommended_for": "Counterfactual checks, rejection-summary review, and festival surge allocation validation.",
+    "scenario": "CSV slice with City=Metropolitian, Road_traffic_density=Jam, Festival=Yes",
+    "source_file": "/home/rewansh57/Programming/PatentProject/Zomato Dataset.csv",
+    "source_filter_match_count": 508,
+    "source_filters": {
+      "City": "Metropolitian",
+      "Festival": "Yes",
+      "Road_traffic_density": "Jam"
+    },
+    "source_unique_delivery_partners": 382,
+    "source_valid_match_count": 492
+  },
+  "orders": [
+    {
+      "amount_paise": 42000,
+      "created_at": "2022-03-18T20:35:00+00:00",
+      "latitude": 12.934365,
+      "longitude": 77.616155,
+      "order_id": "0x20f6",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 44500,
+      "created_at": "2022-03-31T19:35:00+00:00",
+      "latitude": 23.351489,
+      "longitude": 85.324253,
+      "order_id": "0x7ece",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 23000,
+      "created_at": "2022-03-31T21:40:00+00:00",
+      "latitude": 18.563934,
+      "longitude": 73.915367,
+      "order_id": "0x7a1f",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 44500,
+      "created_at": "2022-03-18T20:25:00+00:00",
+      "latitude": 21.170096,
+      "longitude": 72.789122,
+      "order_id": "0x7bf",
+      "requested_vehicle_type": "scooter"
+    },
+    {
+      "amount_paise": 28500,
+      "created_at": "2022-03-25T19:35:00+00:00",
+      "latitude": 17.455894,
+      "longitude": 78.375467,
+      "order_id": "0x836d",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 20500,
+      "created_at": "2022-02-12T19:25:00+00:00",
+      "latitude": 0.0,
+      "longitude": 0.0,
+      "order_id": "0xd719",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 33500,
+      "created_at": "2022-03-10T20:45:00+00:00",
+      "latitude": 26.956431,
+      "longitude": 75.776649,
+      "order_id": "0xa472",
+      "requested_vehicle_type": "scooter"
+    },
+    {
+      "amount_paise": 44500,
+      "created_at": "2022-03-25T21:25:00+00:00",
+      "latitude": 22.311844,
+      "longitude": 73.165081,
+      "order_id": "0x5e14",
+      "requested_vehicle_type": "scooter"
+    },
+    {
+      "amount_paise": 28500,
+      "created_at": "2022-03-25T19:15:00+00:00",
+      "latitude": 26.892312,
+      "longitude": 75.806896,
+      "order_id": "0x3ebd",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 14500,
+      "created_at": "2022-03-02T00:00:00+00:00",
+      "latitude": 26.849596,
+      "longitude": 75.800512,
+      "order_id": "0x8fc3",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 33500,
+      "created_at": "2022-02-16T20:10:00+00:00",
+      "latitude": 26.482419,
+      "longitude": 80.320939,
+      "order_id": "0xcf16",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 44500,
+      "created_at": "2022-03-12T19:35:00+00:00",
+      "latitude": 0.0,
+      "longitude": 0.0,
+      "order_id": "0x4f16",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 28500,
+      "created_at": "2022-03-29T21:45:00+00:00",
+      "latitude": 18.593481,
+      "longitude": 73.785901,
+      "order_id": "0xd12",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 14500,
+      "created_at": "2022-04-06T19:10:00+00:00",
+      "latitude": 0.0,
+      "longitude": 0.0,
+      "order_id": "0x39eb",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 25500,
+      "created_at": "2022-03-31T21:20:00+00:00",
+      "latitude": 11.000762,
+      "longitude": 76.981876,
+      "order_id": "0x4cee",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 28500,
+      "created_at": "2022-02-16T19:10:00+00:00",
+      "latitude": 15.157944,
+      "longitude": 73.950889,
+      "order_id": "0xc8f9",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 28500,
+      "created_at": "2022-03-23T19:45:00+00:00",
+      "latitude": 12.978453,
+      "longitude": 77.643685,
+      "order_id": "0x7e9b",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 31000,
+      "created_at": "2022-03-10T20:55:00+00:00",
+      "latitude": 26.902328,
+      "longitude": 75.794257,
+      "order_id": "0x4680",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 12000,
+      "created_at": "2022-04-01T19:20:00+00:00",
+      "latitude": 13.086438,
+      "longitude": 80.220672,
+      "order_id": "0x1f75",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 20500,
+      "created_at": "2022-03-08T21:45:00+00:00",
+      "latitude": 11.022298,
+      "longitude": 76.998349,
+      "order_id": "0x2762",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 23000,
+      "created_at": "2022-04-06T20:15:00+00:00",
+      "latitude": 17.410371,
+      "longitude": 78.437225,
+      "order_id": "0x951c",
+      "requested_vehicle_type": "scooter"
+    },
+    {
+      "amount_paise": 44500,
+      "created_at": "2022-03-14T21:55:00+00:00",
+      "latitude": 13.045479,
+      "longitude": 80.23311,
+      "order_id": "0x2fac",
+      "requested_vehicle_type": "scooter"
+    },
+    {
+      "amount_paise": 44500,
+      "created_at": "2022-04-06T21:55:00+00:00",
+      "latitude": 17.429585,
+      "longitude": 78.392621,
+      "order_id": "0x53f4",
+      "requested_vehicle_type": "scooter"
+    },
+    {
+      "amount_paise": 20500,
+      "created_at": "2022-04-06T19:35:00+00:00",
+      "latitude": 0.0,
+      "longitude": 0.0,
+      "order_id": "0x553a",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 44500,
+      "created_at": "2022-03-16T20:20:00+00:00",
+      "latitude": 22.308096,
+      "longitude": 73.167753,
+      "order_id": "0x32a4",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 28500,
+      "created_at": "2022-03-07T19:40:00+00:00",
+      "latitude": 12.914264,
+      "longitude": 77.6784,
+      "order_id": "0x4734",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 23000,
+      "created_at": "2022-02-16T19:55:00+00:00",
+      "latitude": 0.0,
+      "longitude": 0.0,
+      "order_id": "0xc6b9",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 20500,
+      "created_at": "2022-03-08T21:15:00+00:00",
+      "latitude": 13.044694,
+      "longitude": 80.26147,
+      "order_id": "0x1bd7",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 17000,
+      "created_at": "2022-03-20T21:45:00+00:00",
+      "latitude": 18.53408,
+      "longitude": 73.89852,
+      "order_id": "0xb2e2",
+      "requested_vehicle_type": "scooter"
+    },
+    {
+      "amount_paise": 31000,
+      "created_at": "2022-03-10T20:40:00+00:00",
+      "latitude": 23.374989,
+      "longitude": 85.335486,
+      "order_id": "0x30f4",
+      "requested_vehicle_type": "scooter"
+    },
+    {
+      "amount_paise": 17000,
+      "created_at": "2022-03-27T20:40:00+00:00",
+      "latitude": 21.149669,
+      "longitude": 72.772629,
+      "order_id": "0x34db",
+      "requested_vehicle_type": "scooter"
+    },
+    {
+      "amount_paise": 20500,
+      "created_at": "2022-03-25T20:45:00+00:00",
+      "latitude": 22.732225,
+      "longitude": 75.874765,
+      "order_id": "0x472a",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 28500,
+      "created_at": "2022-03-09T19:20:00+00:00",
+      "latitude": 0.0,
+      "longitude": 0.0,
+      "order_id": "0xb9e9",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 28500,
+      "created_at": "2022-03-06T20:50:00+00:00",
+      "latitude": 12.933298,
+      "longitude": 77.614293,
+      "order_id": "0xb95d",
+      "requested_vehicle_type": "scooter"
+    },
+    {
+      "amount_paise": 44500,
+      "created_at": "2022-03-20T21:30:00+00:00",
+      "latitude": 22.31279,
+      "longitude": 73.170283,
+      "order_id": "0x4a84",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 17000,
+      "created_at": "2022-03-04T21:15:00+00:00",
+      "latitude": 22.753659,
+      "longitude": 75.903365,
+      "order_id": "0x533e",
+      "requested_vehicle_type": "scooter"
+    },
+    {
+      "amount_paise": 44500,
+      "created_at": "2022-03-31T19:55:00+00:00",
+      "latitude": 12.933284,
+      "longitude": 77.615428,
+      "order_id": "0x75f7",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 20500,
+      "created_at": "2022-03-14T19:50:00+00:00",
+      "latitude": 23.371292,
+      "longitude": 85.327872,
+      "order_id": "0x1fe5",
+      "requested_vehicle_type": "scooter"
+    },
+    {
+      "amount_paise": 33500,
+      "created_at": "2022-02-12T21:35:00+00:00",
+      "latitude": 19.875016,
+      "longitude": 75.322405,
+      "order_id": "0xccb3",
+      "requested_vehicle_type": "scooter"
+    },
+    {
+      "amount_paise": 44500,
+      "created_at": "2022-02-12T19:20:00+00:00",
+      "latitude": 0.0,
+      "longitude": 0.0,
+      "order_id": "0xda51",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 23000,
+      "created_at": "2022-03-08T19:45:00+00:00",
+      "latitude": 11.026117,
+      "longitude": 76.944652,
+      "order_id": "0x2cbf",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 18000,
+      "created_at": "2022-04-06T21:45:00+00:00",
+      "latitude": 12.934365,
+      "longitude": 77.616155,
+      "order_id": "0x7bf3",
+      "requested_vehicle_type": "scooter"
+    },
+    {
+      "amount_paise": 20500,
+      "created_at": "2022-03-07T19:50:00+00:00",
+      "latitude": 19.103249,
+      "longitude": 72.846749,
+      "order_id": "0xb3d3",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 33500,
+      "created_at": "2022-03-16T21:30:00+00:00",
+      "latitude": 26.913987,
+      "longitude": 75.752891,
+      "order_id": "0x9973",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 28500,
+      "created_at": "2022-03-31T19:10:00+00:00",
+      "latitude": 11.021278,
+      "longitude": 76.995017,
+      "order_id": "0x7a1a",
+      "requested_vehicle_type": "scooter"
+    },
+    {
+      "amount_paise": 20500,
+      "created_at": "2022-03-10T00:00:00+00:00",
+      "latitude": 17.450851,
+      "longitude": 78.379347,
+      "order_id": "0x7420",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 44500,
+      "created_at": "2022-03-31T21:30:00+00:00",
+      "latitude": 19.207222,
+      "longitude": 72.972281,
+      "order_id": "0x3033",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 23000,
+      "created_at": "2022-04-02T21:25:00+00:00",
+      "latitude": 22.732225,
+      "longitude": 75.874765,
+      "order_id": "0x1190",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 19500,
+      "created_at": "2022-04-02T19:30:00+00:00",
+      "latitude": 26.846156,
+      "longitude": 75.8023,
+      "order_id": "0xa223",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 26000,
+      "created_at": "2022-03-16T19:40:00+00:00",
+      "latitude": 13.091809,
+      "longitude": 80.219104,
+      "order_id": "0x575e",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 20500,
+      "created_at": "2022-03-16T21:20:00+00:00",
+      "latitude": 19.207222,
+      "longitude": 72.972281,
+      "order_id": "0x9445",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 26000,
+      "created_at": "2022-02-12T21:35:00+00:00",
+      "latitude": 30.893234,
+      "longitude": 75.82172,
+      "order_id": "0xdeae",
+      "requested_vehicle_type": "scooter"
+    },
+    {
+      "amount_paise": 47000,
+      "created_at": "2022-02-12T19:50:00+00:00",
+      "latitude": 27.159795,
+      "longitude": 78.04299,
+      "order_id": "0xe236",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 14500,
+      "created_at": "2022-03-25T20:15:00+00:00",
+      "latitude": 21.173493,
+      "longitude": 72.801953,
+      "order_id": "0x9074",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 20500,
+      "created_at": "2022-03-14T19:15:00+00:00",
+      "latitude": 12.933298,
+      "longitude": 77.614293,
+      "order_id": "0x8cb4",
+      "requested_vehicle_type": "scooter"
+    },
+    {
+      "amount_paise": 47000,
+      "created_at": "2022-04-06T21:50:00+00:00",
+      "latitude": 22.311358,
+      "longitude": 73.164798,
+      "order_id": "0xa16e",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 20500,
+      "created_at": "2022-04-04T21:45:00+00:00",
+      "latitude": 11.010375,
+      "longitude": 76.95295,
+      "order_id": "0x3d24",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 44500,
+      "created_at": "2022-04-06T19:15:00+00:00",
+      "latitude": 11.001753,
+      "longitude": 76.986241,
+      "order_id": "0x80bb",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 47000,
+      "created_at": "2022-02-18T19:20:00+00:00",
+      "latitude": 27.163303,
+      "longitude": 78.057044,
+      "order_id": "0xce06",
+      "requested_vehicle_type": "scooter"
+    },
+    {
+      "amount_paise": 14500,
+      "created_at": "2022-03-17T21:50:00+00:00",
+      "latitude": 12.939496,
+      "longitude": 77.625999,
+      "order_id": "0x85fc",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 20500,
+      "created_at": "2022-03-25T20:15:00+00:00",
+      "latitude": 12.326356,
+      "longitude": 76.619103,
+      "order_id": "0x5785",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 20500,
+      "created_at": "2022-03-20T20:10:00+00:00",
+      "latitude": 0.0,
+      "longitude": 0.0,
+      "order_id": "0x983e",
+      "requested_vehicle_type": "scooter"
+    },
+    {
+      "amount_paise": 17000,
+      "created_at": "2022-03-08T00:00:00+00:00",
+      "latitude": 23.374878,
+      "longitude": 85.335739,
+      "order_id": "0x4022",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 19500,
+      "created_at": "2022-03-27T19:40:00+00:00",
+      "latitude": 19.176269,
+      "longitude": 72.836721,
+      "order_id": "0x2ad2",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 31000,
+      "created_at": "2022-03-12T21:55:00+00:00",
+      "latitude": 11.02091,
+      "longitude": 76.940432,
+      "order_id": "0x4b02",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 25500,
+      "created_at": "2022-03-31T20:15:00+00:00",
+      "latitude": 13.045479,
+      "longitude": 80.23311,
+      "order_id": "0x42a0",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 28500,
+      "created_at": "2022-03-27T20:15:00+00:00",
+      "latitude": 21.186438,
+      "longitude": 72.794115,
+      "order_id": "0x67ab",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 42000,
+      "created_at": "2022-03-08T19:55:00+00:00",
+      "latitude": 26.911927,
+      "longitude": 75.797282,
+      "order_id": "0xb95e",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 26000,
+      "created_at": "2022-03-10T00:00:00+00:00",
+      "latitude": 23.416792,
+      "longitude": 85.316842,
+      "order_id": "0x13ed",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 14500,
+      "created_at": "2022-03-20T19:25:00+00:00",
+      "latitude": 19.1813,
+      "longitude": 72.836191,
+      "order_id": "0x897a",
+      "requested_vehicle_type": "scooter"
+    },
+    {
+      "amount_paise": 28500,
+      "created_at": "2022-03-04T20:55:00+00:00",
+      "latitude": 23.351489,
+      "longitude": 85.324253,
+      "order_id": "0xa888",
+      "requested_vehicle_type": "bike"
+    },
+    {
+      "amount_paise": 44500,
+      "created_at": "2022-02-16T21:25:00+00:00",
+      "latitude": 25.454697,
+      "longitude": 81.834492,
+      "order_id": "0xe007",
+      "requested_vehicle_type": "scooter"
+    }
+  ],
+  "partners": [
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 13.024365,
+      "longitude": 77.706155,
+      "partner_id": "BANGRES11DEL03",
+      "rating": 4.6,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 23.461489,
+      "longitude": 85.434253,
+      "partner_id": "RANCHIRES18DEL01",
+      "rating": 4.35,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 18.653934,
+      "longitude": 74.005367,
+      "partner_id": "PUNERES19DEL03",
+      "rating": 4.6,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 21.250096,
+      "longitude": 72.869122,
+      "partner_id": "SURRES13DEL02",
+      "rating": 3.8,
+      "vehicle_types": [
+        "scooter"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 17.525894,
+      "longitude": 78.445467,
+      "partner_id": "HYDRES06DEL01",
+      "rating": 4.4,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 0.07,
+      "longitude": 0.07,
+      "partner_id": "GOARES20DEL01",
+      "rating": 4.6,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 27.046431,
+      "longitude": 75.866649,
+      "partner_id": "JAPRES20DEL03",
+      "rating": 4.5,
+      "vehicle_types": [
+        "scooter"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 22.441844,
+      "longitude": 73.295081,
+      "partner_id": "VADRES19DEL02",
+      "rating": 4.3,
+      "vehicle_types": [
+        "scooter"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 27.022313,
+      "longitude": 75.936896,
+      "partner_id": "JAPRES17DEL02",
+      "rating": 4.6,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 26.989596,
+      "longitude": 75.940512,
+      "partner_id": "JAPRES16DEL03",
+      "rating": 4.7,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 26.572419,
+      "longitude": 80.410939,
+      "partner_id": "KNPRES15DEL03",
+      "rating": 4.8,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 0.09,
+      "longitude": 0.09,
+      "partner_id": "VADRES16DEL03",
+      "rating": 4.9,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 18.723481,
+      "longitude": 73.915901,
+      "partner_id": "PUNERES18DEL02",
+      "rating": 4.3,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 0.09,
+      "longitude": 0.09,
+      "partner_id": "VADRES15DEL03",
+      "rating": 4.9,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 11.080762,
+      "longitude": 77.061876,
+      "partner_id": "COIMBRES12DEL02",
+      "rating": 4.5,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 15.247944,
+      "longitude": 74.040889,
+      "partner_id": "GOARES14DEL03",
+      "rating": 4.6,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 13.088453,
+      "longitude": 77.753685,
+      "partner_id": "BANGRES07DEL01",
+      "rating": 4.4,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 27.012328,
+      "longitude": 75.904257,
+      "partner_id": "JAPRES04DEL01",
+      "rating": 4.8,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 13.116438,
+      "longitude": 80.250672,
+      "partner_id": "CHENRES02DEL03",
+      "rating": 4.0,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 11.152298,
+      "longitude": 77.128349,
+      "partner_id": "COIMBRES19DEL02",
+      "rating": 5.0,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 17.540371,
+      "longitude": 78.567225,
+      "partner_id": "HYDRES01DEL02",
+      "rating": 4.0,
+      "vehicle_types": [
+        "scooter"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 13.115479,
+      "longitude": 80.30311,
+      "partner_id": "CHENRES17DEL01",
+      "rating": 4.1,
+      "vehicle_types": [
+        "scooter"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 17.539585,
+      "longitude": 78.502621,
+      "partner_id": "HYDRES12DEL01",
+      "rating": 4.9,
+      "vehicle_types": [
+        "scooter"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 0.09,
+      "longitude": 0.09,
+      "partner_id": "VADRES12DEL03",
+      "rating": 4.2,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 22.438096,
+      "longitude": 73.297753,
+      "partner_id": "VADRES11DEL02",
+      "rating": 5.0,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 12.964264,
+      "longitude": 77.7284,
+      "partner_id": "BANGRES19DEL02",
+      "rating": 4.0,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 0.07,
+      "longitude": 0.07,
+      "partner_id": "AURGRES11DEL01",
+      "rating": 4.0,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 13.154694,
+      "longitude": 80.37147,
+      "partner_id": "CHENRES09DEL01",
+      "rating": 4.4,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 18.66408,
+      "longitude": 74.02852,
+      "partner_id": "PUNERES08DEL02",
+      "rating": 4.6,
+      "vehicle_types": [
+        "scooter"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 23.464989,
+      "longitude": 85.425486,
+      "partner_id": "RANCHIRES13DEL03",
+      "rating": 4.7,
+      "vehicle_types": [
+        "scooter"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 21.279669,
+      "longitude": 72.902629,
+      "partner_id": "SURRES19DEL02",
+      "rating": 4.6,
+      "vehicle_types": [
+        "scooter"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 22.812225,
+      "longitude": 75.954765,
+      "partner_id": "INDORES20DEL02",
+      "rating": 4.4,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 0.06,
+      "longitude": 0.06,
+      "partner_id": "RANCHIRES12DEL03",
+      "rating": 4.4,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 13.063298,
+      "longitude": 77.744293,
+      "partner_id": "BANGRES010DEL02",
+      "rating": 4.2,
+      "vehicle_types": [
+        "scooter"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 22.42279,
+      "longitude": 73.280283,
+      "partner_id": "VADRES06DEL01",
+      "rating": 4.6,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 22.823659,
+      "longitude": 75.973365,
+      "partner_id": "INDORES04DEL01",
+      "rating": 4.3,
+      "vehicle_types": [
+        "scooter"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 13.013284,
+      "longitude": 77.695428,
+      "partner_id": "BANGRES01DEL02",
+      "rating": 4.6,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 23.461292,
+      "longitude": 85.417872,
+      "partner_id": "RANCHIRES16DEL03",
+      "rating": 4.7,
+      "vehicle_types": [
+        "scooter"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 20.005016,
+      "longitude": 75.452405,
+      "partner_id": "AURGRES14DEL02",
+      "rating": 4.1,
+      "vehicle_types": [
+        "scooter"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 0.08,
+      "longitude": 0.08,
+      "partner_id": "DEHRES15DEL02",
+      "rating": 4.6,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 11.096117,
+      "longitude": 77.014652,
+      "partner_id": "COIMBRES17DEL01",
+      "rating": 4.7,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 13.064365,
+      "longitude": 77.746155,
+      "partner_id": "BANGRES11DEL02",
+      "rating": 5.0,
+      "vehicle_types": [
+        "scooter"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 19.163249,
+      "longitude": 72.906749,
+      "partner_id": "MUMRES20DEL03",
+      "rating": 3.8,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 26.983987,
+      "longitude": 75.822891,
+      "partner_id": "JAPRES18DEL01",
+      "rating": 4.6,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 11.101278,
+      "longitude": 77.075017,
+      "partner_id": "COIMBRES06DEL02",
+      "rating": 4.9,
+      "vehicle_types": [
+        "scooter"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 17.520851,
+      "longitude": 78.449347,
+      "partner_id": "HYDRES18DEL01",
+      "rating": 4.5,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 19.277222,
+      "longitude": 73.042281,
+      "partner_id": "MUMRES12DEL01",
+      "rating": 4.2,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 26.936156,
+      "longitude": 75.8923,
+      "partner_id": "JAPRES13DEL03",
+      "rating": 5.0,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 13.201809,
+      "longitude": 80.329104,
+      "partner_id": "CHENRES03DEL01",
+      "rating": 4.9,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 19.297222,
+      "longitude": 73.062281,
+      "partner_id": "MUMRES12DEL03",
+      "rating": 4.5,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 31.023234,
+      "longitude": 75.95172,
+      "partner_id": "LUDHRES13DEL02",
+      "rating": 3.8,
+      "vehicle_types": [
+        "scooter"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 27.269795,
+      "longitude": 78.15299,
+      "partner_id": "AGRRES13DEL01",
+      "rating": 4.8,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 21.253493,
+      "longitude": 72.881953,
+      "partner_id": "SURRES04DEL02",
+      "rating": 4.3,
+      "vehicle_types": [
+        "bike"
+      ]
+    },
+    {
+      "active": true,
+      "is_available": true,
+      "latitude": 13.023298,
+      "longitude": 77.704293,
+      "partner_id": "BANGRES010DEL03",
+      "rating": 4.8,
+      "vehicle_types": [
+        "scooter"
+      ]
+    }
+  ]
+}

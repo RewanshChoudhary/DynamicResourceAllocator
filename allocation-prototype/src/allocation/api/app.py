@@ -12,7 +12,9 @@ from fastapi.responses import FileResponse
 
 from allocation.api.routers.allocate import router as allocate_router
 from allocation.api.routers.audit import router as audit_router
+from allocation.api.routers.presentation import router as presentation_router
 from allocation.api.routers.simulate import router as simulate_router
+from allocation.config.loader import ConfigLoader
 from allocation.fairness.tracker import PartnerLoadTracker
 from allocation.persistence.models import (
     assert_schema_compatible,
@@ -24,6 +26,8 @@ from allocation.persistence.models import (
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 FRONTEND_PATH = PROJECT_ROOT / "frontend" / "index.html"
 SAMPLE_DATASET_DIR = PROJECT_ROOT / "demo" / "sample_datasets"
+SIMULATION_PRESETS_PATH = PROJECT_ROOT / "data" / "simulation_presets.json"
+RULE_CONFIG_PATH = PROJECT_ROOT / "src" / "allocation" / "config" / "rules.yaml"
 DEFAULT_SAMPLE_DATASET = "bengaluru_lunch_rush"
 
 
@@ -62,6 +66,74 @@ def _sample_dataset_catalog() -> list[dict[str, Any]]:
     return datasets
 
 
+def _mutation_option_payload() -> dict[str, Any]:
+    loaded = ConfigLoader(RULE_CONFIG_PATH).load()
+    config = loaded.config
+
+    hard_rules = [
+        {
+            "rule_name": entry["name"],
+            "enabled": bool(entry.get("enabled", True)),
+            "rule_group": "hard_rule",
+            "params": entry.get("params", {}),
+        }
+        for entry in config.get("hard_rules", [])
+        if isinstance(entry, dict) and isinstance(entry.get("name"), str)
+    ]
+    scoring_rules = [
+        {
+            "rule_name": entry["name"],
+            "enabled": bool(entry.get("enabled", True)),
+            "rule_group": "scoring_rule",
+            "params": entry.get("params", {}),
+        }
+        for entry in config.get("scoring_rules", [])
+        if isinstance(entry, dict) and isinstance(entry.get("name"), str)
+    ]
+
+    parameter_rules = []
+    for entry in hard_rules + scoring_rules:
+        params = entry.get("params", {})
+        if not params:
+            continue
+        parameter_rules.append(
+            {
+                "rule_name": entry["rule_name"],
+                "rule_group": entry["rule_group"],
+                "parameters": [
+                    {"name": name, "current_value": value}
+                    for name, value in sorted(params.items())
+                ],
+            }
+        )
+
+    weights = config.get("weights", {})
+    return {
+        "rule_parameter": parameter_rules,
+        "rule_weight": [
+            {
+                "rule_name": entry["rule_name"],
+                "rule_group": entry["rule_group"],
+                "current_weight": float(weights.get(entry["rule_name"], 0.0)),
+            }
+            for entry in scoring_rules
+            if entry["enabled"]
+        ],
+        "rule_toggle": [
+            {
+                "rule_name": entry["rule_name"],
+                "rule_group": entry["rule_group"],
+                "enabled": entry["enabled"],
+            }
+            for entry in hard_rules + scoring_rules
+        ],
+        "partner_pool": {
+            "actions": ["remove", "add", "modify"],
+            "vehicle_type_choices": ["bike", "scooter", "car"],
+        },
+    }
+
+
 def create_app() -> FastAPI:
     structlog.configure(processors=[structlog.processors.JSONRenderer()])
 
@@ -78,6 +150,7 @@ def create_app() -> FastAPI:
 
     app.include_router(allocate_router)
     app.include_router(audit_router)
+    app.include_router(presentation_router)
     app.include_router(simulate_router)
 
     @app.get("/", include_in_schema=False)
@@ -111,6 +184,18 @@ def create_app() -> FastAPI:
                 detail=f"Unknown sample dataset '{selected_dataset}'. Available datasets: {available}",
             )
         return _load_json_payload(selected_path)
+
+    @app.get("/demo/simulation-presets", include_in_schema=False)
+    def simulation_presets() -> list[dict[str, Any]]:
+        if not SIMULATION_PRESETS_PATH.exists():
+            raise HTTPException(status_code=404, detail="Simulation presets are unavailable")
+        return json.loads(SIMULATION_PRESETS_PATH.read_text(encoding="utf-8"))
+
+    @app.get("/demo/mutation-options", include_in_schema=False)
+    def mutation_options() -> dict[str, Any]:
+        if not RULE_CONFIG_PATH.exists():
+            raise HTTPException(status_code=404, detail="Rule config is unavailable")
+        return _mutation_option_payload()
 
     @app.get("/health")
     def health() -> dict[str, str]:

@@ -1,0 +1,61 @@
+[
+  {
+    "name": "max_distance.max_distance_km = 10",
+    "description": "Increase the max-distance hard rule from 5 km to 10 km for counterfactual allocation checks.",
+    "requires_manifest_id": true,
+    "mutations": [
+      {
+        "mutation_type": "rule_parameter",
+        "rule_name": "max_distance",
+        "parameter_name": "max_distance_km",
+        "new_value": 10
+      }
+    ]
+  },
+  {
+    "name": "weights: fairness_score prioritized",
+    "description": "Shift scoring weights so fairness_score becomes the dominant factor in the replayed run.",
+    "requires_manifest_id": true,
+    "mutations": [
+      {
+        "mutation_type": "rule_weight",
+        "rule_name": "fairness_score",
+        "new_weight": 0.7
+      },
+      {
+        "mutation_type": "rule_weight",
+        "rule_name": "proximity_score",
+        "new_weight": 0.2
+      },
+      {
+        "mutation_type": "rule_weight",
+        "rule_name": "rating_score",
+        "new_weight": 0.1
+      }
+    ]
+  },
+  {
+    "name": "min_rating disabled",
+    "description": "Disable the min_rating hard rule and compare the resulting partner selections.",
+    "requires_manifest_id": true,
+    "mutations": [
+      {
+        "mutation_type": "rule_toggle",
+        "rule_name": "min_rating",
+        "enabled": false
+      }
+    ]
+  },
+  {
+    "name": "partner_pool.remove busiest_partner",
+    "description": "Remove the busiest partner from the candidate pool before rerunning the stored allocation.",
+    "requires_manifest_id": true,
+    "mutations": [
+      {
+        "mutation_type": "partner_pool",
+        "action": "remove",
+        "partner_id": "REPLACE_WITH_ACTUAL_ID"
+      }
+    ]
+  }
+]

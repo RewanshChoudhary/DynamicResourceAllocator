@@ -89,6 +89,25 @@ def _normalize_vehicle(raw: str | None) -> str:
     return "bike"
 
 
+def _row_matches_filters(
+    row: dict[str, Any],
+    source_filters: dict[str, str | list[str] | tuple[str, ...] | set[str]] | None,
+) -> bool:
+    if not source_filters:
+        return True
+
+    for field_name, expected in source_filters.items():
+        actual = (row.get(field_name) or "").strip()
+        if isinstance(expected, str):
+            allowed = {expected.strip()}
+        else:
+            allowed = {str(value).strip() for value in expected}
+        if actual not in allowed:
+            return False
+
+    return True
+
+
 def _haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     earth_radius_km = 6371.0
     dlat = math.radians(lat2 - lat1)
@@ -255,6 +274,7 @@ def build_allocation_payload_from_zomato(
     max_orders: int = 250,
     max_partners: int = 150,
     max_delivery_radius_km: float = 30.0,
+    source_filters: dict[str, str | list[str] | tuple[str, ...] | set[str]] | None = None,
 ) -> dict[str, Any]:
     path = _ensure_existing_csv(csv_path)
 
@@ -272,10 +292,17 @@ def build_allocation_payload_from_zomato(
     corrected_coordinate_rows = 0
 
     seen_order_ids: set[str] = set()
+    source_filter_match_count = 0
+    source_valid_match_count = 0
+    source_unique_partners: set[str] = set()
 
     with path.open(newline="", encoding="utf-8", errors="replace") as handle:
         reader = csv.DictReader(handle)
         for row in reader:
+            if not _row_matches_filters(row, source_filters):
+                continue
+
+            source_filter_match_count += 1
             order_id = (row.get("ID") or "").strip()
             partner_id = (row.get("Delivery_person_ID") or "").strip()
             if not order_id or not partner_id:
@@ -319,6 +346,9 @@ def build_allocation_payload_from_zomato(
             created_at = _parse_timestamp(row.get("Order_Date"), row.get("Time_Orderd"))
             multiple_deliveries = _parse_int(row.get("multiple_deliveries"))
             requested_vehicle = _normalize_vehicle(row.get("Type_of_vehicle"))
+            source_valid_match_count += 1
+            source_unique_partners.add(partner_id)
+            seen_order_ids.add(order_id)
 
             if len(orders) < max_orders:
                 orders.append(
@@ -331,9 +361,8 @@ def build_allocation_payload_from_zomato(
                         "created_at": created_at.isoformat(),
                     }
                 )
-                seen_order_ids.add(order_id)
             else:
-                break
+                continue
 
             if partner_id not in partner_state and len(partner_state) >= max_partners:
                 continue
@@ -374,6 +403,10 @@ def build_allocation_payload_from_zomato(
 
     metadata = {
         "source_file": str(path),
+        "source_filters": dict(source_filters) if source_filters else None,
+        "source_filter_match_count": source_filter_match_count,
+        "source_valid_match_count": source_valid_match_count,
+        "source_unique_delivery_partners": len(source_unique_partners),
         "max_orders": max_orders,
         "max_partners": max_partners,
         "max_delivery_radius_km": max_delivery_radius_km,

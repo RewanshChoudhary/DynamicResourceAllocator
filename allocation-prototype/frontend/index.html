@@ -3,20 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Allocation Engine Frontend</title>
+    <title>Allocation Prototype Console</title>
     <style>
       :root {
-        --paper: #f8f2e8;
-        --ink: #1f2430;
-        --muted: #5f6a78;
-        --panel: rgba(255, 252, 247, 0.92);
-        --line: rgba(57, 70, 89, 0.16);
-        --accent: #b45f3c;
-        --accent-deep: #7a3218;
-        --green: #2f7d4c;
-        --red: #b33a3a;
-        --gold: #aa7a1d;
-        --shadow: 0 18px 45px rgba(56, 34, 17, 0.12);
+        --bg: #0f1117;
+        --surface: #1a1d27;
+        --surface-2: #232736;
+        --border: rgba(226, 232, 240, 0.12);
+        --accent: #6c63ff;
+        --accent-soft: rgba(108, 99, 255, 0.16);
+        --text: #e2e8f0;
+        --muted: #93a0b4;
+        --success: #22c55e;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+        --mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+        --sans: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+        --shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
       }
 
       * {
@@ -25,1064 +28,2119 @@
 
       body {
         margin: 0;
+        min-width: 1024px;
         min-height: 100vh;
-        color: var(--ink);
+        color: var(--text);
         background:
-          radial-gradient(circle at top left, rgba(215, 162, 110, 0.28), transparent 32%),
-          radial-gradient(circle at bottom right, rgba(181, 95, 60, 0.16), transparent 28%),
-          linear-gradient(180deg, #fbf6ee 0%, #f3eadf 100%);
-        font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
+          radial-gradient(circle at top left, rgba(108, 99, 255, 0.18), transparent 28%),
+          radial-gradient(circle at bottom right, rgba(45, 212, 191, 0.1), transparent 24%),
+          var(--bg);
+        font-family: var(--sans);
       }
 
-      .page {
-        width: min(1220px, calc(100% - 32px));
-        margin: 0 auto;
-        padding: 28px 0 36px;
+      .shell {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        min-height: 100vh;
+      }
+
+      .main {
+        padding: 28px 26px 32px;
       }
 
       .hero {
-        padding: 28px;
-        border: 1px solid var(--line);
-        border-radius: 28px;
-        background: linear-gradient(135deg, rgba(255, 252, 247, 0.96), rgba(248, 238, 224, 0.92));
+        padding: 24px;
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        background: linear-gradient(140deg, rgba(26, 29, 39, 0.95), rgba(31, 36, 51, 0.88));
         box-shadow: var(--shadow);
       }
 
       .eyebrow {
         margin: 0 0 10px;
-        font-size: 0.8rem;
-        font-weight: 700;
-        letter-spacing: 0.14em;
+        color: var(--accent);
+        font: 700 0.78rem/1 var(--mono);
+        letter-spacing: 0.16em;
         text-transform: uppercase;
-        color: var(--accent-deep);
+      }
+
+      h1,
+      h2,
+      h3 {
+        margin: 0;
       }
 
       h1 {
-        margin: 0;
-        font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
-        font-size: clamp(2rem, 3vw, 3.2rem);
+        font-size: clamp(2rem, 3vw, 3rem);
         line-height: 1.05;
       }
 
-      .lead {
-        max-width: 760px;
+      .hero-copy {
+        max-width: 900px;
         margin: 14px 0 0;
-        font-size: 1.04rem;
-        line-height: 1.6;
         color: var(--muted);
+        line-height: 1.65;
       }
 
-      .hero-notes {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 18px;
-      }
-
-      .pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 14px;
-        border: 1px solid var(--line);
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.7);
-        font-size: 0.92rem;
-      }
-
-      .layout {
-        display: grid;
-        grid-template-columns: minmax(320px, 0.9fr) minmax(420px, 1.1fr);
-        gap: 18px;
-        margin-top: 18px;
-      }
-
-      .panel {
-        border: 1px solid var(--line);
-        border-radius: 24px;
-        background: var(--panel);
-        box-shadow: var(--shadow);
-        overflow: hidden;
-      }
-
-      .panel-header {
-        padding: 22px 24px 12px;
-      }
-
-      .panel-title {
-        margin: 0;
-        font-size: 1.2rem;
-      }
-
-      .panel-copy {
-        margin: 8px 0 0;
-        color: var(--muted);
-        line-height: 1.5;
-      }
-
-      .panel-body {
-        padding: 0 24px 24px;
-      }
-
-      .action-row,
-      .inline-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-      }
-
-      .action-row {
-        margin-bottom: 14px;
-      }
-
-      label {
-        display: block;
-        margin: 0 0 8px;
-        font-size: 0.92rem;
-        font-weight: 700;
-      }
-
-      input,
-      textarea,
-      select {
-        width: 100%;
-        border: 1px solid rgba(67, 77, 90, 0.18);
-        border-radius: 16px;
-        padding: 14px 15px;
-        background: rgba(255, 255, 255, 0.85);
-        color: var(--ink);
-        font: inherit;
-      }
-
-      input:focus,
-      textarea:focus,
-      select:focus {
-        outline: 2px solid rgba(180, 95, 60, 0.22);
-        border-color: rgba(180, 95, 60, 0.45);
-      }
-
-      textarea {
-        min-height: 420px;
-        resize: vertical;
-        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-        font-size: 0.9rem;
-        line-height: 1.45;
-      }
-
-      .button {
-        border: 0;
-        border-radius: 999px;
-        padding: 12px 18px;
-        font: inherit;
-        font-weight: 700;
-        cursor: pointer;
-        transition: transform 140ms ease, box-shadow 140ms ease, opacity 140ms ease;
-      }
-
-      .button:hover {
-        transform: translateY(-1px);
-      }
-
-      .button:disabled {
-        opacity: 0.65;
-        cursor: wait;
-        transform: none;
-      }
-
-      .button-primary {
-        color: #fff9f3;
-        background: linear-gradient(135deg, var(--accent), var(--accent-deep));
-        box-shadow: 0 12px 24px rgba(122, 50, 24, 0.22);
-      }
-
-      .button-secondary {
-        background: rgba(255, 255, 255, 0.8);
-        color: var(--ink);
-        border: 1px solid var(--line);
-      }
-
-      .helper {
-        margin: 12px 0 0;
-        color: var(--muted);
-        line-height: 1.5;
-        font-size: 0.93rem;
-      }
-
-      .banner {
-        margin-bottom: 14px;
-        padding: 14px 16px;
-        border-radius: 18px;
-        border: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.68);
-        line-height: 1.5;
-      }
-
-      .banner.info {
-        border-color: rgba(58, 96, 144, 0.2);
-        background: rgba(232, 241, 253, 0.72);
-      }
-
-      .banner.success {
-        border-color: rgba(47, 125, 76, 0.25);
-        background: rgba(232, 246, 236, 0.78);
-      }
-
-      .banner.error {
-        border-color: rgba(179, 58, 58, 0.22);
-        background: rgba(250, 234, 234, 0.8);
-      }
-
-      .section {
-        margin-top: 18px;
-      }
-
-      .section:first-child {
-        margin-top: 0;
-      }
-
-      .section h3 {
-        margin: 0 0 8px;
-        font-size: 1rem;
-      }
-
-      .narrative {
-        margin: 0;
-        line-height: 1.7;
-        color: var(--ink);
-      }
-
-      .cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 12px;
-      }
-
+      .hero-pills,
+      .tab-list,
+      .pill-list,
+      .mutation-list,
       .rule-list {
         display: flex;
         flex-wrap: wrap;
         gap: 10px;
       }
 
-      .rule-chip {
+      .hero-pills {
+        margin-top: 18px;
+      }
+
+      .pill,
+      .rule-chip,
+      .mutation-chip {
         display: inline-flex;
         align-items: center;
+        gap: 8px;
         padding: 10px 14px;
-        border: 1px solid var(--line);
+        border: 1px solid var(--border);
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.82);
-        font-size: 0.92rem;
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--text);
+        font-size: 0.9rem;
+      }
+
+      .mutation-chip button {
+        border: 0;
+        background: transparent;
+        color: var(--muted);
+        cursor: pointer;
+        font: inherit;
+      }
+
+      .topbar {
+        display: grid;
+        grid-template-columns: 1.25fr 1fr 1fr auto;
+        gap: 12px;
+        margin-top: 18px;
+      }
+
+      .tabs {
+        margin-top: 18px;
+      }
+
+      .tab-list {
+        padding: 8px;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .tab-button,
+      .button,
+      .sidebar-toggle {
+        border: 1px solid transparent;
+        border-radius: 14px;
+        padding: 12px 16px;
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text);
+        cursor: pointer;
+        font: 600 0.94rem/1 var(--sans);
+        transition: background 140ms ease, border-color 140ms ease, transform 140ms ease;
+      }
+
+      .tab-button:hover,
+      .button:hover,
+      .sidebar-toggle:hover {
+        transform: translateY(-1px);
+      }
+
+      .tab-button.active,
+      .button-primary,
+      .sidebar-toggle {
+        background: linear-gradient(135deg, var(--accent), #5b54d6);
+        color: white;
+        border-color: rgba(108, 99, 255, 0.45);
+      }
+
+      .button-secondary {
+        background: rgba(255, 255, 255, 0.03);
+        border-color: var(--border);
+      }
+
+      .tab-panel {
+        display: none;
+        margin-top: 18px;
+      }
+
+      .tab-panel.active {
+        display: block;
+      }
+
+      .grid {
+        display: grid;
+        gap: 18px;
+      }
+
+      .grid-2 {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      }
+
+      .grid-allocate {
+        grid-template-columns: minmax(360px, 0.95fr) minmax(460px, 1.05fr);
+      }
+
+      .panel {
+        border: 1px solid var(--border);
+        border-radius: 22px;
+        background: var(--surface);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+
+      .panel-header {
+        padding: 22px 22px 14px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .panel-title {
+        font-size: 1.1rem;
+      }
+
+      .panel-copy {
+        margin: 8px 0 0;
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      .panel-body {
+        padding: 22px;
+      }
+
+      .stack {
+        display: grid;
+        gap: 14px;
+      }
+
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .row > * {
+        flex: 1 1 0;
+      }
+
+      .field {
+        display: grid;
+        gap: 8px;
+      }
+
+      label {
+        font-size: 0.9rem;
         font-weight: 700;
       }
 
-      .card {
-        padding: 14px 16px;
-        border-radius: 18px;
-        border: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.82);
+      input,
+      select,
+      textarea {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: var(--surface-2);
+        color: var(--text);
+        padding: 13px 14px;
+        font: 500 0.95rem/1.45 var(--sans);
       }
 
-      .card-label {
+      textarea,
+      pre,
+      code,
+      .mono,
+      .hash,
+      .score {
+        font-family: var(--mono);
+      }
+
+      textarea {
+        min-height: 520px;
+        resize: vertical;
+        font-size: 0.9rem;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: rgba(108, 99, 255, 0.45);
+        box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.12);
+      }
+
+      .banner,
+      .error-card,
+      .loading-card,
+      .stat-card,
+      .info-card,
+      .trace-card,
+      .candidate-card {
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .banner,
+      .error-card,
+      .loading-card,
+      .info-card,
+      .trace-card,
+      .candidate-card {
+        padding: 14px 16px;
+      }
+
+      .banner {
+        line-height: 1.6;
+      }
+
+      .error-card {
+        border-color: rgba(239, 68, 68, 0.45);
+        background: rgba(127, 29, 29, 0.22);
+      }
+
+      .loading-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .spinner {
+        width: 18px;
+        height: 18px;
+        border-radius: 999px;
+        border: 2px solid rgba(226, 232, 240, 0.18);
+        border-top-color: var(--accent);
+        animation: spin 0.8s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 12px;
+      }
+
+      .stat-card {
+        padding: 14px 16px;
+      }
+
+      .stat-label {
         display: block;
         color: var(--muted);
-        font-size: 0.88rem;
+        font-size: 0.84rem;
+        margin-bottom: 6px;
       }
 
-      .card-value {
+      .stat-value {
         display: block;
-        margin-top: 4px;
-        font-size: 1.6rem;
+        font-size: 1.5rem;
         font-weight: 800;
       }
 
-      .card-allocated .card-value {
-        color: var(--green);
+      .status-badge,
+      .result-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font: 700 0.78rem/1 var(--mono);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
       }
 
-      .card-unallocated .card-value {
-        color: var(--red);
+      .status-ok,
+      .verified,
+      .success {
+        background: rgba(34, 197, 94, 0.14);
+        color: #86efac;
       }
 
-      .card-rate .card-value {
-        color: var(--gold);
+      .status-error,
+      .tampered,
+      .mismatch {
+        background: rgba(239, 68, 68, 0.14);
+        color: #fca5a5;
       }
 
-      .insight-list,
-      .detail-list {
-        margin: 0;
-        padding-left: 18px;
-        line-height: 1.7;
+      .warning {
+        background: rgba(245, 158, 11, 0.14);
+        color: #fcd34d;
       }
 
-      .decision-table-wrap {
-        border: 1px solid var(--line);
-        border-radius: 20px;
+      .table-wrap {
         overflow: auto;
-        max-height: 520px;
-        background: rgba(255, 255, 255, 0.84);
+        border: 1px solid var(--border);
+        border-radius: 18px;
       }
 
       table {
         width: 100%;
         border-collapse: collapse;
-        min-width: 720px;
+        min-width: 640px;
       }
 
       th,
       td {
         padding: 12px 14px;
         text-align: left;
-        border-bottom: 1px solid rgba(67, 77, 90, 0.1);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         vertical-align: top;
       }
 
       th {
-        position: sticky;
-        top: 0;
-        background: #f8f2e8;
-        z-index: 1;
-        font-size: 0.88rem;
+        background: rgba(255, 255, 255, 0.04);
+        font: 700 0.78rem/1 var(--mono);
+        color: var(--muted);
+        letter-spacing: 0.08em;
         text-transform: uppercase;
-        letter-spacing: 0.06em;
       }
 
-      .status-tag {
-        display: inline-block;
-        padding: 6px 10px;
-        border-radius: 999px;
+      tr.mismatch-row {
+        background: rgba(127, 29, 29, 0.24);
+      }
+
+      tr.changed-row {
+        background: rgba(120, 53, 15, 0.24);
+      }
+
+      .meta-list,
+      .explanation-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .meta-item {
+        display: grid;
+        gap: 4px;
+      }
+
+      .meta-label {
+        color: var(--muted);
         font-size: 0.82rem;
-        font-weight: 800;
-      }
-
-      .status-tag.assigned {
-        color: var(--green);
-        background: rgba(47, 125, 76, 0.12);
-      }
-
-      .status-tag.unallocated {
-        color: var(--red);
-        background: rgba(179, 58, 58, 0.12);
-      }
-
-      .mini-button {
-        padding: 8px 12px;
-        border-radius: 999px;
-        border: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.76);
-        font: inherit;
-        font-size: 0.86rem;
-        font-weight: 700;
-        cursor: pointer;
-      }
-
-      .selection-box {
-        padding: 16px 18px;
-        border-radius: 20px;
-        border: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.8);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
       }
 
       details {
-        border: 1px solid var(--line);
-        border-radius: 18px;
-        background: rgba(255, 255, 255, 0.8);
-        padding: 12px 14px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.03);
       }
 
-      summary {
+      details > summary {
         cursor: pointer;
+        padding: 14px 16px;
         font-weight: 700;
       }
 
+      details > .details-body {
+        padding: 0 16px 16px;
+      }
+
       pre {
-        margin: 14px 0 0;
+        margin: 0;
         overflow: auto;
         white-space: pre-wrap;
         word-break: break-word;
-        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-        font-size: 0.87rem;
-        line-height: 1.5;
+        line-height: 1.55;
       }
 
-      .muted {
+      .candidate-card {
+        display: grid;
+        gap: 14px;
+      }
+
+      .candidate-head,
+      .rule-row,
+      .score-row,
+      .sidebar-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .candidate-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .score-bar {
+        position: relative;
+        width: 180px;
+        height: 10px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        overflow: hidden;
+      }
+
+      .score-bar > span {
+        position: absolute;
+        inset: 0 auto 0 0;
+        background: linear-gradient(90deg, var(--accent), #8b5cf6);
+      }
+
+      .small {
         color: var(--muted);
+        font-size: 0.88rem;
+        line-height: 1.55;
       }
 
-      .hidden {
-        display: none;
+      .hint {
+        color: var(--muted);
+        font-size: 0.84rem;
       }
 
-      @media (max-width: 940px) {
-        .layout {
-          grid-template-columns: 1fr;
-        }
+      .sidebar {
+        width: 60px;
+        border-left: 1px solid var(--border);
+        background: rgba(9, 11, 16, 0.92);
+        transition: width 180ms ease;
+        overflow: hidden;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+      }
 
-        textarea {
-          min-height: 320px;
-        }
+      .sidebar.open {
+        width: 360px;
+      }
+
+      .sidebar-inner {
+        width: 360px;
+        height: 100%;
+        padding: 18px 16px;
+        display: grid;
+        grid-template-rows: auto auto 1fr;
+        gap: 14px;
+      }
+
+      .sidebar-toggle {
+        width: 100%;
+        text-align: left;
+      }
+
+      .sidebar-section {
+        display: grid;
+        gap: 10px;
+      }
+
+      .reservation-list,
+      .diagnostic-list {
+        display: grid;
+        gap: 8px;
+      }
+
+      .reservation-item,
+      .diagnostic-item {
+        padding: 10px 12px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        border: 0;
       }
     </style>
   </head>
   <body>
-    <div class="page">
-      <header class="hero">
-        <p class="eyebrow">Rule-Driven Allocation Prototype</p>
-        <h1>Human-readable allocation results in one page</h1>
-        <p class="lead">
-          Paste an allocation payload, run the engine, and get a plain-English summary of what happened,
-          how many orders were assigned, and which hard rules blocked the rest.
-        </p>
-        <div class="hero-notes">
-          <span class="pill">Simple browser UI for the existing FastAPI API</span>
-          <span class="pill">Shows summary, diagnostics, and per-order decisions</span>
-          <span class="pill">Includes curated realistic sample payloads</span>
-        </div>
-      </header>
-
-      <main class="layout">
-        <section class="panel">
-          <div class="panel-header">
-            <h2 class="panel-title">1. Choose Input</h2>
-            <p class="panel-copy">
-              You can load one of the bundled realistic sample payloads, tweak it if needed, then send it to
-              <code>/allocations</code>.
-            </p>
-          </div>
-          <div class="panel-body">
-            <div class="section">
-              <label for="sample-dataset">Sample dataset</label>
-              <div class="inline-row">
-                <select id="sample-dataset"></select>
-                <button class="button button-secondary" id="load-sample" type="button">Load selected sample</button>
-              </div>
-              <p class="helper" id="sample-dataset-copy">
-                Curated delivery scenarios are available for quick demos and realistic manual testing.
-              </p>
-            </div>
-
-            <div class="action-row">
-              <button class="button button-secondary" id="format-json" type="button">Format JSON</button>
-              <button class="button button-secondary" id="clear-editor" type="button">Clear</button>
-            </div>
-
-            <div class="section">
-              <label for="idempotency-key">Idempotency key</label>
-              <div class="inline-row">
-                <input id="idempotency-key" type="text" />
-                <button class="button button-secondary" id="new-key" type="button">New key</button>
-              </div>
-              <p class="helper">
-                Reusing the same key returns the cached response for that request. The frontend now refreshes the
-                key automatically when you load or materially change a dataset.
-              </p>
-            </div>
-
-            <div class="section">
-              <label for="payload-editor">Allocation payload JSON</label>
-              <textarea id="payload-editor" spellcheck="false"></textarea>
-            </div>
-
-            <div class="section">
-              <button class="button button-primary" id="run-allocation" type="button">Run allocation</button>
-              <p class="helper">
-                This frontend stays intentionally simple: it uses the existing backend, then translates the
-                response into short explanations a person can read quickly.
-              </p>
-            </div>
+    <div class="shell">
+      <main class="main">
+        <section class="hero">
+          <p class="eyebrow">Rule-Driven Allocation Prototype</p>
+          <h1>Delivery allocation audit and replay console</h1>
+          <p class="hero-copy">
+            Run order-to-partner allocation, inspect the stored decision manifest, verify integrity, replay recorded
+            decisions, and test rule mutations from one project console. Active rules, rejection reasons, replay
+            evidence, and counterfactual deltas stay visible throughout the allocation workflow.
+          </p>
+          <div class="hero-pills">
+            <span class="pill">Order-to-partner matching</span>
+            <span class="pill">Manifest verification</span>
+            <span class="pill">Replay trace inspection</span>
+            <span class="pill">Counterfactual rule mutations</span>
           </div>
         </section>
 
-        <section class="panel">
-          <div class="panel-header">
-            <h2 class="panel-title">2. Read The Result</h2>
-            <p class="panel-copy">
-              The page turns the API response into a short narrative, key counts, and an order-by-order view.
-            </p>
+        <section class="tabs">
+          <div class="tab-list">
+            <button class="tab-button active" data-tab="allocate">Allocate</button>
+            <button class="tab-button" data-tab="audit">Audit &amp; Verify</button>
+            <button class="tab-button" data-tab="replay">Replay</button>
+            <button class="tab-button" data-tab="simulate">Simulate</button>
           </div>
-          <div class="panel-body">
-            <div id="banner" class="banner info">Load a payload and run the engine to see the result here.</div>
+        </section>
 
-            <section id="summary-section" class="section hidden">
-              <h3>Plain-English summary</h3>
-              <p id="summary-narrative" class="narrative"></p>
-            </section>
-
-            <section id="card-section" class="section hidden">
-              <div id="summary-cards" class="cards"></div>
-            </section>
-
-            <section id="rules-section" class="section hidden">
-              <h3>Hard rules currently applied</h3>
-              <p class="helper">
-                These are the enabled hard filters loaded from the active config for this run.
-              </p>
-              <div id="rules-list" class="rule-list"></div>
-            </section>
-
-            <section id="insight-section" class="section hidden">
-              <h3>What blocked allocations?</h3>
-              <ul id="insight-list" class="insight-list"></ul>
-            </section>
-
-            <section id="selection-section" class="section hidden">
-              <h3>Selected order explanation</h3>
-              <div id="selection-box" class="selection-box muted">
-                Choose an order from the table below to see a more detailed explanation.
+        <section class="tab-panel active" id="tab-allocate">
+          <div class="grid grid-allocate">
+            <article class="panel">
+              <div class="panel-header">
+                <h2 class="panel-title">Allocation Request</h2>
+                <p class="panel-copy">
+                  Load a project dataset, adjust the request payload if needed, then execute the current allocation
+                  ruleset.
+                </p>
               </div>
-            </section>
+              <div class="panel-body stack">
+                <div class="row">
+                  <div class="field">
+                    <label for="dataset-select">Project dataset</label>
+                    <select id="dataset-select"></select>
+                  </div>
+                  <div class="field" style="flex: 0 0 180px">
+                    <label class="sr-only" for="dataset-load">Load dataset</label>
+                    <button class="button button-secondary" id="dataset-load" style="margin-top: 30px">
+                      Load dataset
+                    </button>
+                  </div>
+                </div>
 
-            <section id="table-section" class="section hidden">
-              <h3>Order-by-order decisions</h3>
-              <p class="helper">
-                Click <strong>Explain</strong> on any row to inspect why that order was allocated or left
-                unallocated.
-              </p>
-              <div class="decision-table-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Order</th>
-                      <th>Status</th>
-                      <th>Partner</th>
-                      <th>Why</th>
-                      <th>Score</th>
-                      <th>Explain</th>
-                    </tr>
-                  </thead>
-                  <tbody id="decision-table-body"></tbody>
-                </table>
+                <div class="row">
+                  <div class="field">
+                    <label for="idempotency-key">X-Idempotency-Key</label>
+                    <input id="idempotency-key" class="mono" />
+                  </div>
+                  <div class="field" style="flex: 0 0 220px">
+                    <label class="sr-only" for="refresh-idempotency">Generate key</label>
+                    <button class="button button-secondary" id="refresh-idempotency" style="margin-top: 30px">
+                      Generate key
+                    </button>
+                  </div>
+                </div>
+
+                <p class="hint">
+                  A new dataset or materially changed payload should use a fresh idempotency key so the backend does not
+                  return a cached allocation response.
+                </p>
+
+                <div class="field">
+                  <label for="allocation-payload">Allocation payload JSON</label>
+                  <textarea id="allocation-payload" spellcheck="false"></textarea>
+                </div>
+
+                <div class="row">
+                  <button class="button button-primary" id="run-allocation">Run allocation</button>
+                </div>
+
+                <div id="allocate-status"></div>
               </div>
-            </section>
+            </article>
 
-            <section id="raw-section" class="section hidden">
-              <details>
-                <summary>Raw API response</summary>
-                <pre id="raw-json"></pre>
-              </details>
-            </section>
+            <article class="panel">
+              <div class="panel-header">
+                <h2 class="panel-title">Allocation Run Output</h2>
+                <p class="panel-copy">
+                  Assignment results, manifest identifiers, active hard rules, rejection diagnostics, and the raw API
+                  response are shown here.
+                </p>
+              </div>
+              <div class="panel-body stack" id="allocation-results">
+                <div class="banner">
+                  Run allocation to populate this panel. The first order ID and manifest ID are copied into the audit,
+                  replay, and simulation tabs so the investigation flow stays aligned.
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="tab-audit">
+          <div class="grid grid-2">
+            <article class="panel">
+              <div class="panel-header">
+                <h2 class="panel-title">Manifest Lookup</h2>
+                <p class="panel-copy">
+                  Resolve an order ID to its stored manifest and inspect the recorded evaluation trace for each
+                  candidate partner.
+                </p>
+              </div>
+              <div class="panel-body stack">
+                <div class="row">
+                  <div class="field">
+                    <label for="audit-order-id">Order ID</label>
+                    <input id="audit-order-id" class="mono" placeholder="ORD-..." />
+                  </div>
+                  <div class="field" style="flex: 0 0 180px">
+                    <label class="sr-only" for="find-manifest">Lookup Manifest</label>
+                    <button class="button button-primary" id="find-manifest" style="margin-top: 30px">
+                      Lookup Manifest
+                    </button>
+                  </div>
+                </div>
+
+                <div id="audit-manifest-status"></div>
+                <div id="manifest-card"></div>
+
+                <div class="row">
+                  <button class="button button-secondary" id="view-trace">Open Trace</button>
+                </div>
+                <div id="trace-container"></div>
+              </div>
+            </article>
+
+            <article class="panel">
+              <div class="panel-header">
+                <h2 class="panel-title">Verification &amp; Rejections</h2>
+                <p class="panel-copy">
+                  Verify a stored manifest by manifest ID, then inspect hard-rule rejection reasons for a specific order.
+                </p>
+              </div>
+              <div class="panel-body stack">
+                <div class="row">
+                  <div class="field">
+                    <label for="verify-manifest-id">Manifest ID</label>
+                    <input id="verify-manifest-id" class="mono" placeholder="manifest UUID" />
+                  </div>
+                  <div class="field" style="flex: 0 0 180px">
+                    <label class="sr-only" for="verify-integrity">Verify Manifest</label>
+                    <button class="button button-primary" id="verify-integrity" style="margin-top: 30px">
+                      Verify Manifest
+                    </button>
+                  </div>
+                </div>
+
+                <div id="verify-status"></div>
+                <div id="verify-result"></div>
+
+                <div class="row">
+                  <div class="field">
+                    <label for="rejection-order-id">Order ID</label>
+                    <input id="rejection-order-id" class="mono" placeholder="ORD-..." />
+                  </div>
+                  <div class="field" style="flex: 0 0 220px">
+                    <label class="sr-only" for="view-rejections">Load Rejections</label>
+                    <button class="button button-secondary" id="view-rejections" style="margin-top: 30px">
+                      Load Rejections
+                    </button>
+                  </div>
+                </div>
+
+                <div id="rejection-status"></div>
+                <div id="rejection-table"></div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="tab-replay">
+          <article class="panel">
+            <div class="panel-header">
+              <h2 class="panel-title">Deterministic Replay</h2>
+              <p class="panel-copy">
+                Re-run the deterministic pipeline from a stored manifest and compare the original assignment with the
+                replayed result.
+              </p>
+            </div>
+            <div class="panel-body stack">
+              <div class="row">
+                <div class="field">
+                  <label for="replay-manifest-id">Manifest ID</label>
+                  <input id="replay-manifest-id" class="mono" placeholder="manifest UUID" />
+                </div>
+                <div class="field" style="flex: 0 0 180px">
+                  <label class="sr-only" for="run-replay">Replay Manifest</label>
+                  <button class="button button-primary" id="run-replay" style="margin-top: 30px">
+                    Replay Manifest
+                  </button>
+                </div>
+              </div>
+
+              <div id="replay-status"></div>
+              <div id="replay-results"></div>
+            </div>
+          </article>
+        </section>
+
+        <section class="tab-panel" id="tab-simulate">
+          <div class="grid grid-2">
+            <article class="panel">
+              <div class="panel-header">
+                <h2 class="panel-title">Counterfactual Mutations</h2>
+                <p class="panel-copy">
+                  Build a mutation set manually or load a preset to re-evaluate a stored manifest under a changed
+                  ruleset.
+                </p>
+              </div>
+              <div class="panel-body stack">
+                <div class="field">
+                  <label for="simulate-manifest-id">Manifest ID</label>
+                  <input id="simulate-manifest-id" class="mono" placeholder="manifest UUID" />
+                </div>
+
+                <div class="field">
+                  <label for="preset-select">Mutation Preset</label>
+                  <div class="row">
+                    <select id="preset-select">
+                      <option value="">Select a mutation preset...</option>
+                    </select>
+                    <button class="button button-secondary" id="apply-preset" type="button">Apply Preset</button>
+                  </div>
+                </div>
+                <div id="preset-helper" class="hint">Run an allocation first, then provide its manifest_id here.</div>
+
+                <div class="field">
+                  <label for="mutation-type">Mutation type</label>
+                  <select id="mutation-type">
+                    <option value="rule_parameter">rule_parameter</option>
+                    <option value="rule_weight">rule_weight</option>
+                    <option value="rule_toggle">rule_toggle</option>
+                    <option value="partner_pool">partner_pool</option>
+                  </select>
+                </div>
+
+                <div id="mutation-fields" class="stack"></div>
+
+                <div class="row">
+                  <button class="button button-secondary" id="add-mutation">Add Mutation</button>
+                  <button class="button button-secondary" id="clear-mutations">Clear Mutations</button>
+                </div>
+
+                <div class="field">
+                  <label>Mutations</label>
+                  <div class="mutation-list" id="mutation-list"></div>
+                </div>
+
+                <div class="row">
+                  <button class="button button-primary" id="run-simulation">Run Simulation</button>
+                </div>
+
+                <div id="simulate-status"></div>
+              </div>
+            </article>
+
+            <article class="panel">
+              <div class="panel-header">
+                <h2 class="panel-title">Counterfactual Output</h2>
+                <p class="panel-copy">
+                  Review assignment deltas, unchanged orders, mutated partner selections, and the raw simulation
+                  response.
+                </p>
+              </div>
+              <div class="panel-body stack" id="simulation-results">
+                <div class="banner">Add at least one mutation and run a simulation to populate this panel.</div>
+              </div>
+            </article>
           </div>
         </section>
       </main>
+
+      <aside class="sidebar" id="diagnostics-sidebar">
+        <div class="sidebar-inner">
+          <button class="sidebar-toggle" id="diagnostics-toggle">Runtime Diagnostics</button>
+          <div class="sidebar-head">
+            <h2 class="panel-title">Allocation Service Health</h2>
+            <button class="button button-secondary" id="diagnostics-refresh">Refresh</button>
+          </div>
+          <div class="stack">
+            <div id="diagnostics-status"></div>
+            <div class="sidebar-section">
+              <h3>Platform Health</h3>
+              <div id="diagnostics-health"></div>
+            </div>
+            <div class="sidebar-section">
+              <h3>Latest Allocation Run</h3>
+              <div id="diagnostics-summary"></div>
+            </div>
+            <div class="sidebar-section">
+              <h3>Active Reservations</h3>
+              <div id="diagnostics-reservations"></div>
+            </div>
+          </div>
+        </div>
+      </aside>
     </div>
 
     <script>
-      const payloadEditor = document.getElementById("payload-editor");
-      const sampleDatasetSelect = document.getElementById("sample-dataset");
-      const sampleDatasetCopy = document.getElementById("sample-dataset-copy");
-      const idempotencyKeyInput = document.getElementById("idempotency-key");
-      const banner = document.getElementById("banner");
-      const runButton = document.getElementById("run-allocation");
-      const summarySection = document.getElementById("summary-section");
-      const summaryNarrative = document.getElementById("summary-narrative");
-      const cardSection = document.getElementById("card-section");
-      const summaryCards = document.getElementById("summary-cards");
-      const rulesSection = document.getElementById("rules-section");
-      const rulesList = document.getElementById("rules-list");
-      const insightSection = document.getElementById("insight-section");
-      const insightList = document.getElementById("insight-list");
-      const selectionSection = document.getElementById("selection-section");
-      const selectionBox = document.getElementById("selection-box");
-      const tableSection = document.getElementById("table-section");
-      const decisionTableBody = document.getElementById("decision-table-body");
-      const rawSection = document.getElementById("raw-section");
-      const rawJson = document.getElementById("raw-json");
+      const state = {
+        datasets: [],
+        presets: [],
+        mutations: [],
+        mutationOptions: null,
+        loadedPayloadText: "",
+      };
 
-      let currentResponse = null;
-      let sampleDatasetCatalog = [];
-      let lastSubmittedIdempotencyKey = null;
-      let lastSubmittedPayloadFingerprint = null;
+      const elements = {
+        datasetSelect: document.getElementById("dataset-select"),
+        datasetLoad: document.getElementById("dataset-load"),
+        idempotencyKey: document.getElementById("idempotency-key"),
+        refreshIdempotency: document.getElementById("refresh-idempotency"),
+        allocationPayload: document.getElementById("allocation-payload"),
+        runAllocation: document.getElementById("run-allocation"),
+        allocateStatus: document.getElementById("allocate-status"),
+        allocationResults: document.getElementById("allocation-results"),
+        auditOrderId: document.getElementById("audit-order-id"),
+        findManifest: document.getElementById("find-manifest"),
+        auditManifestStatus: document.getElementById("audit-manifest-status"),
+        manifestCard: document.getElementById("manifest-card"),
+        viewTrace: document.getElementById("view-trace"),
+        traceContainer: document.getElementById("trace-container"),
+        verifyManifestId: document.getElementById("verify-manifest-id"),
+        verifyIntegrity: document.getElementById("verify-integrity"),
+        verifyStatus: document.getElementById("verify-status"),
+        verifyResult: document.getElementById("verify-result"),
+        rejectionOrderId: document.getElementById("rejection-order-id"),
+        viewRejections: document.getElementById("view-rejections"),
+        rejectionStatus: document.getElementById("rejection-status"),
+        rejectionTable: document.getElementById("rejection-table"),
+        replayManifestId: document.getElementById("replay-manifest-id"),
+        runReplay: document.getElementById("run-replay"),
+        replayStatus: document.getElementById("replay-status"),
+        replayResults: document.getElementById("replay-results"),
+        simulateManifestId: document.getElementById("simulate-manifest-id"),
+        presetSelect: document.getElementById("preset-select"),
+        applyPreset: document.getElementById("apply-preset"),
+        presetHelper: document.getElementById("preset-helper"),
+        mutationType: document.getElementById("mutation-type"),
+        mutationFields: document.getElementById("mutation-fields"),
+        addMutation: document.getElementById("add-mutation"),
+        clearMutations: document.getElementById("clear-mutations"),
+        mutationList: document.getElementById("mutation-list"),
+        runSimulation: document.getElementById("run-simulation"),
+        simulateStatus: document.getElementById("simulate-status"),
+        simulationResults: document.getElementById("simulation-results"),
+        diagnosticsSidebar: document.getElementById("diagnostics-sidebar"),
+        diagnosticsToggle: document.getElementById("diagnostics-toggle"),
+        diagnosticsRefresh: document.getElementById("diagnostics-refresh"),
+        diagnosticsStatus: document.getElementById("diagnostics-status"),
+        diagnosticsHealth: document.getElementById("diagnostics-health"),
+        diagnosticsSummary: document.getElementById("diagnostics-summary"),
+        diagnosticsReservations: document.getElementById("diagnostics-reservations"),
+      };
 
-      function createIdempotencyKey() {
-        const stamp = new Date().toISOString().replaceAll(":", "").replaceAll(".", "");
-        return `frontend-${stamp}`;
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
       }
 
-      function setBanner(message, type) {
-        banner.textContent = message;
-        banner.className = `banner ${type}`;
+      function prettyJson(value) {
+        return JSON.stringify(value, null, 2);
       }
 
-      function resetResultsView() {
-        currentResponse = null;
-        rulesList.innerHTML = "";
-        selectionBox.innerHTML =
-          '<span class="muted">Choose an order from the table below to see a more detailed explanation.</span>';
-        rawJson.textContent = "";
-        hideResults();
+      function normalizeVehicleTypes(vehicleTypes) {
+        if (Array.isArray(vehicleTypes)) {
+          return vehicleTypes.filter(Boolean);
+        }
+        return String(vehicleTypes || "")
+          .split(",")
+          .map((item) => item.trim())
+          .filter(Boolean);
       }
 
-      function payloadFingerprint(payload) {
-        return JSON.stringify(payload);
+      function generateIdempotencyKey() {
+        if (window.crypto && window.crypto.randomUUID) {
+          return window.crypto.randomUUID();
+        }
+        return `manual-${Date.now()}-${Math.random().toString(16).slice(2)}`;
       }
 
-      function ensureRunIdempotencyKey(parsedPayload) {
-        const fingerprint = payloadFingerprint(parsedPayload);
-        const typedKey = idempotencyKeyInput.value.trim();
+      function showLoading(container, message) {
+        container.innerHTML = `<div class="loading-card"><span class="spinner"></span><span>${escapeHtml(message)}</span></div>`;
+      }
 
-        if (!typedKey) {
-          const generatedKey = createIdempotencyKey();
-          idempotencyKeyInput.value = generatedKey;
-          return { key: generatedKey, fingerprint, refreshed: false };
+      function showError(container, error) {
+        const status = error && error.status ? `HTTP ${error.status}` : "Request failed";
+        const message = error && error.message ? error.message : "Unknown error";
+        container.innerHTML = `<div class="error-card"><strong>${escapeHtml(status)}</strong><div class="small">${escapeHtml(message)}</div></div>`;
+      }
+
+      async function fetchJson(url, options = {}) {
+        const response = await fetch(url, options);
+        const text = await response.text();
+        let payload = null;
+
+        if (text) {
+          try {
+            payload = JSON.parse(text);
+          } catch (error) {
+            payload = text;
+          }
         }
 
-        if (
-          lastSubmittedIdempotencyKey === typedKey &&
-          lastSubmittedPayloadFingerprint !== null &&
-          lastSubmittedPayloadFingerprint !== fingerprint
-        ) {
-          const refreshedKey = createIdempotencyKey();
-          idempotencyKeyInput.value = refreshedKey;
-          return { key: refreshedKey, fingerprint, refreshed: true };
-        }
-
-        return { key: typedKey, fingerprint, refreshed: false };
-      }
-
-      function showResults() {
-        summarySection.classList.remove("hidden");
-        cardSection.classList.remove("hidden");
-        selectionSection.classList.remove("hidden");
-        tableSection.classList.remove("hidden");
-        rawSection.classList.remove("hidden");
-      }
-
-      function hideResults() {
-        summarySection.classList.add("hidden");
-        cardSection.classList.add("hidden");
-        rulesSection.classList.add("hidden");
-        insightSection.classList.add("hidden");
-        selectionSection.classList.add("hidden");
-        tableSection.classList.add("hidden");
-        rawSection.classList.add("hidden");
-      }
-
-      function selectedSampleDataset() {
-        return sampleDatasetCatalog.find((dataset) => dataset.slug === sampleDatasetSelect.value) || null;
-      }
-
-      function updateSampleDatasetCopy() {
-        const dataset = selectedSampleDataset();
-        if (!dataset) {
-          sampleDatasetCopy.textContent =
-            "Curated delivery scenarios are available for quick demos and realistic manual testing.";
-          return;
-        }
-
-        let sentence = `${dataset.name} (${dataset.city}) includes ${dataset.orders} orders and ${dataset.partners} partners. ${dataset.description}`;
-        if (dataset.recommended_for) {
-          sentence += ` Best for: ${dataset.recommended_for}`;
-        }
-        sampleDatasetCopy.textContent = sentence;
-      }
-
-      function renderSampleDatasetCatalog(catalog) {
-        sampleDatasetCatalog = catalog.datasets || [];
-        sampleDatasetSelect.innerHTML = sampleDatasetCatalog
-          .map((dataset) => `<option value="${dataset.slug}">${dataset.name}</option>`)
-          .join("");
-
-        if (!sampleDatasetCatalog.length) {
-          sampleDatasetCopy.textContent = "No sample datasets are currently available.";
-          return;
-        }
-
-        const defaultSlug = catalog.default || sampleDatasetCatalog[0].slug;
-        sampleDatasetSelect.value = defaultSlug;
-        updateSampleDatasetCopy();
-      }
-
-      async function loadSampleDatasetCatalog() {
-        const response = await fetch("/demo/sample-datasets");
         if (!response.ok) {
-          throw new Error(`Could not load sample dataset catalog (${response.status})`);
-        }
-        const catalog = await response.json();
-        renderSampleDatasetCatalog(catalog);
-      }
-
-      function formatRuleName(ruleName) {
-        const friendly = {
-          availability: "availability",
-          max_distance: "distance limit",
-          min_rating: "minimum rating",
-          max_rating: "maximum rating",
-          vehicle_type: "vehicle compatibility",
-        };
-        return friendly[ruleName] || ruleName.replaceAll("_", " ");
-      }
-
-      function formatDecisionReason(reason) {
-        const friendly = {
-          BEST_WEIGHTED_SCORE: "Best combined score across proximity, rating, and fairness.",
-          BEST_WEIGHTED_SCORE_TIE_BREAKER: "Won a score tie using the deterministic partner-id tie-break.",
-          NO_ELIGIBLE_PARTNER: "No eligible partner was found.",
-          NO_PARTNER_PASSED_HARD_RULES: "No partner passed the required hard rules.",
-        };
-        return friendly[reason] || reason.replaceAll("_", " ").toLowerCase();
-      }
-
-      function formatStatus(status) {
-        return status === "assigned" ? "Assigned" : "Unallocated";
-      }
-
-      function formatFailureCombination(combo) {
-        if (!combo || combo === "NO_FAILURE_CODES") {
-          return "No detailed failure codes were recorded.";
+          const detail = payload && typeof payload === "object" && payload.detail ? payload.detail : payload;
+          throw {
+            status: response.status,
+            message: typeof detail === "string" ? detail : prettyJson(detail),
+          };
         }
 
-        const friendly = {
-          DISTANCE_LIMIT_EXCEEDED: "distance limit",
-          VEHICLE_TYPE_MISMATCH: "vehicle mismatch",
-          PARTNER_UNAVAILABLE: "partner unavailable",
-          RATING_TOO_LOW: "rating too low",
-          RATING_TOO_HIGH: "rating too high",
-        };
-
-        return combo
-          .split("+")
-          .map((part) => friendly[part] || part.replaceAll("_", " ").toLowerCase())
-          .join(" + ");
+        return payload;
       }
 
-      function topFailureEntry(diag) {
-        const combos = Object.entries(diag.unallocated_orders_by_failure_combination || {});
-        if (!combos.length) {
-          return null;
-        }
-        combos.sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
-        return combos[0];
+      function setTab(tabName) {
+        document.querySelectorAll(".tab-button").forEach((button) => {
+          button.classList.toggle("active", button.dataset.tab === tabName);
+        });
+        document.querySelectorAll(".tab-panel").forEach((panel) => {
+          panel.classList.toggle("active", panel.id === `tab-${tabName}`);
+        });
       }
 
-      function topRuleEntry(diag) {
-        const ruleCounts = Object.entries(diag.hard_rule_elimination_counts || {});
-        if (!ruleCounts.length) {
-          return null;
+      function summariseMutation(mutation) {
+        if (mutation.mutation_type === "rule_parameter") {
+          return `${mutation.rule_name}.${mutation.parameter_name} → ${mutation.new_value}`;
         }
-        ruleCounts.sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
-        return ruleCounts[0];
+        if (mutation.mutation_type === "rule_weight") {
+          return `${mutation.rule_name} weight → ${mutation.new_weight}`;
+        }
+        if (mutation.mutation_type === "rule_toggle") {
+          return `${mutation.rule_name} enabled → ${mutation.enabled}`;
+        }
+        const action = mutation.action || "remove";
+        return `partner_pool ${action} ${mutation.partner_id}`;
       }
 
-      function renderNarrative(response) {
-        const diag = response.aggregate_diagnostics || {};
-        const total = diag.total_orders || response.summary.total_orders || response.allocations.length;
-        const allocated = diag.allocated || response.summary.allocated_orders || 0;
-        const unallocated = diag.unallocated || response.summary.unallocated_orders || 0;
-        const rate = total ? ((allocated / total) * 100).toFixed(1) : "0.0";
-        const failure = topFailureEntry(diag);
-        const rule = topRuleEntry(diag);
-
-        let sentence =
-          `The engine reviewed ${total} orders and assigned ${allocated} of them, which is an allocation rate of ${rate}%. `;
-
-        if (unallocated > 0) {
-          sentence += `${unallocated} orders stayed unallocated. `;
-        } else {
-          sentence += `Every order received a partner. `;
+      function renderMutationList() {
+        if (!state.mutations.length) {
+          elements.mutationList.innerHTML = `<div class="hint">No mutations added yet.</div>`;
+          return;
         }
 
-        if (failure) {
-          sentence += `The most common reason unallocated orders failed was ${formatFailureCombination(failure[0])} on ${failure[1]} orders. `;
-        }
-
-        if (rule) {
-          sentence += `Across all candidate checks, the rule that eliminated the most options was ${formatRuleName(rule[0])} with ${rule[1]} eliminations.`;
-        }
-
-        summaryNarrative.textContent = sentence.trim();
-      }
-
-      function renderCards(response) {
-        const diag = response.aggregate_diagnostics || {};
-        const total = diag.total_orders || response.summary.total_orders || response.allocations.length;
-        const allocated = diag.allocated || response.summary.allocated_orders || 0;
-        const unallocated = diag.unallocated || response.summary.unallocated_orders || 0;
-        const rate = total ? `${((allocated / total) * 100).toFixed(1)}%` : "0.0%";
-
-        const cards = [
-          { label: "Total orders", value: total, css: "" },
-          { label: "Allocated", value: allocated, css: "card-allocated" },
-          { label: "Unallocated", value: unallocated, css: "card-unallocated" },
-          { label: "Allocation rate", value: rate, css: "card-rate" },
-        ];
-
-        summaryCards.innerHTML = cards
+        elements.mutationList.innerHTML = state.mutations
           .map(
-            (card) => `
-              <div class="card ${card.css}">
-                <span class="card-label">${card.label}</span>
-                <span class="card-value">${card.value}</span>
-              </div>
+            (mutation, index) => `
+              <span class="mutation-chip mono">
+                ${escapeHtml(summariseMutation(mutation))}
+                <button data-remove-mutation="${index}" aria-label="Remove mutation">×</button>
+              </span>
             `
           )
           .join("");
+
+        elements.mutationList.querySelectorAll("[data-remove-mutation]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const index = Number(button.dataset.removeMutation);
+            state.mutations.splice(index, 1);
+            renderMutationList();
+          });
+        });
       }
 
-      function renderActiveHardRules(response) {
-        const hardRules = response.summary.active_hard_rules || [];
-        if (!hardRules.length) {
-          rulesList.innerHTML = "";
-          rulesSection.classList.add("hidden");
+      function mutationToApi(mutation) {
+        if (mutation.mutation_type === "rule_parameter") {
+          return {
+            mutation_type: "rule_parameter",
+            rule_name: mutation.rule_name,
+            parameter: mutation.parameter_name,
+            new_value: Number(mutation.new_value),
+          };
+        }
+
+        if (mutation.mutation_type === "rule_weight") {
+          return {
+            mutation_type: "rule_weight",
+            rule_name: mutation.rule_name,
+            new_weight: Number(mutation.new_weight),
+          };
+        }
+
+        if (mutation.mutation_type === "rule_toggle") {
+          return {
+            mutation_type: "rule_toggle",
+            rule_name: mutation.rule_name,
+            enabled: Boolean(mutation.enabled),
+          };
+        }
+
+        const payload = {
+          mutation_type: "partner_pool",
+          add: [],
+          remove: [],
+          modify: [],
+        };
+
+        if ((mutation.action || "remove") === "remove") {
+          payload.remove = [mutation.partner_id];
+          return payload;
+        }
+
+        const partnerPayload = {
+          partner_id: mutation.partner_id,
+          latitude: Number(mutation.latitude),
+          longitude: Number(mutation.longitude),
+          is_available: mutation.is_available !== false,
+          rating: Number(mutation.rating),
+          vehicle_types: normalizeVehicleTypes(mutation.vehicle_types),
+          active: mutation.active !== false,
+        };
+
+        if (mutation.action === "modify") {
+          payload.modify = [partnerPayload];
+        } else {
+          payload.add = [partnerPayload];
+        }
+        return payload;
+      }
+
+      function renderMutationFields() {
+        const type = elements.mutationType.value;
+        const mutationOptions = state.mutationOptions;
+        if (!mutationOptions) {
+          elements.mutationFields.innerHTML = `<div class="banner">Loading mutation choices from the current rule config...</div>`;
           return;
         }
 
-        rulesList.innerHTML = hardRules
-          .map((rule) => `<span class="rule-chip">${formatRuleName(rule)}</span>`)
-          .join("");
-        rulesSection.classList.remove("hidden");
-      }
+        const previousRuleName = document.getElementById("field-rule-name")?.value || "";
+        const previousParameterName = document.getElementById("field-parameter-name")?.value || "";
+        const previousNewValue = document.getElementById("field-new-value")?.value || "";
+        const previousNewWeight = document.getElementById("field-new-weight")?.value || "";
+        const previousEnabled = document.getElementById("field-enabled")?.value || "";
+        const previousAction = document.getElementById("field-action")?.value || "";
+        const previousPartnerId = document.getElementById("field-partner-id")?.value || "";
+        const previousLatitude = document.getElementById("field-latitude")?.value || "";
+        const previousLongitude = document.getElementById("field-longitude")?.value || "";
+        const previousRating = document.getElementById("field-rating")?.value || "";
+        const previousAvailability = document.getElementById("field-is-available")?.value || "true";
+        const previousActive = document.getElementById("field-active")?.value || "true";
+        const previousVehicleTypes = Array.from(
+          document.getElementById("field-vehicle-types")?.selectedOptions || []
+        ).map((option) => option.value);
+        let html = "";
 
-      function renderInsights(response) {
-        const diag = response.aggregate_diagnostics || {};
-        const failure = topFailureEntry(diag);
-        const ruleCounts = Object.entries(diag.hard_rule_elimination_counts || {})
-          .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-          .slice(0, 3);
+        if (type === "rule_parameter") {
+          const rules = mutationOptions.rule_parameter || [];
+          const selectedRuleName =
+            rules.find((rule) => rule.rule_name === previousRuleName)?.rule_name || rules[0]?.rule_name || "";
+          const selectedRule = rules.find((rule) => rule.rule_name === selectedRuleName);
+          const parameters = selectedRule?.parameters || [];
+          const selectedParameterName =
+            parameters.find((parameter) => parameter.name === previousParameterName)?.name
+            || parameters[0]?.name
+            || "";
+          const selectedParameter = parameters.find((parameter) => parameter.name === selectedParameterName);
 
-        const items = [];
-
-        if (failure) {
-          items.push(
-            `Most common unallocated pattern: ${formatFailureCombination(failure[0])} on ${failure[1]} orders.`
-          );
-        }
-
-        if (ruleCounts.length) {
-          items.push(
-            `Top hard-rule eliminations: ${ruleCounts
-              .map(([rule, count]) => `${formatRuleName(rule)} (${count})`)
-              .join(", ")}.`
-          );
-        }
-
-        if (response.summary.fairness_escalation_event) {
-          items.push("Fairness escalation was triggered during this run.");
+          html = `
+            <div class="row">
+              <div class="field">
+                <label for="field-rule-name">Rule name</label>
+                <select id="field-rule-name" class="mono">
+                  ${rules
+                    .map(
+                      (rule) => `
+                        <option value="${escapeHtml(rule.rule_name)}" ${rule.rule_name === selectedRuleName ? "selected" : ""}>
+                          ${escapeHtml(rule.rule_name)} (${escapeHtml(rule.rule_group)})
+                        </option>
+                      `
+                    )
+                    .join("")}
+                </select>
+              </div>
+              <div class="field">
+                <label for="field-parameter-name">Parameter name</label>
+                <select id="field-parameter-name" class="mono">
+                  ${parameters
+                    .map(
+                      (parameter) => `
+                        <option value="${escapeHtml(parameter.name)}" ${parameter.name === selectedParameterName ? "selected" : ""}>
+                          ${escapeHtml(parameter.name)}
+                        </option>
+                      `
+                    )
+                    .join("")}
+                </select>
+              </div>
+              <div class="field">
+                <label for="field-new-value">New value</label>
+                <input id="field-new-value" type="number" step="0.01" class="mono" value="${escapeHtml(previousNewValue)}" />
+              </div>
+            </div>
+            <div class="hint">
+              Choose from the live rule config. Current value for
+              <span class="mono">${escapeHtml(selectedRuleName || "rule")}.${escapeHtml(selectedParameterName || "parameter")}</span>
+              is <span class="mono">${escapeHtml(selectedParameter?.current_value ?? "N/A")}</span>.
+            </div>
+          `;
+        } else if (type === "rule_weight") {
+          const rules = mutationOptions.rule_weight || [];
+          const selectedRuleName =
+            rules.find((rule) => rule.rule_name === previousRuleName)?.rule_name || rules[0]?.rule_name || "";
+          const selectedRule = rules.find((rule) => rule.rule_name === selectedRuleName);
+          html = `
+            <div class="row">
+              <div class="field">
+                <label for="field-rule-name">Rule name</label>
+                <select id="field-rule-name" class="mono">
+                  ${rules
+                    .map(
+                      (rule) => `
+                        <option value="${escapeHtml(rule.rule_name)}" ${rule.rule_name === selectedRuleName ? "selected" : ""}>
+                          ${escapeHtml(rule.rule_name)}
+                        </option>
+                      `
+                    )
+                    .join("")}
+                </select>
+              </div>
+              <div class="field">
+                <label for="field-new-weight">New weight</label>
+                <input
+                  id="field-new-weight"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max="1"
+                  class="mono"
+                  value="${escapeHtml(previousNewWeight)}"
+                />
+              </div>
+            </div>
+            <div class="hint">
+              Any scoring rule weight can be changed here, not just <span class="mono">fairness_score</span>.
+              Current weight for <span class="mono">${escapeHtml(selectedRuleName || "rule")}</span> is
+              <span class="mono">${escapeHtml(selectedRule?.current_weight ?? "N/A")}</span>.
+            </div>
+          `;
+        } else if (type === "rule_toggle") {
+          const rules = mutationOptions.rule_toggle || [];
+          const selectedRuleName =
+            rules.find((rule) => rule.rule_name === previousRuleName)?.rule_name || rules[0]?.rule_name || "";
+          const selectedRule = rules.find((rule) => rule.rule_name === selectedRuleName);
+          const selectedEnabled = previousEnabled || String(selectedRule?.enabled ?? true);
+          html = `
+            <div class="row">
+              <div class="field">
+                <label for="field-rule-name">Rule name</label>
+                <select id="field-rule-name" class="mono">
+                  ${rules
+                    .map(
+                      (rule) => `
+                        <option value="${escapeHtml(rule.rule_name)}" ${rule.rule_name === selectedRuleName ? "selected" : ""}>
+                          ${escapeHtml(rule.rule_name)} (${escapeHtml(rule.rule_group)})
+                        </option>
+                      `
+                    )
+                    .join("")}
+                </select>
+              </div>
+              <div class="field">
+                <label for="field-enabled">Enabled</label>
+                <select id="field-enabled">
+                  <option value="true" ${selectedEnabled === "true" ? "selected" : ""}>true</option>
+                  <option value="false" ${selectedEnabled === "false" ? "selected" : ""}>false</option>
+                </select>
+              </div>
+            </div>
+            <div class="hint">
+              Toggle any current hard or scoring rule. The live config currently has
+              <span class="mono">${escapeHtml(selectedRuleName || "rule")}</span> set to
+              <span class="mono">${escapeHtml(selectedRule?.enabled ?? true)}</span>.
+            </div>
+          `;
         } else {
-          items.push("Fairness escalation was not triggered during this run.");
+          const partnerPool = mutationOptions.partner_pool || { actions: ["remove"], vehicle_type_choices: ["bike"] };
+          const selectedAction =
+            partnerPool.actions.find((action) => action === previousAction) || partnerPool.actions[0] || "remove";
+          const selectedVehicleTypes = previousVehicleTypes.length
+            ? previousVehicleTypes
+            : [partnerPool.vehicle_type_choices[0]].filter(Boolean);
+          html = `
+            <div class="row">
+              <div class="field">
+                <label for="field-action">Action</label>
+                <select id="field-action">
+                  ${partnerPool.actions
+                    .map(
+                      (action) => `
+                        <option value="${escapeHtml(action)}" ${action === selectedAction ? "selected" : ""}>
+                          ${escapeHtml(action)}
+                        </option>
+                      `
+                    )
+                    .join("")}
+                </select>
+              </div>
+              <div class="field">
+                <label for="field-partner-id">Partner ID</label>
+                <input id="field-partner-id" class="mono" placeholder="PT-123" value="${escapeHtml(previousPartnerId)}" />
+              </div>
+            </div>
+            <div class="hint">Use remove for an existing partner, or add or modify to provide a replacement partner payload with chosen vehicle types.</div>
+            ${
+              selectedAction === "remove"
+                ? ""
+                : `
+                  <div class="row">
+                    <div class="field">
+                      <label for="field-latitude">Latitude</label>
+                      <input id="field-latitude" type="number" step="0.000001" class="mono" value="${escapeHtml(previousLatitude)}" />
+                    </div>
+                    <div class="field">
+                      <label for="field-longitude">Longitude</label>
+                      <input id="field-longitude" type="number" step="0.000001" class="mono" value="${escapeHtml(previousLongitude)}" />
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="field">
+                      <label for="field-rating">Rating</label>
+                      <input id="field-rating" type="number" step="0.1" class="mono" value="${escapeHtml(previousRating || "4.5")}" />
+                    </div>
+                    <div class="field">
+                      <label for="field-vehicle-types">Vehicle types</label>
+                      <select id="field-vehicle-types" class="mono" multiple size="3">
+                        ${partnerPool.vehicle_type_choices
+                          .map(
+                            (vehicleType) => `
+                              <option value="${escapeHtml(vehicleType)}" ${selectedVehicleTypes.includes(vehicleType) ? "selected" : ""}>
+                                ${escapeHtml(vehicleType)}
+                              </option>
+                            `
+                          )
+                          .join("")}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="field">
+                      <label for="field-is-available">Available</label>
+                      <select id="field-is-available">
+                        <option value="true" ${previousAvailability === "true" ? "selected" : ""}>true</option>
+                        <option value="false" ${previousAvailability === "false" ? "selected" : ""}>false</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="field-active">Active</label>
+                      <select id="field-active">
+                        <option value="true" ${previousActive === "true" ? "selected" : ""}>true</option>
+                        <option value="false" ${previousActive === "false" ? "selected" : ""}>false</option>
+                      </select>
+                    </div>
+                  </div>
+                `
+            }
+          `;
         }
 
-        insightList.innerHTML = items.map((item) => `<li>${item}</li>`).join("");
+        elements.mutationFields.innerHTML = html;
+        document.getElementById("field-rule-name")?.addEventListener("change", renderMutationFields);
+        document.getElementById("field-parameter-name")?.addEventListener("change", renderMutationFields);
+        document.getElementById("field-action")?.addEventListener("change", renderMutationFields);
       }
 
-      function renderTable(response) {
-        decisionTableBody.innerHTML = response.allocations
+      function collectMutationFromFields() {
+        const type = elements.mutationType.value;
+        if (type === "rule_parameter") {
+          return {
+            mutation_type: "rule_parameter",
+            rule_name: document.getElementById("field-rule-name").value.trim(),
+            parameter_name: document.getElementById("field-parameter-name").value.trim(),
+            new_value: document.getElementById("field-new-value").value,
+          };
+        }
+        if (type === "rule_weight") {
+          return {
+            mutation_type: "rule_weight",
+            rule_name: document.getElementById("field-rule-name").value.trim(),
+            new_weight: document.getElementById("field-new-weight").value,
+          };
+        }
+        if (type === "rule_toggle") {
+          return {
+            mutation_type: "rule_toggle",
+            rule_name: document.getElementById("field-rule-name").value.trim(),
+            enabled: document.getElementById("field-enabled").value === "true",
+          };
+        }
+        return {
+          mutation_type: "partner_pool",
+          action: document.getElementById("field-action").value,
+          partner_id: document.getElementById("field-partner-id").value.trim(),
+          latitude: document.getElementById("field-latitude")?.value ?? "",
+          longitude: document.getElementById("field-longitude")?.value ?? "",
+          rating: document.getElementById("field-rating")?.value ?? "",
+          vehicle_types: Array.from(document.getElementById("field-vehicle-types")?.selectedOptions || []).map(
+            (option) => option.value
+          ),
+          is_available: (document.getElementById("field-is-available")?.value ?? "true") === "true",
+          active: (document.getElementById("field-active")?.value ?? "true") === "true",
+        };
+      }
+
+      function validateMutation(mutation) {
+        if (mutation.mutation_type === "rule_parameter") {
+          return mutation.rule_name && mutation.parameter_name && mutation.new_value !== "";
+        }
+        if (mutation.mutation_type === "rule_weight") {
+          return mutation.rule_name && mutation.new_weight !== "";
+        }
+        if (mutation.mutation_type === "rule_toggle") {
+          return mutation.rule_name;
+        }
+        if (!mutation.partner_id) {
+          return false;
+        }
+        if ((mutation.action || "remove") === "remove") {
+          return true;
+        }
+        return (
+          mutation.latitude !== ""
+          && mutation.longitude !== ""
+          && mutation.rating !== ""
+          && normalizeVehicleTypes(mutation.vehicle_types).length > 0
+        );
+      }
+
+      function renderAllocationResults(data) {
+        const summary = data.summary || {};
+        const diagnostics = data.aggregate_diagnostics || {};
+        const activeRules = summary.active_hard_rules || [];
+        const firstOrderId = data.allocations && data.allocations.length ? data.allocations[0].order_id : "";
+
+        elements.auditOrderId.value = firstOrderId;
+        elements.rejectionOrderId.value = firstOrderId;
+        elements.verifyManifestId.value = data.manifest_id || "";
+        elements.replayManifestId.value = data.manifest_id || "";
+        elements.simulateManifestId.value = data.manifest_id || "";
+
+        const rows = (data.allocations || [])
           .map(
-            (row) => `
+            (allocation) => `
               <tr>
-                <td><strong>${row.order_id}</strong></td>
-                <td><span class="status-tag ${row.status}">${formatStatus(row.status)}</span></td>
-                <td>${row.partner_id || "No partner selected"}</td>
-                <td>${formatDecisionReason(row.reason)}</td>
-                <td>${row.weighted_score === null ? "Not scored" : row.weighted_score}</td>
-                <td>
-                  <button class="mini-button" type="button" data-order-id="${row.order_id}">
-                    Explain
-                  </button>
-                </td>
+                <td class="mono">${escapeHtml(allocation.order_id)}</td>
+                <td class="mono">${escapeHtml(allocation.partner_id ?? "UNALLOCATED")}</td>
+                <td><span class="result-badge ${allocation.status === "assigned" ? "success" : "mismatch"}">${escapeHtml(allocation.status)}</span></td>
+                <td class="mono">${escapeHtml(allocation.reason ?? "")}</td>
+                <td class="score mono">${allocation.weighted_score ?? "—"}</td>
               </tr>
             `
           )
           .join("");
 
-        decisionTableBody.querySelectorAll("[data-order-id]").forEach((button) => {
-          button.addEventListener("click", async () => {
-            const orderId = button.getAttribute("data-order-id");
-            await explainOrder(orderId);
-          });
-        });
-      }
+        const failureCombos = Object.entries(diagnostics.unallocated_orders_by_failure_combination || {})
+          .map(([reason, count]) => `<div class="diagnostic-item mono">${escapeHtml(reason)}: ${escapeHtml(count)}</div>`)
+          .join("") || `<div class="diagnostic-item">No rejection signatures were recorded in this run.</div>`;
 
-      function renderSelectionFallback(orderId, errorText) {
-        selectionBox.innerHTML = `
-          <strong>${orderId}</strong><br />
-          <span class="muted">${errorText}</span>
+        elements.allocationResults.innerHTML = `
+          <div class="banner">
+            Manifest <span class="hash mono">${escapeHtml(data.manifest_id)}</span> created for
+            <strong>${escapeHtml(summary.total_orders ?? 0)}</strong> orders.
+          </div>
+
+          <div class="stats">
+            <div class="stat-card">
+              <span class="stat-label">Allocated</span>
+              <span class="stat-value">${escapeHtml(summary.allocated_orders ?? 0)}</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Unallocated</span>
+              <span class="stat-value">${escapeHtml(summary.unallocated_orders ?? 0)}</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Manifest ID</span>
+              <span class="stat-value mono" style="font-size: 0.95rem">${escapeHtml(data.manifest_id)}</span>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div>
+              <h3>Active hard rules in this run</h3>
+              <div class="rule-list">
+                ${activeRules.map((rule) => `<span class="rule-chip mono">${escapeHtml(rule)}</span>`).join("") || `<span class="hint">No active hard rules reported.</span>`}
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Partner</th>
+                    <th>Status</th>
+                    <th>Reason</th>
+                    <th>Weighted Score</th>
+                  </tr>
+                </thead>
+                <tbody>${rows}</tbody>
+              </table>
+            </div>
+
+            <div class="stats">
+              <div class="stat-card">
+                <span class="stat-label">Aggregate Allocated</span>
+                <span class="stat-value">${escapeHtml(diagnostics.allocated ?? 0)}</span>
+              </div>
+              <div class="stat-card">
+                <span class="stat-label">Aggregate Unallocated</span>
+                <span class="stat-value">${escapeHtml(diagnostics.unallocated ?? 0)}</span>
+              </div>
+              <div class="stat-card">
+                <span class="stat-label">Rejection signatures</span>
+                <span class="stat-value">${escapeHtml(Object.keys(diagnostics.unallocated_orders_by_failure_combination || {}).length)}</span>
+              </div>
+            </div>
+
+            <div>
+              <h3>Unallocated rejection signatures</h3>
+              <div class="diagnostic-list">${failureCombos}</div>
+            </div>
+
+            <details>
+              <summary>Raw allocation response</summary>
+              <div class="details-body"><pre>${escapeHtml(prettyJson(data))}</pre></div>
+            </details>
+          </div>
         `;
       }
 
-      function renderSelection(orderId, summary) {
-        const failures = summary.hard_rule_failures || [];
-        const failureItems = failures.length
-          ? `
-            <ul class="detail-list">
-              ${failures
-                .slice(0, 8)
-                .map(
-                  (item) =>
-                    `<li>Partner ${item.partner_id}: ${formatRuleName(item.rule)} failed because ${item.reason}.</li>`
-                )
+      function renderManifestCard(manifest) {
+        elements.manifestCard.innerHTML = `
+          <div class="info-card stack">
+            <div class="meta-list">
+              <div class="meta-item">
+                <span class="meta-label">Manifest ID</span>
+                <span class="mono">${escapeHtml(manifest.manifest_id)}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Decision Timestamp</span>
+                <span>${escapeHtml(manifest.decided_at)}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Config Version Hash</span>
+                <span class="mono">${escapeHtml(manifest.config_version_hash)}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Manifest Signature</span>
+                <span class="mono">${escapeHtml(manifest.manifest_signature)}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderTrace(tracePayload, orderId) {
+        const orderTrace = (tracePayload.trace?.orders || []).find((entry) => entry.order_id === orderId);
+        if (!orderTrace) {
+          elements.traceContainer.innerHTML = `<div class="error-card"><strong>Trace missing</strong><div class="small">No stored trace found for order ${escapeHtml(orderId)}.</div></div>`;
+          return;
+        }
+
+        const candidates = orderTrace.candidates || [];
+        elements.traceContainer.innerHTML = `
+          <div class="trace-card stack">
+            <div class="candidate-head">
+              <div>
+                <strong>Order ${escapeHtml(orderId)}</strong>
+                <div class="small">Recorded decision reason: <span class="mono">${escapeHtml(orderTrace.decision_reason)}</span></div>
+              </div>
+              <span class="result-badge ${orderTrace.selected_partner_id ? "success" : "mismatch"}">
+                ${escapeHtml(orderTrace.selected_partner_id ? "ALLOCATED" : "UNALLOCATED")}
+              </span>
+            </div>
+            ${candidates
+              .map((candidate) => {
+                const selected = candidate.partner_id === orderTrace.selected_partner_id;
+                const hardRules = (candidate.hard_results || [])
+                  .map(
+                    (rule) => `
+                      <div class="rule-row">
+                        <div>
+                          <strong class="mono">${escapeHtml(rule.rule)}</strong>
+                          <div class="small">${escapeHtml(rule.rationale || "")}</div>
+                        </div>
+                        <span class="result-badge ${rule.passed ? "success" : "mismatch"}">${rule.passed ? "PASSED" : "FAILED"}</span>
+                      </div>
+                    `
+                  )
+                  .join("");
+                const scoringRules = (candidate.scoring_results || [])
+                  .map(
+                    (rule) => `
+                      <div class="score-row">
+                        <div>
+                          <strong class="mono">${escapeHtml(rule.rule)}</strong>
+                          <div class="small">Weighted contribution: <span class="mono">${escapeHtml(rule.weighted_contribution)}</span></div>
+                        </div>
+                        <div class="row" style="align-items: center; justify-content: flex-end; flex: 0 0 auto">
+                          <div class="score-bar"><span style="width: ${Math.max(0, Math.min(100, (Number(rule.raw_score) / 10) * 100))}%"></span></div>
+                          <span class="mono">${escapeHtml(rule.raw_score)}</span>
+                        </div>
+                      </div>
+                    `
+                  )
+                  .join("");
+
+                return `
+                  <details class="candidate-card" ${selected ? "open" : ""}>
+                    <summary>
+                      <span class="candidate-title">
+                        <strong class="mono">${escapeHtml(candidate.partner_id)}</strong>
+                        <span class="result-badge ${selected ? "success" : "warning"}">${selected ? "SELECTED" : "REJECTED"}</span>
+                      </span>
+                    </summary>
+                    <div class="details-body stack">
+                      <div class="small">Total weighted score: <span class="mono">${candidate.weighted_score ?? "—"}</span></div>
+                      <div class="stack">${hardRules || `<div class="small">No hard rule evaluations recorded.</div>`}</div>
+                      <div class="stack">${scoringRules || `<div class="small">No scoring rules ran for this candidate.</div>`}</div>
+                    </div>
+                  </details>
+                `;
+              })
+              .join("")}
+          </div>
+        `;
+      }
+
+      function renderVerifyResult(data) {
+        const verified = data.status === "VERIFIED";
+        elements.verifyResult.innerHTML = `
+          <div class="info-card stack">
+            <div class="candidate-head">
+              <div>
+                <strong>${verified ? "VERIFIED" : "TAMPERED"}</strong>
+                <div class="small">${verified ? "Signature valid. Decision is reproducible." : escapeHtml(data.details || "Verification mismatch detected.")}</div>
+              </div>
+              <span class="result-badge ${verified ? "verified" : "tampered"}">${escapeHtml(data.status)}</span>
+            </div>
+            <div class="meta-list">
+              <div class="meta-item">
+                <span class="meta-label">Manifest ID</span>
+                <span class="mono">${escapeHtml(data.manifest_id)}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Verified At</span>
+                <span>${escapeHtml(data.verified_at)}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderRejections(summary) {
+        const rows = (summary.hard_rule_failures || [])
+          .map(
+            (failure) => `
+              <tr>
+                <td class="mono">${escapeHtml(failure.partner_id)}</td>
+                <td>${escapeHtml(failure.reason)}</td>
+                <td class="mono">${escapeHtml(failure.rule)}</td>
+              </tr>
+            `
+          )
+          .join("");
+
+        elements.rejectionTable.innerHTML = `
+          <div class="banner">
+            Allocation status: <span class="mono">${escapeHtml(summary.allocation_status)}</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Partner ID</th>
+                  <th>Rejection Reason</th>
+                  <th>Rule Name</th>
+                </tr>
+              </thead>
+              <tbody>${rows || `<tr><td colspan="3">No hard-rule failures recorded.</td></tr>`}</tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      function renderReplay(data) {
+        const replayedByOrder = new Map((data.replayed_allocations || []).map((item) => [item.order_id, item]));
+        const rows = (data.original_allocations || [])
+          .map((original) => {
+            const replayed = replayedByOrder.get(original.order_id) || { partner_id: null };
+            const match = original.partner_id === replayed.partner_id;
+            return `
+              <tr class="${match ? "" : "mismatch-row"}">
+                <td class="mono">${escapeHtml(original.order_id)}</td>
+                <td class="mono">${escapeHtml(original.partner_id ?? "UNALLOCATED")}</td>
+                <td class="mono">${escapeHtml(replayed.partner_id ?? "UNALLOCATED")}</td>
+                <td>${match ? "Match" : "Non-determinism detected — rule configuration may have changed"}</td>
+              </tr>
+            `;
+          })
+          .join("");
+
+        elements.replayResults.innerHTML = `
+          <div class="banner">
+            <span class="result-badge ${data.status === "SUCCESS" ? "success" : "mismatch"}">${escapeHtml(data.status)}</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Original Partner</th>
+                  <th>Replayed Partner</th>
+                  <th>Match?</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+          <details>
+            <summary>Raw replay response</summary>
+            <div class="details-body"><pre>${escapeHtml(prettyJson(data.raw_replay_response))}</pre></div>
+          </details>
+        `;
+      }
+
+      function renderSimulation(data) {
+        const rows = data.trace_diff || [];
+        const changedCount = Number(data.counterfactual_summary?.total_changed_orders || 0);
+        const unchangedCount = Math.max(0, rows.length - changedCount);
+        const explanations = rows
+          .filter((row) => row.changed)
+          .map(
+            (row) => `
+              <div class="diagnostic-item">
+                Under the mutated ruleset, <span class="mono">${escapeHtml(row.hypothetical_partner ?? "UNALLOCATED")}</span>
+                replaced <span class="mono">${escapeHtml(row.original_partner ?? "UNALLOCATED")}</span>
+                because the decision reason changed from
+                <span class="mono">${escapeHtml(row.original_reason ?? "unknown")}</span>
+                to <span class="mono">${escapeHtml(row.hypothetical_reason ?? "unknown")}</span>.
+              </div>
+            `
+          )
+          .join("");
+
+        const tableRows = rows
+          .map(
+            (row) => `
+              <tr class="${row.changed ? "changed-row" : ""}">
+                <td class="mono">${escapeHtml(row.order_id)}</td>
+                <td class="mono">${escapeHtml(row.original_partner ?? "UNALLOCATED")}</td>
+                <td class="mono">${escapeHtml(row.hypothetical_partner ?? "UNALLOCATED")}</td>
+                <td>${row.changed ? "Changed" : "Unchanged"}</td>
+              </tr>
+            `
+          )
+          .join("");
+
+        elements.simulationResults.innerHTML = `
+          <div class="stats">
+            <div class="stat-card">
+              <span class="stat-label">Changed Orders</span>
+              <span class="stat-value">${escapeHtml(changedCount)}</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Unchanged Orders</span>
+              <span class="stat-value">${escapeHtml(unchangedCount)}</span>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Original Partner</th>
+                  <th>Mutated Partner</th>
+                  <th>Changed?</th>
+                </tr>
+              </thead>
+              <tbody>${tableRows}</tbody>
+            </table>
+          </div>
+
+          <div class="stack">
+            <h3>Assignment deltas</h3>
+            <div class="explanation-list">${explanations || `<div class="diagnostic-item">No partner selections changed under this counterfactual run.</div>`}</div>
+          </div>
+
+          <details>
+            <summary>Raw simulation response</summary>
+            <div class="details-body"><pre>${escapeHtml(prettyJson(data))}</pre></div>
+          </details>
+        `;
+      }
+
+      function renderDiagnostics(health, runtime, diagnostics, reservations) {
+        elements.diagnosticsHealth.innerHTML = `
+          <div class="diagnostic-list">
+            <div class="diagnostic-item">
+              <div class="candidate-head">
+                <span>API Health</span>
+                <span class="result-badge ${health.status === "ok" ? "success" : "mismatch"}">${escapeHtml(health.status)}</span>
+              </div>
+            </div>
+            <div class="diagnostic-item">
+              <strong>DB Connected</strong>
+              <div class="small mono">${escapeHtml(runtime.db_connected)}</div>
+            </div>
+            <div class="diagnostic-item">
+              <strong>Version</strong>
+              <div class="small mono">${escapeHtml(runtime.version)}</div>
+            </div>
+          </div>
+        `;
+
+        const activeRules = (diagnostics.active_rules || [])
+          .map((rule) => `<span class="rule-chip mono">${escapeHtml(rule)}</span>`)
+          .join("");
+        elements.diagnosticsSummary.innerHTML = `
+          <div class="diagnostic-list">
+            <div class="diagnostic-item"><strong>Total allocations</strong><div class="small mono">${escapeHtml(diagnostics.total_allocations)}</div></div>
+            <div class="diagnostic-item"><strong>Total unallocated</strong><div class="small mono">${escapeHtml(diagnostics.total_unallocated)}</div></div>
+            <div class="diagnostic-item"><strong>Average score</strong><div class="small mono">${escapeHtml(diagnostics.avg_score ?? "N/A")}</div></div>
+            <div class="diagnostic-item"><strong title="Requires event log">Fairness Gini: N/A</strong></div>
+            <div class="diagnostic-item">
+              <strong>Active rules</strong>
+              <div class="rule-list" style="margin-top: 8px">${activeRules || `<span class="hint">No active rules reported.</span>`}</div>
+            </div>
+          </div>
+        `;
+
+        const reservationEntries = Object.entries(reservations || {});
+        elements.diagnosticsReservations.innerHTML = reservationEntries.length
+          ? `<div class="reservation-list">
+              ${reservationEntries
+                .map(([partnerId, reservation]) => {
+                  const remaining = Math.max(0, Number(reservation.expires_at) - Date.now() / 1000);
+                  return `
+                    <div class="reservation-item mono">
+                      Partner ${escapeHtml(partnerId)} → Order ${escapeHtml(reservation.order_id)}
+                      (expires in ${remaining.toFixed(1)} seconds)
+                    </div>
+                  `;
+                })
                 .join("")}
-            </ul>
-          `
-          : `<p class="muted">No hard-rule failures were stored for this order.</p>`;
-
-        selectionBox.innerHTML = `
-          <strong>Order ${orderId}</strong>
-          <p class="helper">
-            Status: ${formatStatus(summary.allocation_status)}.
-            ${
-              summary.allocated_partner_id
-                ? `Chosen partner: ${summary.allocated_partner_id}.`
-                : "No partner was chosen."
-            }
-            Candidates evaluated: ${summary.candidates_evaluated}.
-            Candidates that survived the hard rules: ${summary.candidates_surviving_hard_rules}.
-          </p>
-          <h4>Why other candidates dropped out</h4>
-          ${failureItems}
-        `;
+            </div>`
+          : `<div class="diagnostic-item">No active reservations.</div>`;
       }
 
-      async function explainOrder(orderId) {
-        selectionBox.innerHTML = `<span class="muted">Loading explanation for ${orderId}...</span>`;
-
+      async function loadDatasetCatalog() {
         try {
-          const response = await fetch(`/allocations/${encodeURIComponent(orderId)}/rejection-summary`);
-          if (!response.ok) {
-            const detail = await response.text();
-            renderSelectionFallback(orderId, detail || "No explanation could be loaded.");
-            return;
-          }
-          const summary = await response.json();
-          renderSelection(orderId, summary);
+          const payload = await fetchJson("/demo/sample-datasets");
+          state.datasets = payload.datasets || [];
+          elements.datasetSelect.innerHTML = state.datasets
+            .map((dataset) => `<option value="${escapeHtml(dataset.slug)}">${escapeHtml(dataset.name)} (${dataset.orders} orders / ${dataset.partners} partners)</option>`)
+            .join("");
+          elements.datasetSelect.value = payload.default;
+          await loadSampleDataset(payload.default);
         } catch (error) {
-          renderSelectionFallback(orderId, error.message || "The explanation request failed.");
+          showError(elements.allocateStatus, error);
         }
       }
 
-      async function loadSamplePayload() {
-        const dataset = selectedSampleDataset();
-        const datasetLabel = dataset ? dataset.name : "sample payload";
-        const query = dataset ? `?dataset=${encodeURIComponent(dataset.slug)}` : "";
-        setBanner(`Loading ${datasetLabel}...`, "info");
+      async function loadSimulationPresets() {
         try {
-          const response = await fetch(`/demo/sample-payload${query}`);
-          if (!response.ok) {
-            throw new Error(`Could not load sample payload (${response.status})`);
-          }
-          const payload = await response.json();
-          payloadEditor.value = JSON.stringify(payload, null, 2);
-          idempotencyKeyInput.value = createIdempotencyKey();
-          resetResultsView();
-          setBanner(
-            `${dataset ? dataset.name : "Sample payload"} loaded with a fresh idempotency key. You can run it as-is or edit it first.`,
-            "success"
-          );
+          const presets = await fetchJson("/demo/simulation-presets");
+          state.presets = presets || [];
+          elements.presetSelect.innerHTML =
+            `<option value="">Select a mutation preset...</option>` +
+            state.presets
+              .map((preset, index) => `<option value="${index}">${escapeHtml(preset.name)}</option>`)
+              .join("");
         } catch (error) {
-          setBanner(error.message || "Failed to load the sample payload.", "error");
+          showError(elements.simulateStatus, error);
         }
       }
 
-      function formatEditorJson() {
+      function selectedPreset() {
+        const presetIndex = elements.presetSelect.value.trim();
+        if (!presetIndex) {
+          return null;
+        }
+        return state.presets[Number(presetIndex)] || null;
+      }
+
+      async function loadMutationOptions() {
         try {
-          const parsed = JSON.parse(payloadEditor.value);
-          payloadEditor.value = JSON.stringify(parsed, null, 2);
-          setBanner("JSON formatted successfully.", "success");
+          state.mutationOptions = await fetchJson("/demo/mutation-options");
+          renderMutationFields();
         } catch (error) {
-          setBanner(`Could not format JSON: ${error.message}`, "error");
+          showError(elements.simulateStatus, error);
+        }
+      }
+
+      async function loadSampleDataset(datasetSlug) {
+        showLoading(elements.allocateStatus, "Loading allocation dataset...");
+        try {
+          const payload = await fetchJson(`/demo/sample-payload?dataset=${encodeURIComponent(datasetSlug)}`);
+          const json = prettyJson(payload);
+          state.loadedPayloadText = json;
+          elements.allocationPayload.value = json;
+          elements.idempotencyKey.value = generateIdempotencyKey();
+          elements.allocateStatus.innerHTML = `<div class="banner">Loaded allocation dataset <span class="mono">${escapeHtml(datasetSlug)}</span>.</div>`;
+          elements.allocationResults.innerHTML = `<div class="banner">Run allocation to populate this panel. The first order ID and manifest ID are copied into the audit, replay, and simulation tabs so the investigation flow stays aligned.</div>`;
+        } catch (error) {
+          showError(elements.allocateStatus, error);
         }
       }
 
       async function runAllocation() {
-        let parsedPayload;
+        elements.allocateStatus.innerHTML = "";
+        showLoading(elements.allocateStatus, "Running allocation...");
+
+        let payload = null;
         try {
-          parsedPayload = JSON.parse(payloadEditor.value);
+          payload = JSON.parse(elements.allocationPayload.value);
         } catch (error) {
-          setBanner(`The payload is not valid JSON: ${error.message}`, "error");
-          hideResults();
+          showError(elements.allocateStatus, { message: `Invalid JSON: ${error.message}` });
           return;
         }
 
-        runButton.disabled = true;
-        const runState = ensureRunIdempotencyKey(parsedPayload);
-        if (runState.refreshed) {
-          setBanner("Payload changed, so the frontend generated a fresh idempotency key before running.", "info");
-        } else {
-          setBanner("Running allocation...", "info");
+        if (elements.allocationPayload.value !== state.loadedPayloadText && !elements.idempotencyKey.value.trim()) {
+          elements.idempotencyKey.value = generateIdempotencyKey();
         }
 
         try {
-          const response = await fetch("/allocations", {
+          const response = await fetchJson("/allocations", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "X-Idempotency-Key": runState.key,
+              "X-Idempotency-Key": elements.idempotencyKey.value.trim() || generateIdempotencyKey(),
             },
-            body: JSON.stringify(parsedPayload),
+            body: JSON.stringify(payload),
           });
 
-          const text = await response.text();
-          let payload = {};
-          if (text) {
-            try {
-              payload = JSON.parse(text);
-            } catch (error) {
-              payload = { raw: text };
-            }
-          }
-
-          if (!response.ok) {
-            const message =
-              payload.detail
-                ? typeof payload.detail === "string"
-                  ? payload.detail
-                  : JSON.stringify(payload.detail, null, 2)
-                : `Request failed with status ${response.status}`;
-            hideResults();
-            rawJson.textContent = JSON.stringify(payload, null, 2);
-            rawSection.classList.remove("hidden");
-            setBanner(message, "error");
-            return;
-          }
-
-          lastSubmittedIdempotencyKey = runState.key;
-          lastSubmittedPayloadFingerprint = runState.fingerprint;
-          currentResponse = payload;
-          renderNarrative(payload);
-          renderCards(payload);
-          renderActiveHardRules(payload);
-          renderInsights(payload);
-          renderTable(payload);
-          selectionBox.innerHTML =
-            '<span class="muted">Choose an order from the table below to see a more detailed explanation.</span>';
-          rawJson.textContent = JSON.stringify(payload, null, 2);
-          showResults();
-          insightSection.classList.remove("hidden");
-          setBanner("Allocation completed successfully. The summary below is ready to share with a human reader.", "success");
+          elements.allocateStatus.innerHTML = `<div class="banner">Allocation completed successfully.</div>`;
+          renderAllocationResults(response);
         } catch (error) {
-          hideResults();
-          setBanner(error.message || "The allocation request failed.", "error");
-        } finally {
-          runButton.disabled = false;
+          showError(elements.allocateStatus, error);
+          elements.allocationResults.innerHTML = `<div class="banner">Results unavailable because the request failed.</div>`;
         }
       }
 
-      document.getElementById("load-sample").addEventListener("click", loadSamplePayload);
-      sampleDatasetSelect.addEventListener("change", updateSampleDatasetCopy);
-      document.getElementById("format-json").addEventListener("click", formatEditorJson);
-      document.getElementById("clear-editor").addEventListener("click", () => {
-        payloadEditor.value = "";
-        idempotencyKeyInput.value = createIdempotencyKey();
-        resetResultsView();
-        setBanner("Editor cleared.", "info");
-      });
-      document.getElementById("new-key").addEventListener("click", () => {
-        idempotencyKeyInput.value = createIdempotencyKey();
-      });
-      runButton.addEventListener("click", runAllocation);
+      async function findManifest() {
+        const orderId = elements.auditOrderId.value.trim();
+        if (!orderId) {
+          showError(elements.auditManifestStatus, { message: "Order ID is required." });
+          return;
+        }
 
-      async function initializePage() {
-        idempotencyKeyInput.value = createIdempotencyKey();
-        hideResults();
-
+        showLoading(elements.auditManifestStatus, "Loading manifest...");
         try {
-          await loadSampleDatasetCatalog();
+          const manifest = await fetchJson(`/audit/manifest/${encodeURIComponent(orderId)}`);
+          elements.auditManifestStatus.innerHTML = `<div class="banner">Manifest located for order <span class="mono">${escapeHtml(orderId)}</span>.</div>`;
+          renderManifestCard(manifest);
+          elements.verifyManifestId.value = manifest.manifest_id;
+          elements.replayManifestId.value = manifest.manifest_id;
+          elements.simulateManifestId.value = manifest.manifest_id;
         } catch (error) {
-          sampleDatasetCopy.textContent =
-            "Could not load the sample dataset catalog, so the frontend will fall back to the default sample payload.";
+          showError(elements.auditManifestStatus, error);
+          elements.manifestCard.innerHTML = "";
         }
-
-        await loadSamplePayload();
       }
 
-      initializePage();
+      async function viewTrace() {
+        const orderId = elements.auditOrderId.value.trim();
+        if (!orderId) {
+          showError(elements.traceContainer, { message: "Order ID is required." });
+          return;
+        }
+
+        showLoading(elements.traceContainer, "Loading stored trace...");
+        try {
+          const trace = await fetchJson(`/audit/trace/${encodeURIComponent(orderId)}`);
+          renderTrace(trace, orderId);
+        } catch (error) {
+          showError(elements.traceContainer, error);
+        }
+      }
+
+      async function verifyIntegrity() {
+        const manifestId = elements.verifyManifestId.value.trim();
+        if (!manifestId) {
+          showError(elements.verifyStatus, { message: "Manifest ID is required." });
+          return;
+        }
+
+        showLoading(elements.verifyStatus, "Verifying manifest integrity...");
+        try {
+          const result = await fetchJson(`/audit/verify/${encodeURIComponent(manifestId)}`);
+          elements.verifyStatus.innerHTML = `<div class="banner">Verification finished for <span class="mono">${escapeHtml(manifestId)}</span>.</div>`;
+          renderVerifyResult(result);
+        } catch (error) {
+          showError(elements.verifyStatus, error);
+          elements.verifyResult.innerHTML = "";
+        }
+      }
+
+      async function viewRejections() {
+        const orderId = elements.rejectionOrderId.value.trim();
+        if (!orderId) {
+          showError(elements.rejectionStatus, { message: "Order ID is required." });
+          return;
+        }
+
+        showLoading(elements.rejectionStatus, "Loading rejection summary...");
+        try {
+          const result = await fetchJson(`/audit/rejections/${encodeURIComponent(orderId)}`);
+          elements.rejectionStatus.innerHTML = `<div class="banner">Loaded rejection summary for <span class="mono">${escapeHtml(orderId)}</span>.</div>`;
+          renderRejections(result);
+        } catch (error) {
+          showError(elements.rejectionStatus, error);
+          elements.rejectionTable.innerHTML = "";
+        }
+      }
+
+      async function runReplay() {
+        const manifestId = elements.replayManifestId.value.trim();
+        if (!manifestId) {
+          showError(elements.replayStatus, { message: "Manifest ID is required." });
+          return;
+        }
+
+        showLoading(elements.replayStatus, "Replaying deterministic trace...");
+        try {
+          const result = await fetchJson(`/audit/replay/${encodeURIComponent(manifestId)}`);
+          elements.replayStatus.innerHTML = `<div class="banner">Replay completed for <span class="mono">${escapeHtml(manifestId)}</span>.</div>`;
+          renderReplay(result);
+        } catch (error) {
+          showError(elements.replayStatus, error);
+          elements.replayResults.innerHTML = "";
+        }
+      }
+
+      async function runSimulation() {
+        const manifestId = elements.simulateManifestId.value.trim();
+        if (!manifestId) {
+          showError(elements.simulateStatus, { message: "Manifest ID is required." });
+          return;
+        }
+
+        if (!state.mutations.length) {
+          showError(elements.simulateStatus, { message: "Add at least one mutation before running a simulation." });
+          return;
+        }
+
+        showLoading(elements.simulateStatus, "Running counterfactual simulation...");
+        try {
+          const payload = {
+            manifest_id: manifestId,
+            mutations: state.mutations.map(mutationToApi),
+          };
+          const result = await fetchJson("/simulations", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          elements.simulateStatus.innerHTML = `<div class="banner">Simulation completed for <span class="mono">${escapeHtml(manifestId)}</span>.</div>`;
+          renderSimulation(result);
+        } catch (error) {
+          showError(elements.simulateStatus, error);
+          elements.simulationResults.innerHTML = `<div class="banner">Simulation results unavailable because the request failed.</div>`;
+        }
+      }
+
+      async function refreshDiagnostics() {
+        showLoading(elements.diagnosticsStatus, "Refreshing diagnostics...");
+        const [health, runtime, diagnostics, reservations] = await Promise.allSettled([
+          fetchJson("/health"),
+          fetchJson("/diagnostics/runtime"),
+          fetchJson("/audit/diagnostics"),
+          fetchJson("/allocations/reservations/active"),
+        ]);
+
+        const firstFailure = [health, runtime, diagnostics, reservations].find((result) => result.status === "rejected");
+        if (firstFailure) {
+          showError(elements.diagnosticsStatus, firstFailure.reason);
+        } else {
+          elements.diagnosticsStatus.innerHTML = `<div class="banner">Diagnostics refreshed successfully.</div>`;
+        }
+
+        elements.diagnosticsHealth.innerHTML = health.status === "fulfilled" && runtime.status === "fulfilled"
+          ? ""
+          : `<div class="error-card"><strong>Health unavailable</strong><div class="small">One or more diagnostics calls failed.</div></div>`;
+        elements.diagnosticsSummary.innerHTML = diagnostics.status === "fulfilled"
+          ? ""
+          : `<div class="error-card"><strong>Allocation diagnostics unavailable</strong><div class="small">The latest diagnostics endpoint did not return data.</div></div>`;
+        elements.diagnosticsReservations.innerHTML = reservations.status === "fulfilled"
+          ? ""
+          : `<div class="error-card"><strong>Reservations unavailable</strong><div class="small">Active reservation diagnostics did not return data.</div></div>`;
+
+        if (
+          health.status === "fulfilled" &&
+          runtime.status === "fulfilled" &&
+          diagnostics.status === "fulfilled" &&
+          reservations.status === "fulfilled"
+        ) {
+          renderDiagnostics(health.value, runtime.value, diagnostics.value, reservations.value);
+        }
+      }
+
+      document.querySelectorAll(".tab-button").forEach((button) => {
+        button.addEventListener("click", () => setTab(button.dataset.tab));
+      });
+
+      elements.datasetLoad.addEventListener("click", () => loadSampleDataset(elements.datasetSelect.value));
+      elements.refreshIdempotency.addEventListener("click", () => {
+        elements.idempotencyKey.value = generateIdempotencyKey();
+      });
+      elements.runAllocation.addEventListener("click", runAllocation);
+      elements.findManifest.addEventListener("click", findManifest);
+      elements.viewTrace.addEventListener("click", viewTrace);
+      elements.verifyIntegrity.addEventListener("click", verifyIntegrity);
+      elements.viewRejections.addEventListener("click", viewRejections);
+      elements.runReplay.addEventListener("click", runReplay);
+      elements.mutationType.addEventListener("change", renderMutationFields);
+      elements.addMutation.addEventListener("click", () => {
+        const mutation = collectMutationFromFields();
+        if (!validateMutation(mutation)) {
+          showError(elements.simulateStatus, { message: "Complete the mutation fields before adding it." });
+          return;
+        }
+        elements.simulateStatus.innerHTML = "";
+        state.mutations.push(mutation);
+        renderMutationList();
+      });
+      elements.clearMutations.addEventListener("click", () => {
+        state.mutations = [];
+        renderMutationList();
+      });
+      elements.runSimulation.addEventListener("click", runSimulation);
+      elements.presetSelect.addEventListener("change", () => {
+        const selected = selectedPreset();
+        if (!selected) {
+          elements.presetHelper.textContent = "Run an allocation first, then provide its manifest_id here.";
+          return;
+        }
+        elements.presetHelper.textContent = `${selected.description}${selected.requires_manifest_id ? " Run an allocation first, then provide its manifest_id here." : ""}`;
+      });
+      elements.applyPreset.addEventListener("click", () => {
+        const selected = selectedPreset();
+        if (!selected) {
+          showError(elements.simulateStatus, { message: "Select a mutation preset before applying it." });
+          return;
+        }
+        elements.simulateStatus.innerHTML = "";
+        state.mutations = selected.mutations.map((mutation) => ({ ...mutation }));
+        renderMutationList();
+        elements.presetHelper.textContent = `${selected.description}${selected.requires_manifest_id ? " Run an allocation first, then provide its manifest_id here." : ""}`;
+      });
+      elements.diagnosticsToggle.addEventListener("click", () => {
+        elements.diagnosticsSidebar.classList.toggle("open");
+      });
+      elements.diagnosticsRefresh.addEventListener("click", refreshDiagnostics);
+
+      renderMutationFields();
+      renderMutationList();
+      elements.idempotencyKey.value = generateIdempotencyKey();
+      loadDatasetCatalog();
+      loadSimulationPresets();
+      loadMutationOptions();
     </script>
   </body>
 </html>

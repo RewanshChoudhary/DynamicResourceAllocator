@@ -3,8 +3,8 @@
     "name": "Hyderabad Monsoon Mixed Fleet",
     "city": "Hyderabad",
     "scenario": "Rain-shift demand across HITEC City, Madhapur, Kondapur, and Gachibowli",
-    "description": "A larger mixed-fleet scenario with rain-hour demand, stronger car usage, and visible availability pressure.",
-    "recommended_for": "Vehicle-compatibility demos, mixed-fleet regression checks, and larger manual API runs.",
+    "description": "Mixed-fleet Hyderabad payload for validating vehicle compatibility, availability pressure, and higher-value car assignments.",
+    "recommended_for": "Vehicle-type rule checks, trace review, and mixed-fleet regression runs.",
     "orders_generated": 48,
     "partners_generated": 30,
     "generator": "scripts/generate_sample_datasets.py"
