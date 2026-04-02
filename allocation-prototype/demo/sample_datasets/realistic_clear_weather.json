@@ -4508,7 +4508,7 @@
       "partner_id": "SURRES05DEL02",
       "rating": 4.7,
       "raw_vehicle_type": "MOTORCYCLE",
-      "vehicle_condition": 0,
+      "vehicle_condition": 1,
       "vehicle_type": "bike",
       "vehicle_types": [
         "bike"
@@ -4530,7 +4530,7 @@
       "partner_id": "SURRES05DEL01",
       "rating": 4.6,
       "raw_vehicle_type": "MOTORCYCLE",
-      "vehicle_condition": 0,
+      "vehicle_condition": 1,
       "vehicle_type": "bike",
       "vehicle_types": [
         "bike"
@@ -4552,7 +4552,7 @@
       "partner_id": "SURRES05DEL03",
       "rating": 4.8,
       "raw_vehicle_type": "MOTORCYCLE",
-      "vehicle_condition": 0,
+      "vehicle_condition": 1,
       "vehicle_type": "bike",
       "vehicle_types": [
         "bike"
@@ -4574,7 +4574,7 @@
       "partner_id": "SURRES04DEL03",
       "rating": 4.7,
       "raw_vehicle_type": "MOTORCYCLE",
-      "vehicle_condition": 0,
+      "vehicle_condition": 1,
       "vehicle_type": "bike",
       "vehicle_types": [
         "bike"
@@ -4596,7 +4596,7 @@
       "partner_id": "SURRES04DEL01",
       "rating": 4.5,
       "raw_vehicle_type": "MOTORCYCLE",
-      "vehicle_condition": 0,
+      "vehicle_condition": 1,
       "vehicle_type": "bike",
       "vehicle_types": [
         "bike"
@@ -4618,7 +4618,7 @@
       "partner_id": "SURRES04DEL02",
       "rating": 4.8,
       "raw_vehicle_type": "MOTORCYCLE",
-      "vehicle_condition": 0,
+      "vehicle_condition": 1,
       "vehicle_type": "bike",
       "vehicle_types": [
         "bike"

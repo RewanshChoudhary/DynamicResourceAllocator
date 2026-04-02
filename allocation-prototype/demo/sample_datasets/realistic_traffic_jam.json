@@ -14180,7 +14180,7 @@
       "partner_id": "COIMBRES01DEL01",
       "rating": 4.5,
       "raw_vehicle_type": "MOTORCYCLE",
-      "vehicle_condition": 0,
+      "vehicle_condition": 1,
       "vehicle_type": "bike",
       "vehicle_types": [
         "bike"
@@ -14202,7 +14202,7 @@
       "partner_id": "COIMBRES01DEL03",
       "rating": 4.6,
       "raw_vehicle_type": "MOTORCYCLE",
-      "vehicle_condition": 0,
+      "vehicle_condition": 1,
       "vehicle_type": "bike",
       "vehicle_types": [
         "bike"
@@ -14224,7 +14224,7 @@
       "partner_id": "COIMBRES01DEL02",
       "rating": 4.7,
       "raw_vehicle_type": "MOTORCYCLE",
-      "vehicle_condition": 0,
+      "vehicle_condition": 1,
       "vehicle_type": "bike",
       "vehicle_types": [
         "bike"
@@ -14246,7 +14246,7 @@
       "partner_id": "COIMBRES14DEL02",
       "rating": 4.6,
       "raw_vehicle_type": "MOTORCYCLE",
-      "vehicle_condition": 0,
+      "vehicle_condition": 1,
       "vehicle_type": "bike",
       "vehicle_types": [
         "bike"
@@ -14268,7 +14268,7 @@
       "partner_id": "COIMBRES14DEL01",
       "rating": 4.6,
       "raw_vehicle_type": "MOTORCYCLE",
-      "vehicle_condition": 0,
+      "vehicle_condition": 1,
       "vehicle_type": "bike",
       "vehicle_types": [
         "bike"
@@ -14290,7 +14290,7 @@
       "partner_id": "COIMBRES14DEL03",
       "rating": 4.6,
       "raw_vehicle_type": "MOTORCYCLE",
-      "vehicle_condition": 0,
+      "vehicle_condition": 1,
       "vehicle_type": "bike",
       "vehicle_types": [
         "bike"
@@ -14312,7 +14312,7 @@
       "partner_id": "COIMBRES13DEL01",
       "rating": 4.7,
       "raw_vehicle_type": "MOTORCYCLE",
-      "vehicle_condition": 0,
+      "vehicle_condition": 1,
       "vehicle_type": "bike",
       "vehicle_types": [
         "bike"
@@ -14334,7 +14334,7 @@
       "partner_id": "COIMBRES13DEL02",
       "rating": 4.5,
       "raw_vehicle_type": "MOTORCYCLE",
-      "vehicle_condition": 0,
+      "vehicle_condition": 1,
       "vehicle_type": "bike",
       "vehicle_types": [
         "bike"
@@ -14356,7 +14356,7 @@
       "partner_id": "COIMBRES13DEL03",
       "rating": 4.7,
       "raw_vehicle_type": "MOTORCYCLE",
-      "vehicle_condition": 0,
+      "vehicle_condition": 1,
       "vehicle_type": "bike",
       "vehicle_types": [
         "bike"
@@ -14378,7 +14378,7 @@
       "partner_id": "COIMBRES010DEL01",
       "rating": 4.4,
       "raw_vehicle_type": "MOTORCYCLE",
-      "vehicle_condition": 0,
+      "vehicle_condition": 1,
       "vehicle_type": "bike",
       "vehicle_types": [
         "bike"
@@ -14400,7 +14400,7 @@
       "partner_id": "COIMBRES010DEL03",
       "rating": 4.5,
       "raw_vehicle_type": "MOTORCYCLE",
-      "vehicle_condition": 0,
+      "vehicle_condition": 1,
       "vehicle_type": "bike",
       "vehicle_types": [
         "bike"
@@ -14422,7 +14422,7 @@
       "partner_id": "COIMBRES010DEL02",
       "rating": 4.5,
       "raw_vehicle_type": "SCOOTER",
-      "vehicle_condition": 0,
+      "vehicle_condition": 1,
       "vehicle_type": "scooter",
       "vehicle_types": [
         "scooter"
@@ -14444,7 +14444,7 @@
       "partner_id": "COIMBRES09DEL03",
       "rating": 4.7,
       "raw_vehicle_type": "MOTORCYCLE",
-      "vehicle_condition": 0,
+      "vehicle_condition": 1,
       "vehicle_type": "bike",
       "vehicle_types": [
         "bike"
@@ -14466,7 +14466,7 @@
       "partner_id": "COIMBRES09DEL02",
       "rating": 4.6,
       "raw_vehicle_type": "MOTORCYCLE",
-      "vehicle_condition": 0,
+      "vehicle_condition": 1,
       "vehicle_type": "bike",
       "vehicle_types": [
         "bike"
@@ -14488,7 +14488,7 @@
       "partner_id": "COIMBRES09DEL01",
       "rating": 4.4,
       "raw_vehicle_type": "MOTORCYCLE",
-      "vehicle_condition": 0,
+      "vehicle_condition": 1,
       "vehicle_type": "bike",
       "vehicle_types": [
         "bike"
@@ -14510,7 +14510,7 @@
       "partner_id": "COIMBRES08DEL02",
       "rating": 4.7,
       "raw_vehicle_type": "MOTORCYCLE",
-      "vehicle_condition": 0,
+      "vehicle_condition": 1,
       "vehicle_type": "bike",
       "vehicle_types": [
         "bike"
@@ -14532,7 +14532,7 @@
       "partner_id": "COIMBRES08DEL01",
       "rating": 4.5,
       "raw_vehicle_type": "SCOOTER",
-      "vehicle_condition": 0,
+      "vehicle_condition": 1,
       "vehicle_type": "scooter",
       "vehicle_types": [
         "scooter"
@@ -14554,7 +14554,7 @@
       "partner_id": "COIMBRES08DEL03",
       "rating": 4.8,
       "raw_vehicle_type": "MOTORCYCLE",
-      "vehicle_condition": 0,
+      "vehicle_condition": 1,
       "vehicle_type": "bike",
       "vehicle_types": [
         "bike"
@@ -14576,7 +14576,7 @@
       "partner_id": "COIMBRES12DEL02",
       "rating": 4.6,
       "raw_vehicle_type": "MOTORCYCLE",
-      "vehicle_condition": 0,
+      "vehicle_condition": 1,
       "vehicle_type": "bike",
       "vehicle_types": [
         "bike"
@@ -14598,7 +14598,7 @@
       "partner_id": "COIMBRES12DEL03",
       "rating": 4.6,
       "raw_vehicle_type": "MOTORCYCLE",
-      "vehicle_condition": 0,
+      "vehicle_condition": 1,
       "vehicle_type": "bike",
       "vehicle_types": [
         "bike"
@@ -14620,7 +14620,7 @@
       "partner_id": "COIMBRES12DEL01",
       "rating": 4.6,
       "raw_vehicle_type": "MOTORCYCLE",
-      "vehicle_condition": 0,
+      "vehicle_condition": 1,
       "vehicle_type": "bike",
       "vehicle_types": [
         "bike"
@@ -14642,7 +14642,7 @@
       "partner_id": "COIMBRES16DEL02",
       "rating": 4.6,
       "raw_vehicle_type": "MOTORCYCLE",
-      "vehicle_condition": 0,
+      "vehicle_condition": 1,
       "vehicle_type": "bike",
       "vehicle_types": [
         "bike"
@@ -14664,7 +14664,7 @@
       "partner_id": "COIMBRES16DEL01",
       "rating": 4.6,
       "raw_vehicle_type": "MOTORCYCLE",
-      "vehicle_condition": 0,
+      "vehicle_condition": 1,
       "vehicle_type": "bike",
       "vehicle_types": [
         "bike"
@@ -14686,7 +14686,7 @@
       "partner_id": "COIMBRES16DEL03",
       "rating": 4.7,
       "raw_vehicle_type": "MOTORCYCLE",
-      "vehicle_condition": 0,
+      "vehicle_condition": 1,
       "vehicle_type": "bike",
       "vehicle_types": [
         "bike"
@@ -14708,7 +14708,7 @@
       "partner_id": "COIMBRES11DEL01",
       "rating": 4.6,
       "raw_vehicle_type": "MOTORCYCLE",
-      "vehicle_condition": 0,
+      "vehicle_condition": 1,
       "vehicle_type": "bike",
       "vehicle_types": [
         "bike"
@@ -14730,7 +14730,7 @@
       "partner_id": "COIMBRES11DEL03",
       "rating": 4.6,
       "raw_vehicle_type": "MOTORCYCLE",
-      "vehicle_condition": 0,
+      "vehicle_condition": 1,
       "vehicle_type": "bike",
       "vehicle_types": [
         "bike"
@@ -14752,7 +14752,7 @@
       "partner_id": "COIMBRES11DEL02",
       "rating": 4.6,
       "raw_vehicle_type": "MOTORCYCLE",
-      "vehicle_condition": 0,
+      "vehicle_condition": 1,
       "vehicle_type": "bike",
       "vehicle_types": [
         "bike"

@@ -153,7 +153,7 @@ def test_build_partner_pool_aggregates_correctly():
     assert partner["longitude"] == 77.5966
 
 
-def test_build_partner_pool_picks_worst_vehicle_condition():
+def test_build_partner_pool_averages_vehicle_condition():
     partners = build_partner_pool(
         [
             {
@@ -193,7 +193,7 @@ def test_build_partner_pool_picks_worst_vehicle_condition():
         ]
     )
 
-    assert partners[0]["vehicle_condition"] == 0
+    assert partners[0]["vehicle_condition"] == 1
 
 
 def test_build_order_set_respects_max_orders():

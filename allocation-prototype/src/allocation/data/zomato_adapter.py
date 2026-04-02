@@ -163,6 +163,12 @@ def _estimate_amount_paise(type_of_order: str | None, multiple_deliveries: int |
     return base + extra
 
 
+def _rounded_average_int(values: list[int]) -> int:
+    if not values:
+        return 0
+    return int(math.floor((sum(values) / len(values)) + 0.5))
+
+
 def _fix_restaurant_coordinates(
     restaurant_lat: float,
     restaurant_lon: float,
@@ -631,7 +637,9 @@ def build_partner_pool(clean_rows: list[dict]) -> list[dict]:
                 "longitude": float(last_row["restaurant_lon"]),
                 "is_available": True,
                 "current_load": int(round(sum(int(row["current_load"]) for row in rows) / len(rows))),
-                "vehicle_condition": min(int(row["vehicle_condition"]) for row in rows),
+                "vehicle_condition": _rounded_average_int(
+                    [int(row["vehicle_condition"]) for row in rows]
+                ),
                 "avg_time_taken_min": int(round(sum(int(row["time_taken_min"]) for row in rows) / len(rows))),
                 "city": _most_common_value(
                     [str(row.get("city", "")).strip() for row in rows],
