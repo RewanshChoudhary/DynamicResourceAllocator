@@ -158,3 +158,80 @@ def test_allocate_route_marks_conflicting_selection_as_partner_reserved(tmp_path
     assert sum(1 for allocation in allocations if allocation["reason"] == "partner_reserved") == 1
     assert response.aggregate_diagnostics["allocated"] == 0
     assert response.aggregate_diagnostics["unallocated"] == 1
+
+
+def test_allocate_route_uses_next_eligible_partner_when_best_partner_is_reserved(tmp_path):
+    context = build_api_test_context(tmp_path)
+    payload = AllocationRequest.model_validate(
+        {
+            "orders": [
+                {
+                    "order_id": "ORD-FALLBACK",
+                    "latitude": 12.9716,
+                    "longitude": 77.5946,
+                    "amount_paise": 30000,
+                    "requested_vehicle_type": "bike",
+                    "created_at": datetime(2026, 2, 22, 12, 0, tzinfo=timezone.utc).isoformat(),
+                }
+            ],
+            "partners": [
+                {
+                    "partner_id": "PT-BEST",
+                    "latitude": 12.97161,
+                    "longitude": 77.59461,
+                    "is_available": True,
+                    "rating": 4.9,
+                    "vehicle_types": ["bike"],
+                    "active": True,
+                    "vehicle_condition": 2,
+                    "avg_time_taken_min": 18,
+                },
+                {
+                    "partner_id": "PT-BACKUP",
+                    "latitude": 12.9718,
+                    "longitude": 77.5948,
+                    "is_available": True,
+                    "rating": 4.3,
+                    "vehicle_types": ["bike"],
+                    "active": True,
+                    "vehicle_condition": 2,
+                    "avg_time_taken_min": 24,
+                },
+            ],
+        }
+    )
+    store = reservation_store_module.get_reservation_store()
+    assert store.reserve("PT-BEST", "ORD-OTHER") is True
+
+    response = allocate(
+        payload,
+        context.request("POST", "/allocations"),
+        x_idempotency_key="api-allocate-fallback-partner",
+    )
+
+    allocation = response.model_dump()["allocations"][0]
+
+    assert allocation["partner_id"] == "PT-BACKUP"
+    assert allocation["status"] == "assigned"
+    assert allocation["reason"] == "partner_reselected_after_reservation"
+
+
+def test_allocate_route_does_not_reuse_same_partner_across_multiple_orders_in_one_request(tmp_path):
+    context = build_api_test_context(tmp_path)
+    payload = AllocationRequest.model_validate(_single_partner_payload())
+
+    response = allocate(
+        payload,
+        context.request("POST", "/allocations"),
+        x_idempotency_key="api-allocate-single-partner-scarcity",
+    )
+
+    allocations = response.model_dump()["allocations"]
+    allocated = [allocation for allocation in allocations if allocation["partner_id"] is not None]
+    unallocated = [allocation for allocation in allocations if allocation["partner_id"] is None]
+
+    assert len(allocated) == 1
+    assert len(unallocated) == 1
+    assert unallocated[0]["reason"] == "partner_already_allocated_in_request"
+    assert response.summary["allocated_orders"] == 1
+    assert response.summary["unallocated_orders"] == 1

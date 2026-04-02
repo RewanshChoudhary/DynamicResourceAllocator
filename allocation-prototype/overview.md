@@ -108,6 +108,8 @@ Some realistic future directions for the project are:
 - add role-based views for operators, analysts, and auditors
 
 ## 8. Very Small High-Level Architecture Diagram
+I’ve confirmed there are no pending local edits, so I can patch safely. Next I’m reading the allocation engine and API path where current_load is passed through, because that’s where we need to turn a soft scoring signal into an actual capacity guard.
+
 
 ```text
                 +----------------------+

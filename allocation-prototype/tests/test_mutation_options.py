@@ -14,11 +14,20 @@ def test_mutation_options_endpoint_exposes_live_rule_and_parameter_choices(tmp_p
     weight_rules = {entry["rule_name"] for entry in payload["rule_weight"]}
     toggle_rules = {entry["rule_name"] for entry in payload["rule_toggle"]}
 
-    assert {"max_distance", "min_rating", "vehicle_condition", "weather_safety", "proximity_score", "on_time_rate"} <= parameter_rules
+    assert {
+        "load_capacity",
+        "max_distance",
+        "min_rating",
+        "vehicle_condition",
+        "weather_safety",
+        "proximity_score",
+        "on_time_rate",
+    } <= parameter_rules
     assert {"proximity_score", "rating_score", "fairness_score", "on_time_rate"} <= weight_rules
     assert {
         "availability",
         "vehicle_type",
+        "load_capacity",
         "max_distance",
         "min_rating",
         "vehicle_condition",

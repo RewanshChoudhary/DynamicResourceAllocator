@@ -39,7 +39,7 @@ def _trace_for_manifest(context, manifest_id: str) -> dict:
 
 
 def test_severe_weather_dataset_triggers_weather_safety_rejections(tmp_path):
-    context, _, response = _allocate_sample(
+    context, payload, response = _allocate_sample(
         tmp_path,
         "realistic_severe_weather.json",
         idempotency_key="realistic-severe-weather",
@@ -47,7 +47,8 @@ def test_severe_weather_dataset_triggers_weather_safety_rejections(tmp_path):
 
     trace = _trace_for_manifest(context, response.manifest_id)
 
-    assert response.summary["unallocated_orders"] == 0
+    assert response.summary["allocated_orders"] <= len(payload["partners"])
+    assert response.summary["unallocated_orders"] > 0
     assert response.aggregate_diagnostics["hard_rule_elimination_counts"]["max_distance"] == 0
     assert response.aggregate_diagnostics["hard_rule_elimination_counts"]["weather_safety"] > 0
     assert any(
@@ -59,7 +60,7 @@ def test_severe_weather_dataset_triggers_weather_safety_rejections(tmp_path):
 
 
 def test_clear_weather_dataset_includes_on_time_rate_in_trace_scoring(tmp_path):
-    context, _, response = _allocate_sample(
+    context, payload, response = _allocate_sample(
         tmp_path,
         "realistic_clear_weather.json",
         idempotency_key="realistic-clear-weather",
@@ -68,7 +69,8 @@ def test_clear_weather_dataset_includes_on_time_rate_in_trace_scoring(tmp_path):
     trace = _trace_for_manifest(context, response.manifest_id)
     scored_candidates = 0
 
-    assert response.summary["unallocated_orders"] == 0
+    assert response.summary["allocated_orders"] <= len(payload["partners"])
+    assert response.summary["unallocated_orders"] > 0
     assert response.aggregate_diagnostics["hard_rule_elimination_counts"]["max_distance"] == 0
     for order_trace in trace.get("orders", []):
         hard_passed_candidates = [candidate for candidate in order_trace.get("candidates", []) if candidate["hard_passed"]]
@@ -86,7 +88,8 @@ def test_traffic_jam_dataset_and_preset_change_allocations_when_verified(tmp_pat
         idempotency_key="realistic-traffic-jam",
     )
 
-    assert response.summary["unallocated_orders"] == 0
+    assert response.summary["allocated_orders"] <= len(payload["partners"])
+    assert response.summary["unallocated_orders"] > 0
     assert response.aggregate_diagnostics["hard_rule_elimination_counts"]["max_distance"] < 1000
 
     metadata = payload["metadata"]

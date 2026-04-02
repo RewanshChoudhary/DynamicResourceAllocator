@@ -12,6 +12,7 @@ from allocation.domain.allocation import Allocation
 from allocation.domain.enums import AllocationStatus
 from allocation.domain.order import Order
 from allocation.domain.partner import DeliveryPartner
+from allocation.engine.loads import resolve_partner_loads
 from allocation.engine.manifest import ManifestBuilder, build_input_snapshot
 from allocation.engine.pipeline import (
     DeterministicAllocationPipeline,
@@ -90,6 +91,17 @@ def _active_hard_rule_names(config: dict) -> list[str]:
     ]
 
 
+def _rank_eligible_trace_candidates(order_trace: dict) -> list[dict]:
+    return sorted(
+        [
+            candidate
+            for candidate in order_trace.get("candidates", [])
+            if candidate.get("hard_passed") and candidate.get("weighted_score") is not None
+        ],
+        key=lambda candidate: (-float(candidate["weighted_score"]), str(candidate["partner_id"])),
+    )
+
+
 def _apply_partner_reservations(pipeline_result: PipelineResult) -> tuple[PipelineResult, list[tuple[str, str]], list[str]]:
     reservation_store = get_reservation_store()
     adjusted_allocations: list[Allocation] = []
@@ -100,23 +112,52 @@ def _apply_partner_reservations(pipeline_result: PipelineResult) -> tuple[Pipeli
 
     for allocation, order_trace in zip(pipeline_result.allocations, pipeline_result.trace.orders):
         trace_payload = copy.deepcopy(order_trace)
+        ranked_candidates = _rank_eligible_trace_candidates(trace_payload)
 
-        if allocation.partner_id is None:
-            adjusted_allocations.append(allocation)
-            adjusted_order_traces.append(trace_payload)
-            continue
-
-        if allocation.partner_id in request_reserved_partner_ids:
+        if allocation.partner_id is None or not ranked_candidates:
             adjusted_allocations.append(allocation)
             adjusted_order_traces.append(trace_payload)
             continue
 
         attempted_order_ids.append(allocation.order_id)
-        reserved = reservation_store.reserve(allocation.partner_id, allocation.order_id)
-        if reserved:
-            request_reserved_partner_ids.add(allocation.partner_id)
-            successful_reservations.append((allocation.order_id, allocation.partner_id))
-            adjusted_allocations.append(allocation)
+        chosen_candidate: dict | None = None
+        failure_reason = "partner_reserved"
+
+        for candidate in ranked_candidates:
+            partner_id = str(candidate["partner_id"])
+            if partner_id in request_reserved_partner_ids:
+                failure_reason = "partner_already_allocated_in_request"
+                continue
+
+            reserved = reservation_store.reserve(partner_id, allocation.order_id)
+            if not reserved:
+                failure_reason = "partner_reserved"
+                continue
+
+            request_reserved_partner_ids.add(partner_id)
+            successful_reservations.append((allocation.order_id, partner_id))
+            chosen_candidate = candidate
+            break
+
+        if chosen_candidate is not None:
+            selected_partner_id = str(chosen_candidate["partner_id"])
+            selected_weighted_score = float(chosen_candidate["weighted_score"])
+            decision_reason = allocation.reason
+            if selected_partner_id != allocation.partner_id:
+                decision_reason = "partner_reselected_after_reservation"
+
+            adjusted_allocations.append(
+                Allocation(
+                    order_id=allocation.order_id,
+                    partner_id=selected_partner_id,
+                    status=AllocationStatus.ASSIGNED,
+                    reason=decision_reason,
+                    weighted_score=selected_weighted_score,
+                )
+            )
+            trace_payload["selected_partner_id"] = selected_partner_id
+            trace_payload["selected_weighted_score"] = selected_weighted_score
+            trace_payload["decision_reason"] = decision_reason
             adjusted_order_traces.append(trace_payload)
             continue
 
@@ -125,13 +166,13 @@ def _apply_partner_reservations(pipeline_result: PipelineResult) -> tuple[Pipeli
                 order_id=allocation.order_id,
                 partner_id=None,
                 status=AllocationStatus.UNALLOCATED,
-                reason="partner_reserved",
+                reason=failure_reason,
                 weighted_score=None,
             )
         )
         trace_payload["selected_partner_id"] = None
         trace_payload["selected_weighted_score"] = None
-        trace_payload["decision_reason"] = "partner_reserved"
+        trace_payload["decision_reason"] = failure_reason
         adjusted_order_traces.append(trace_payload)
 
     adjusted_trace = EvaluationTrace(
@@ -191,11 +232,12 @@ def allocate(
         orders = _to_domain_orders(payload)
         partners = _to_domain_partners(payload)
 
-        tracker = request.app.state.partner_load_tracker
         partner_ids = [partner.partner_id for partner in partners]
         if not partner_ids:
             raise HTTPException(status_code=400, detail="Gini calculation requires at least one partner load")
-        partner_loads = tracker.get_load_counts(partner_ids)
+        # Allocation scoring must be deterministic for the same request payload,
+        # so fairness starts from the payload's current_load values only.
+        partner_loads = resolve_partner_loads(partners)
 
         fairness_cfg = config.get("fairness", {})
         enforcer = FairnessEnforcer(
@@ -280,6 +322,7 @@ def allocate(
         for order_id, partner_id in reserved_pairs:
             reservation_store.release(partner_id, order_id)
 
+        tracker = request.app.state.partner_load_tracker
         for allocation in pipeline_result.allocations:
             if allocation.partner_id is not None:
                 tracker.record_assignment(allocation.partner_id)

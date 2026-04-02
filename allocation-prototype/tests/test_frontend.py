@@ -35,6 +35,8 @@ def test_frontend_root_serves_allocation_console(tmp_path, monkeypatch):
     assert "Active hard rules in this run" in js
     assert "Runtime Diagnostics" in html
     assert "Fairness Gini: N/A" in js
+    assert "NOT SELECTED" in js
+    assert "ELIGIBLE" in js
 
 
 def test_frontend_static_asset_routes_serve_split_css_and_js(tmp_path, monkeypatch):

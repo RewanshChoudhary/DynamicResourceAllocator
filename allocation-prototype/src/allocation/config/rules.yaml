@@ -3,6 +3,10 @@ hard_rules:
     enabled: true
   - name: vehicle_type
     enabled: true
+  - name: load_capacity
+    enabled: false
+    params:
+      max_active_orders: 3
   - name: max_distance
     enabled: true
     params:

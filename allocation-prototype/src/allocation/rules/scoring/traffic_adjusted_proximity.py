@@ -15,6 +15,8 @@ DEFAULT_TRAFFIC_MULTIPLIERS = {
 }
 
 
+# Score scale: 0-1 (matching existing pipeline contract)
+# Verified against: rules/scoring/proximity.py on 2026-04-02
 @rule_registry.register
 class TrafficAdjustedProximityRule(ScoringRule):
     rule_name = "traffic_adjusted_proximity"

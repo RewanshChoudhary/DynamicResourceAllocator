@@ -84,6 +84,19 @@ function scoreBarWidth(rawScore) {
   return Math.max(0, Math.min(100, normalized * 100));
 }
 
+function candidateTraceStatus(candidate, orderTrace) {
+  if (candidate.partner_id === orderTrace.selected_partner_id) {
+    return { badgeClass: "success", label: "SELECTED" };
+  }
+  if (!candidate.hard_passed) {
+    return { badgeClass: "mismatch", label: "REJECTED" };
+  }
+  if (orderTrace.selected_partner_id) {
+    return { badgeClass: "warning", label: "NOT SELECTED" };
+  }
+  return { badgeClass: "warning", label: "ELIGIBLE" };
+}
+
 function normalizeVehicleTypes(vehicleTypes) {
   if (Array.isArray(vehicleTypes)) {
     return vehicleTypes.filter(Boolean);
@@ -696,6 +709,7 @@ function renderTrace(tracePayload, orderId) {
       ${candidates
         .map((candidate) => {
           const selected = candidate.partner_id === orderTrace.selected_partner_id;
+          const status = candidateTraceStatus(candidate, orderTrace);
           const hardRules = (candidate.hard_results || [])
             .map(
               (rule) => `
@@ -734,7 +748,7 @@ function renderTrace(tracePayload, orderId) {
               <summary>
                 <span class="candidate-title">
                   <strong class="mono">${escapeHtml(candidate.partner_id)}</strong>
-                  <span class="result-badge ${selected ? "success" : "warning"}">${selected ? "SELECTED" : "REJECTED"}</span>
+                  <span class="result-badge ${status.badgeClass}">${status.label}</span>
                 </span>
               </summary>
               <div class="details-body stack">

@@ -1,0 +1,33 @@
+============================= test session starts ==============================
+platform linux -- Python 3.14.3, pytest-9.0.2, pluggy-1.6.0
+rootdir: /home/rewansh57/Programming/PatentProject/allocation-prototype
+configfile: pyproject.toml
+plugins: anyio-4.12.1, cov-7.0.0
+collected 87 items
+
+tests/test_api_allocate.py ....                                          [  4%]
+tests/test_api_audit.py ...                                              [  8%]
+tests/test_api_lifecycle.py .                                            [  9%]
+tests/test_conflict_detection.py ...                                     [ 12%]
+tests/test_counterfactual.py .                                           [ 13%]
+tests/test_diagnostics.py ...                                            [ 17%]
+tests/test_fairness_gini.py ....                                         [ 21%]
+tests/test_frontend.py ....                                              [ 26%]
+tests/test_manifest.py .                                                 [ 27%]
+tests/test_mutation_options.py .                                         [ 28%]
+tests/test_presentation_api.py .....                                     [ 34%]
+tests/test_realistic_dataset_allocations.py ...                          [ 37%]
+tests/test_rejection_query.py .                                          [ 39%]
+tests/test_replay.py ..                                                  [ 41%]
+tests/test_reservation.py .......                                        [ 49%]
+tests/test_rule_on_time_rate.py .......                                  [ 57%]
+tests/test_rule_traffic_adjusted_proximity.py .......                    [ 65%]
+tests/test_rule_vehicle_condition.py .....                               [ 71%]
+tests/test_rule_weather_safety.py ........                               [ 80%]
+tests/test_sample_datasets.py .....                                      [ 86%]
+tests/test_schema_compatibility.py ..                                    [ 88%]
+tests/test_simulation_presets.py .                                       [ 89%]
+tests/test_vehicle_compatibility.py .                                    [ 90%]
+tests/test_zomato_adapter_extended.py ........                           [100%]
+
+============================== 87 passed in 8.08s ==============================

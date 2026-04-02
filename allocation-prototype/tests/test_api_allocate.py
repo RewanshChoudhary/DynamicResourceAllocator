@@ -5,6 +5,7 @@ from sqlalchemy import func, select
 from allocation.api.routers.allocate import allocate
 from allocation.api.schemas import AllocationRequest
 from allocation.persistence.models import AllocationEventModel
+from allocation.persistence.repository import ManifestRepository
 from api_test_utils import build_api_test_context, minimal_allocation_payload
 
 
@@ -96,3 +97,129 @@ def test_allocate_route_accepts_richer_realistic_payload_shape(tmp_path):
     )
 
     assert response.summary["allocated_orders"] == 1
+
+
+def test_allocate_route_traces_different_fairness_scores_for_different_request_loads(tmp_path):
+    context = build_api_test_context(tmp_path)
+    payload = AllocationRequest.model_validate(
+        {
+            "orders": [
+                {
+                    "order_id": "ORD-FAIR-1",
+                    "latitude": 12.9716,
+                    "longitude": 77.5946,
+                    "amount_paise": 30000,
+                    "requested_vehicle_type": "bike",
+                },
+            ],
+            "partners": [
+                {
+                    "partner_id": "PT-LOW",
+                    "latitude": 12.9717,
+                    "longitude": 77.5947,
+                    "is_available": True,
+                    "rating": 4.8,
+                    "vehicle_types": ["bike"],
+                    "active": True,
+                    "current_load": 0,
+                    "vehicle_condition": 2,
+                },
+                {
+                    "partner_id": "PT-HIGH",
+                    "latitude": 12.9717,
+                    "longitude": 77.5947,
+                    "is_available": True,
+                    "rating": 4.8,
+                    "vehicle_types": ["bike"],
+                    "active": True,
+                    "current_load": 2,
+                    "vehicle_condition": 2,
+                }
+            ],
+        }
+    )
+
+    response = allocate(
+        payload,
+        context.request("POST", "/allocations"),
+        x_idempotency_key="api-allocate-fairness-request-loads",
+    )
+
+    with context.session_factory() as session:
+        manifest = ManifestRepository(session).get(response.manifest_id)
+
+    assert manifest is not None
+    order_trace = manifest.evaluation_trace["orders"][0]
+    candidates = {candidate["partner_id"]: candidate for candidate in order_trace["candidates"]}
+
+    low_fairness = next(
+        score for score in candidates["PT-LOW"]["scoring_results"] if score["rule"] == "fairness_score"
+    )
+    high_fairness = next(
+        score for score in candidates["PT-HIGH"]["scoring_results"] if score["rule"] == "fairness_score"
+    )
+
+    assert low_fairness["score_breakdown"]["partner_current_load"] == 0.0
+    assert high_fairness["score_breakdown"]["partner_current_load"] == 2.0
+    assert low_fairness["raw_score"] > high_fairness["raw_score"]
+
+
+def test_allocate_route_is_deterministic_for_same_payload_on_same_app(tmp_path):
+    context = build_api_test_context(tmp_path)
+    payload = AllocationRequest.model_validate(
+        {
+            "orders": [
+                {
+                    "order_id": "ORD-DET-1",
+                    "latitude": 12.9716,
+                    "longitude": 77.5946,
+                    "amount_paise": 30000,
+                    "requested_vehicle_type": "bike",
+                }
+            ],
+            "partners": [
+                {
+                    "partner_id": "PA",
+                    "latitude": 12.9717,
+                    "longitude": 77.5947,
+                    "is_available": True,
+                    "rating": 4.8,
+                    "vehicle_types": ["bike"],
+                    "active": True,
+                    "current_load": 0,
+                    "vehicle_condition": 2,
+                    "avg_time_taken_min": 20,
+                },
+                {
+                    "partner_id": "PB",
+                    "latitude": 12.9717,
+                    "longitude": 77.5947,
+                    "is_available": True,
+                    "rating": 4.8,
+                    "vehicle_types": ["bike"],
+                    "active": True,
+                    "current_load": 0,
+                    "vehicle_condition": 2,
+                    "avg_time_taken_min": 20,
+                },
+            ],
+        }
+    )
+
+    first = allocate(
+        payload,
+        context.request("POST", "/allocations"),
+        x_idempotency_key="api-allocate-determinism-1",
+    )
+    second = allocate(
+        payload,
+        context.request("POST", "/allocations"),
+        x_idempotency_key="api-allocate-determinism-2",
+    )
+
+    first_allocation = first.model_dump()["allocations"][0]
+    second_allocation = second.model_dump()["allocations"][0]
+
+    assert first_allocation["partner_id"] == "PA"
+    assert second_allocation["partner_id"] == "PA"
+    assert first_allocation["weighted_score"] == second_allocation["weighted_score"]

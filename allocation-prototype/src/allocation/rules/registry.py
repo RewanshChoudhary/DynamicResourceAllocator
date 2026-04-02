@@ -50,6 +50,7 @@ rule_registry = RuleRegistry()
 def import_all_rules() -> None:
     import allocation.rules.hard.availability
     import allocation.rules.hard.distance
+    import allocation.rules.hard.load_capacity
     import allocation.rules.hard.rating
     import allocation.rules.hard.vehicle_condition
     import allocation.rules.hard.weather_safety

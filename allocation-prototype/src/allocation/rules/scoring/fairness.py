@@ -19,8 +19,8 @@ class FairnessScoreRule(ScoringRule):
         if not isinstance(partner_loads, dict):
             partner_loads = {}
 
-        load = int(partner_loads.get(partner.partner_id, 0))
-        max_load = max([int(v) for v in partner_loads.values()] + [0])
+        load = max(0, int(partner.current_load))
+        max_load = max([max(0, int(v)) for v in partner_loads.values()] + [load, 0])
 
         if max_load <= 0:
             raw = 1.0
@@ -30,7 +30,7 @@ class FairnessScoreRule(ScoringRule):
         return ScoreResult(
             raw,
             {
-                "partner_load": float(load),
+                "partner_current_load": float(load),
                 "max_partner_load": float(max_load),
                 "fairness_score": round(raw, 6),
             },

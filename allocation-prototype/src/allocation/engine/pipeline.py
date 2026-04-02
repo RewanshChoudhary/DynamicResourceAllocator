@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any
 
 from allocation.domain.allocation import Allocation
 from allocation.domain.enums import AllocationStatus
 from allocation.domain.order import Order
 from allocation.domain.partner import DeliveryPartner
+from allocation.engine.loads import resolve_partner_loads
 from allocation.rules.base import HardRule, ScoringRule
 
 
@@ -107,9 +108,7 @@ class DeterministicAllocationPipeline:
     ) -> PipelineResult:
         sorted_orders = sorted(orders, key=lambda x: x.order_id)
         sorted_partners = sorted(partners, key=lambda x: x.partner_id)
-        local_partner_loads = dict(partner_loads or {})
-        for partner in sorted_partners:
-            local_partner_loads.setdefault(partner.partner_id, 0)
+        local_partner_loads = resolve_partner_loads(sorted_partners, partner_loads)
         initial_partner_loads = {partner_id: int(load) for partner_id, load in sorted(local_partner_loads.items())}
 
         allocations: list[Allocation] = []
@@ -122,11 +121,15 @@ class DeterministicAllocationPipeline:
             candidate_traces: list[dict[str, Any]] = []
 
             for partner in sorted_partners:
+                effective_partner = replace(
+                    partner,
+                    current_load=local_partner_loads.get(partner.partner_id, partner.current_load),
+                )
                 hard_results: list[dict[str, Any]] = []
                 hard_passed = True
 
                 for hard_rule in self.hard_rules:
-                    result = hard_rule.evaluate(order, partner)
+                    result = hard_rule.evaluate(order, effective_partner)
                     hard_results.append(
                         {
                             "rule": hard_rule.rule_name,
@@ -156,7 +159,7 @@ class DeterministicAllocationPipeline:
                 context = {"partner_loads": dict(local_partner_loads)}
 
                 for scoring_rule in self.scoring_rules:
-                    result = scoring_rule.score(order, partner, context)
+                    result = scoring_rule.score(order, effective_partner, context)
                     weight = float(scoring_weights.get(scoring_rule.rule_name, 0.0))
                     contribution = result.raw_score * weight
                     weighted += contribution

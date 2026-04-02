@@ -6,6 +6,8 @@ from allocation.rules.base import ScoreResult, ScoringRule
 from allocation.rules.registry import rule_registry
 
 
+# Score scale: 0-1 (matching existing pipeline contract)
+# Verified against: rules/scoring/proximity.py on 2026-04-02
 @rule_registry.register
 class OnTimeRateRule(ScoringRule):
     rule_name = "on_time_rate"
